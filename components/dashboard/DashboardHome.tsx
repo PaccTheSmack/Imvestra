@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Calculator,
@@ -53,6 +54,8 @@ interface DashboardHomeProps {
   totalInvestment: number | null;
   recentProperties: RecentProperty[];
   financingAlertCount?: number;
+  monthlyRentSoll?: number;
+  monthlyRentIst?: number;
 }
 
 function fmtCurrency(n: number) {
@@ -75,6 +78,8 @@ export default function DashboardHome({
   totalInvestment,
   recentProperties,
   financingAlertCount = 0,
+  monthlyRentSoll = 0,
+  monthlyRentIst = 0,
 }: DashboardHomeProps) {
   const router = useRouter();
 
@@ -177,6 +182,39 @@ export default function DashboardHome({
           ))}
         </div>
       </FadeIn>
+
+      {/* Mini cashflow widget */}
+      {monthlyRentSoll > 0 && (
+        <FadeIn delay={0.07}>
+          <div
+            className="rounded-[12px] px-5 py-4 mb-4 flex items-center justify-between"
+            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "#555" }}>
+                Mieteinnahmen{" "}
+                {new Date().toLocaleDateString("de-DE", { month: "long" })}
+              </p>
+              <div className="w-48 rounded-full overflow-hidden" style={{ background: "#1A1A1A", height: 6 }}>
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: `${Math.min((monthlyRentIst / monthlyRentSoll) * 100, 100)}%`,
+                    background: monthlyRentIst >= monthlyRentSoll ? "#1DB87A" : "#FFB800",
+                  }}
+                />
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-semibold" style={{ color: "#1DB87A" }}>{fmtCurrency(monthlyRentIst)}</p>
+              <p className="text-[10px]" style={{ color: "#444" }}>von {fmtCurrency(monthlyRentSoll)}</p>
+              <Link href="/finanzen" className="text-[10px] mt-1 block" style={{ color: "#1DB87A" }}>
+                Details →
+              </Link>
+            </div>
+          </div>
+        </FadeIn>
+      )}
 
       {/* Financing alert banner */}
       {financingAlertCount > 0 && (

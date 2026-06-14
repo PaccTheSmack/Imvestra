@@ -165,3 +165,25 @@ export interface RentPayment {
   notes?: string;
   created_at: string;
 }
+
+export interface Expense {
+  id: string;
+  user_id: string;
+  property_id?: string;
+  title: string;
+  amount: number;
+  category: "maintenance" | "management" | "insurance" | "tax" | "utilities" | "renovation" | "other";
+  date: string;
+  notes?: string;
+  created_at: string;
+}
+
+export const EXPENSE_CATEGORIES = {
+  maintenance: { label: "Instandhaltung", color: "#FFB800" },
+  management:  { label: "Verwaltung",      color: "#1DB87A" },
+  insurance:   { label: "Versicherung",    color: "#4B9EFF" },
+  tax:         { label: "Steuern/Abgaben", color: "#FF4444" },
+  utilities:   { label: "Nebenkosten",     color: "#A855F7" },
+  renovation:  { label: "Renovierung",     color: "#FF8C00" },
+  other:       { label: "Sonstiges",       color: "#666"    },
+} as const;
