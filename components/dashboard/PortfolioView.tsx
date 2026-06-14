@@ -49,6 +49,7 @@ interface PortfolioViewProps {
   avgGrossYield: number;
   plan: Plan;
   tenantsByProperty?: Record<string, { count: number; totalRent: number }>;
+  financingAlertsByProperty?: Record<string, "critical" | "warning">;
 }
 
 function Sparkline() {
@@ -91,6 +92,7 @@ export default function PortfolioView({
   avgGrossYield,
   plan,
   tenantsByProperty = {},
+  financingAlertsByProperty = {},
 }: PortfolioViewProps) {
   const prefersReduced = useReducedMotion();
   const count = properties.length;
@@ -383,6 +385,8 @@ export default function PortfolioView({
             const colors = TYPE_COLORS[p.type] ?? TYPE_COLORS.ETW;
             const positive = p.cashflow_monthly >= 0;
 
+            const financingAlert = financingAlertsByProperty[p.id];
+
             return (
               <motion.div
                 key={p.id}
@@ -396,7 +400,9 @@ export default function PortfolioView({
                     className="relative rounded-[16px] overflow-hidden h-full transition-all duration-300"
                     style={{
                       background: tokens.color.surface,
-                      border: `1px solid ${tokens.color.border}`,
+                      border: financingAlert
+                        ? `1px solid ${financingAlert === "critical" ? "rgba(255,68,68,0.25)" : "rgba(255,184,0,0.2)"}`
+                        : `1px solid ${tokens.color.border}`,
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLDivElement).style.borderColor = tokens.color.borderStrong;
@@ -419,12 +425,25 @@ export default function PortfolioView({
                         >
                           <Buildings size={18} color={colors.text} />
                         </div>
-                        <span
-                          className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                          style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}
-                        >
-                          {p.type}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {financingAlert && (
+                            <span
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                              style={{
+                                background: financingAlert === "critical" ? "rgba(255,68,68,0.1)" : "rgba(255,184,0,0.1)",
+                                color: financingAlert === "critical" ? "#FF4444" : "#FFB800",
+                              }}
+                            >
+                              Zins bald fallig
+                            </span>
+                          )}
+                          <span
+                            className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                            style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}
+                          >
+                            {p.type}
+                          </span>
+                        </div>
                       </div>
 
                       <h3 className="text-sm font-semibold leading-snug" style={{ color: tokens.color.text }}>

@@ -3,11 +3,15 @@ import { calculateProperty } from "@/lib/calculations";
 import PortfolioView from "@/components/dashboard/PortfolioView";
 import type { Property, Plan } from "@/types";
 
+function daysUntil(d: string) {
+  return Math.ceil((new Date(d).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
 export default async function PortfolioPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: properties }, { data: profile }, { data: tenants }] = await Promise.all([
+  const [{ data: properties }, { data: profile }, { data: tenants }, { data: financings }] = await Promise.all([
     supabase
       .from("properties")
       .select("*")
@@ -22,6 +26,10 @@ export default async function PortfolioPage() {
       .from("tenants")
       .select("property_id, rent_monthly, is_active")
       .eq("user_id", user!.id),
+    supabase
+      .from("financings")
+      .select("property_id, fixed_until")
+      .eq("user_id", user!.id),
   ]);
 
   const tenantsByProperty: Record<string, { count: number; totalRent: number }> = {};
@@ -30,6 +38,16 @@ export default async function PortfolioPage() {
     if (!tenantsByProperty[t.property_id]) tenantsByProperty[t.property_id] = { count: 0, totalRent: 0 };
     tenantsByProperty[t.property_id].count += 1;
     tenantsByProperty[t.property_id].totalRent += t.rent_monthly;
+  }
+
+  const financingAlertsByProperty: Record<string, "critical" | "warning"> = {};
+  for (const f of financings ?? []) {
+    if (!f.fixed_until) continue;
+    const days = daysUntil(f.fixed_until);
+    if (days < 180) financingAlertsByProperty[f.property_id] = "critical";
+    else if (days < 365 && financingAlertsByProperty[f.property_id] !== "critical") {
+      financingAlertsByProperty[f.property_id] = "warning";
+    }
   }
 
   const plan = (profile?.plan ?? "free") as Plan;
@@ -63,6 +81,7 @@ export default async function PortfolioPage() {
       avgGrossYield={avgGrossYield}
       plan={plan}
       tenantsByProperty={tenantsByProperty}
+      financingAlertsByProperty={financingAlertsByProperty}
     />
   );
 }

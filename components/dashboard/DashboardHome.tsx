@@ -10,6 +10,8 @@ import {
   TrendUp,
   CurrencyEur,
   ChartLine,
+  Warning,
+  Bank,
 } from "@phosphor-icons/react";
 import FadeIn from "@/components/ui/FadeIn";
 import HoverCard from "@/components/ui/HoverCard";
@@ -50,6 +52,7 @@ interface DashboardHomeProps {
   avgNetYield: number | null;
   totalInvestment: number | null;
   recentProperties: RecentProperty[];
+  financingAlertCount?: number;
 }
 
 function fmtCurrency(n: number) {
@@ -71,6 +74,7 @@ export default function DashboardHome({
   avgNetYield,
   totalInvestment,
   recentProperties,
+  financingAlertCount = 0,
 }: DashboardHomeProps) {
   const router = useRouter();
 
@@ -173,6 +177,41 @@ export default function DashboardHome({
           ))}
         </div>
       </FadeIn>
+
+      {/* Financing alert banner */}
+      {financingAlertCount > 0 && (
+        <FadeIn delay={0.08}>
+          <div
+            className="rounded-[14px] px-5 py-4 mb-6 flex items-center justify-between gap-4"
+            style={{ background: "rgba(255,184,0,0.06)", border: "1px solid rgba(255,184,0,0.15)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(255,184,0,0.1)" }}
+              >
+                <Bank size={15} color="#FFB800" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
+                  {financingAlertCount} Zinsbindung{financingAlertCount > 1 ? "en laufen" : " lauft"} bald aus
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: "#666" }}>
+                  Jetzt Anschlussfinanzierung prufen.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => router.push("/finanzen")}
+              className="text-xs font-semibold px-3 py-1.5 rounded-[8px] flex-shrink-0 flex items-center gap-1.5 transition-colors"
+              style={{ background: "rgba(255,184,0,0.12)", color: "#FFB800" }}
+            >
+              <Warning size={12} />
+              Ansehen
+            </button>
+          </div>
+        </FadeIn>
+      )}
 
       {/* Feature tiles */}
       <FadeIn delay={0.1}>

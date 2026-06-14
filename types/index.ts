@@ -126,6 +126,33 @@ export interface Tenant {
   created_at: string;
 }
 
+export interface Task {
+  id: string;
+  user_id: string;
+  property_id?: string;
+  title: string;
+  description?: string;
+  due_date?: string;
+  completed: boolean;
+  priority: "low" | "medium" | "high";
+  category: string;
+  created_at: string;
+}
+
+export type FinanzierungUrgency = "critical" | "warning" | "ok" | "expired";
+
+export interface FinanzierungWithProperty extends Financing {
+  property: {
+    id: string;
+    name: string;
+    type: string;
+    purchase_price: number;
+  };
+  daysUntilExpiry: number;
+  monthsUntilExpiry: number;
+  urgency: FinanzierungUrgency;
+}
+
 export interface RentPayment {
   id: string;
   tenant_id: string;
