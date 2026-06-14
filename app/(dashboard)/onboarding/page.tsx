@@ -95,7 +95,7 @@ export default function OnboardingPage() {
     setSaving(true);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({
         name: data.name || null,
@@ -105,7 +105,12 @@ export default function OnboardingPage() {
         onboarding_completed: true,
       })
       .eq("id", user!.id);
-    router.push("/dashboard");
+    if (!error) {
+      router.refresh();
+      router.replace("/dashboard");
+    } else {
+      setSaving(false);
+    }
   }
 
   async function handleSkip() {
@@ -115,7 +120,8 @@ export default function OnboardingPage() {
       .from("profiles")
       .update({ onboarding_completed: true })
       .eq("id", user!.id);
-    router.push("/dashboard");
+    router.refresh();
+    router.replace("/dashboard");
   }
 
   const step1Valid = data.name.trim().length > 0 && data.experience_level !== "";
