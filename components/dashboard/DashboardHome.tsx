@@ -115,7 +115,11 @@ export default function DashboardHome({
             className="text-[22px] font-semibold tracking-[-0.02em]"
             style={{ color: tokens.color.text }}
           >
-            Guten Tag{firstName ? `, ${firstName}` : ""}.
+            {(() => {
+              const h = new Date().getHours();
+              const g = h < 12 ? "Guten Morgen" : h < 18 ? "Guten Tag" : "Guten Abend";
+              return `${g}${firstName ? `, ${firstName}` : ""}.`;
+            })()}
           </h1>
           <p className="text-sm mt-0.5" style={{ color: tokens.color.textMuted }}>
             Hier ist deine Übersicht.

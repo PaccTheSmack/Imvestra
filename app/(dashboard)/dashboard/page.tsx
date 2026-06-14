@@ -10,9 +10,14 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   const [{ data: profile }, { data: properties }] = await Promise.all([
-    supabase.from("profiles").select("plan, name").eq("id", user!.id).single(),
+    supabase.from("profiles").select("plan, name, onboarding_completed").eq("id", user!.id).single(),
     supabase.from("properties").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
   ]);
+
+  if (profile && profile.onboarding_completed === false) {
+    const { redirect } = await import("next/navigation");
+    redirect("/onboarding");
+  }
 
   const firstName = (profile?.name ?? user?.email ?? "").split(" ")[0];
   const isFreePlan = !profile?.plan || profile.plan === "free";
