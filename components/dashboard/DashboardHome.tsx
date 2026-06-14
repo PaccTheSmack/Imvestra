@@ -4,10 +4,9 @@ import { useRouter } from "next/navigation";
 import {
   Calculator,
   Buildings,
-  FilePdf,
+  MapPin,
   ArrowUpRight,
   ArrowRight,
-  Lock,
   TrendUp,
   CurrencyEur,
   ChartLine,
@@ -177,6 +176,9 @@ export default function DashboardHome({
 
       {/* Feature tiles */}
       <FadeIn delay={0.1}>
+        <p className="text-xs font-medium mb-4" style={{ color: tokens.color.textSubtle }}>
+          {count === 0 ? "Womit möchtest du starten?" : "Schnellzugriff"}
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Rechner */}
           <HoverCard intensity={5} className="h-full">
@@ -262,55 +264,43 @@ export default function DashboardHome({
             </div>
           </HoverCard>
 
-          {/* PDF Export */}
-          <HoverCard intensity={5} className="h-full">
+          {/* Standortanalyse */}
+          <HoverCard intensity={2} className="h-full">
             <div
-              className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer transition-all duration-200"
+              className="rounded-[16px] p-6 h-full flex flex-col cursor-default transition-all duration-200"
               style={{
                 background: tokens.color.surface,
                 border: `1px solid ${tokens.color.border}`,
+                opacity: 0.7,
               }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = tokens.color.borderAccent;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = tokens.color.border;
-              }}
-              onClick={() => router.push("/calculator")}
             >
               <div className="flex items-center justify-between mb-5">
                 <div
                   className="w-10 h-10 rounded-[10px] flex items-center justify-center"
-                  style={{ background: "rgba(255,68,68,0.1)" }}
+                  style={{ background: "rgba(29,184,122,0.08)" }}
                 >
-                  <FilePdf size={20} color={tokens.color.danger} />
+                  <MapPin size={20} color={tokens.color.accent} />
                 </div>
-                <ArrowUpRight size={16} color={tokens.color.textSubtle} />
+                <span
+                  className="text-[9px] font-medium px-2 py-0.5 rounded-full"
+                  style={{ background: tokens.color.surfaceHover, color: tokens.color.textSubtle }}
+                >
+                  Bald
+                </span>
               </div>
               <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                PDF Bankpräsentation
+                Standortanalyse
               </p>
               <p className="text-sm mt-1.5 leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-                Professionelle Objektanalyse als PDF für dein nächstes Bankgespräch.
+                Marktdaten, Durchschnittsmieten und Kaufpreisfaktoren per PLZ.
               </p>
               <div
                 className="mt-5 pt-4"
                 style={{ borderTop: `1px solid ${tokens.color.border}` }}
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs" style={{ color: tokens.color.textSubtle }}>
-                    Für Pro-Nutzer
-                  </p>
-                  {isFreePlan && (
-                    <span
-                      className="text-[9px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1"
-                      style={{ background: tokens.color.surfaceHover, color: tokens.color.textMuted }}
-                    >
-                      <Lock size={9} />
-                      Pro
-                    </span>
-                  )}
-                </div>
+                <p className="text-xs" style={{ color: tokens.color.textSubtle }}>
+                  Bald verfügbar
+                </p>
               </div>
             </div>
           </HoverCard>

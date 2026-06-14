@@ -8,22 +8,60 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   HouseLine,
   Calculator,
+  MapPin,
+  FilePdf,
   Buildings,
   UsersFour,
-  FilePdf,
-  GearSix,
+  Bank,
+  CheckSquare,
   SignOut,
+  type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
-import { tokens } from "@/lib/tokens";
 
-const nav = [
-  { Icon: HouseLine,  label: "Übersicht",    href: "/dashboard",   badge: null },
-  { Icon: Calculator, label: "Rechner",       href: "/calculator",  badge: "NEU" },
-  { Icon: Buildings,  label: "Portfolio",     href: "/portfolio",   badge: null },
-  { Icon: UsersFour,  label: "Mieter",        href: "/mieter",      badge: null },
-  { Icon: FilePdf,    label: "PDF Export",    href: "/pdf-export",  badge: null },
-  { Icon: GearSix,    label: "Einstellungen", href: "/settings",    badge: null },
+const LOGO_FILTER =
+  "brightness(0) saturate(100%) invert(58%) sepia(55%) saturate(450%) hue-rotate(110deg) brightness(95%)";
+
+type NavItem = {
+  Icon: PhosphorIcon;
+  label: string;
+  href: string;
+  badge?: string;
+};
+
+type NavSection = {
+  section?: string;
+  items: NavItem[];
+};
+
+const navSections: NavSection[] = [
+  {
+    items: [
+      { Icon: HouseLine, label: "Übersicht", href: "/dashboard" },
+    ],
+  },
+  {
+    section: "ANALYSE",
+    items: [
+      { Icon: Calculator, label: "Rechner",          href: "/calculator", badge: "NEU"  },
+      { Icon: MapPin,     label: "Standort",          href: "/standort",   badge: "Bald" },
+      { Icon: FilePdf,    label: "PDF Export",        href: "/pdf-export"                },
+    ],
+  },
+  {
+    section: "VERWALTUNG",
+    items: [
+      { Icon: Buildings,   label: "Portfolio", href: "/portfolio"                },
+      { Icon: UsersFour,   label: "Mieter",    href: "/mieter"                  },
+      { Icon: Bank,        label: "Finanzen",  href: "/finanzen",  badge: "Bald" },
+      { Icon: CheckSquare, label: "Aufgaben",  href: "/aufgaben",  badge: "Bald" },
+    ],
+  },
 ];
+
+function isActive(href: string, pathname: string) {
+  if (href === "/dashboard") return pathname === "/dashboard";
+  return pathname.startsWith(href);
+}
 
 interface SidebarProps {
   userEmail?: string;
@@ -38,93 +76,123 @@ export default function Sidebar({ userEmail }: SidebarProps) {
     <aside
       className="w-[220px] flex-shrink-0 h-screen sticky top-0 flex flex-col"
       style={{
-        background: tokens.color.bgSubtle,
-        borderRight: `1px solid ${tokens.color.border}`,
+        background: "#0C0C0C",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
       }}
     >
+      {/* Logo */}
       <div className="px-5 pt-6 pb-5">
         <Image
           src="/logo.svg"
           alt="Imvestra"
           width={100}
           height={26}
-          style={{ filter: tokens.logoFilter }}
+          style={{ filter: LOGO_FILTER }}
         />
       </div>
 
-      <nav className="flex-1 flex flex-col gap-0.5 py-1 px-2">
-        {nav.map(({ Icon, label, href, badge }) => {
-          const active = pathname === href;
-          return (
-            <Link key={label} href={href} className="relative block">
-              {active &&
-                (prefersReduced ? (
-                  <div
-                    className="absolute inset-0 rounded-[8px]"
-                    style={{ background: tokens.color.accentSubtle, border: `1px solid ${tokens.color.borderAccent}` }}
-                  />
-                ) : (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-[8px]"
-                    style={{ background: tokens.color.accentSubtle, border: `1px solid ${tokens.color.borderAccent}` }}
-                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                  />
-                ))}
-              <motion.div
-                className={`relative z-10 flex items-center gap-3 py-2.5 px-3 text-sm rounded-[8px] transition-colors duration-150 ${
-                  active ? "font-medium" : "hover:bg-[rgba(255,255,255,0.03)]"
-                }`}
-                style={{ color: active ? tokens.color.accent : tokens.color.textMuted }}
-                whileHover={active || prefersReduced ? {} : { x: 1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      {/* Nav */}
+      <nav className="flex-1 px-3 overflow-y-auto py-2">
+        {navSections.map((section, si) => (
+          <div key={si}>
+            {section.section && (
+              <p
+                className="px-3 pt-4 pb-1.5 text-[9px] font-semibold uppercase"
+                style={{ color: "#333", letterSpacing: "0.12em" }}
               >
-                <Icon
-                  size={16}
-                  color={active ? tokens.color.accent : tokens.color.textSubtle}
-                />
-                <span className="flex-1">{label}</span>
-                {badge && (
-                  <span
-                    className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
-                    style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
+                {section.section}
+              </p>
+            )}
+            {section.items.map(({ Icon, label, href, badge }) => {
+              const active = isActive(href, pathname);
+              return (
+                <Link key={href} href={href} className="block mb-0.5">
+                  <motion.div
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] text-sm transition-colors duration-150 border"
+                    style={active ? {
+                      color: "#1DB87A",
+                      fontWeight: 500,
+                      background: "rgba(29,184,122,0.08)",
+                      borderColor: "rgba(29,184,122,0.12)",
+                    } : {
+                      color: "#555",
+                      background: "transparent",
+                      borderColor: "transparent",
+                    }}
+                    whileHover={active || prefersReduced ? {} : { x: 2 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    onMouseEnter={(e) => {
+                      if (!active) {
+                        (e.currentTarget as HTMLDivElement).style.color = "#888";
+                        (e.currentTarget as HTMLDivElement).style.background = "#141414";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!active) {
+                        (e.currentTarget as HTMLDivElement).style.color = "#555";
+                        (e.currentTarget as HTMLDivElement).style.background = "transparent";
+                      }
+                    }}
                   >
-                    {badge}
-                  </span>
-                )}
-              </motion.div>
-            </Link>
-          );
-        })}
+                    <Icon
+                      size={16}
+                      color={active ? "#1DB87A" : "#444"}
+                    />
+                    <span className="flex-1">{label}</span>
+                    {badge && (
+                      <span
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
+                        style={badge === "NEU"
+                          ? { background: "rgba(29,184,122,0.1)", color: "#1DB87A" }
+                          : { background: "#1A1A1A", color: "#333" }
+                        }
+                      >
+                        {badge}
+                      </span>
+                    )}
+                  </motion.div>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
+      {/* Bottom */}
       <div
         className="px-4 pb-5 pt-4"
-        style={{ borderTop: `1px solid ${tokens.color.border}` }}
+        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
       >
-        <div className="flex items-center gap-2.5 mb-3">
+        <div className="flex items-center gap-3">
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: tokens.color.accentMuted }}
+            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
+            style={{
+              background: "rgba(29,184,122,0.1)",
+              border: "1px solid rgba(29,184,122,0.15)",
+              color: "#1DB87A",
+            }}
           >
-            <span className="text-xs font-semibold" style={{ color: tokens.color.accent }}>
-              {avatarLetter}
-            </span>
+            {avatarLetter}
           </div>
-          <p className="text-xs truncate" style={{ color: tokens.color.textSubtle }}>
-            {userEmail ?? ""}
-          </p>
+          <div className="min-w-0">
+            <p
+              className="text-[10px] truncate"
+              style={{ color: "#444", maxWidth: 120 }}
+            >
+              {userEmail ?? ""}
+            </p>
+            <button
+              onClick={() => signOut()}
+              className="flex items-center gap-1 text-[9px] mt-0.5 transition-colors duration-150"
+              style={{ color: "#333" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF4444")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#333")}
+            >
+              <SignOut size={10} />
+              Abmelden
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => signOut()}
-          className="flex items-center gap-2 text-xs px-1 py-1 w-full transition-colors duration-150"
-          style={{ color: tokens.color.textSubtle }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = tokens.color.danger)}
-          onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}
-        >
-          <SignOut size={13} />
-          Abmelden
-        </button>
       </div>
     </aside>
   );
