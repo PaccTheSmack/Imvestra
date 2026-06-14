@@ -136,6 +136,9 @@ export interface Task {
   completed: boolean;
   priority: "low" | "medium" | "high";
   category: string;
+  source_type?: string;
+  source_id?: string;
+  auto_generated?: boolean;
   created_at: string;
 }
 

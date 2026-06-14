@@ -18,13 +18,23 @@ export default async function DashboardPage() {
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
   const lastDay  = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0];
 
-  const [{ data: profile }, { data: properties }, { data: financings }, { data: tenants }, { data: thisMonthPaidPayments }] = await Promise.all([
+  const todayStr = now.toISOString().split("T")[0];
+
+  const [
+    { data: profile },
+    { data: properties },
+    { data: financings },
+    { data: tenants },
+    { data: thisMonthPaidPayments },
+    { data: openTasks },
+  ] = await Promise.all([
     supabase.from("profiles").select("plan, name, onboarding_completed").eq("id", user!.id).single(),
     supabase.from("properties").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
     supabase.from("financings").select("fixed_until").eq("user_id", user!.id),
     supabase.from("tenants").select("rent_monthly, is_active").eq("user_id", user!.id),
     supabase.from("rent_payments").select("amount").eq("user_id", user!.id).eq("status", "paid")
       .gte("due_date", firstDay).lte("due_date", lastDay),
+    supabase.from("tasks").select("due_date, priority").eq("user_id", user!.id).eq("completed", false),
   ]);
 
   if (profile?.onboarding_completed === false) {
@@ -65,6 +75,9 @@ export default async function DashboardPage() {
   const monthlyRentIst = (thisMonthPaidPayments ?? [])
     .reduce((s, p) => s + (p.amount ?? 0), 0);
 
+  const overdueTasks      = (openTasks ?? []).filter((t) => t.due_date && t.due_date < todayStr).length;
+  const highPriorityTasks = (openTasks ?? []).filter((t) => t.priority === "high").length;
+
   return (
     <>
       <DashboardHome
@@ -78,6 +91,9 @@ export default async function DashboardPage() {
         financingAlertCount={financingAlertCount}
         monthlyRentSoll={monthlyRentSoll}
         monthlyRentIst={monthlyRentIst}
+        overdueTasks={overdueTasks}
+        highPriorityTasks={highPriorityTasks}
+        userId={user!.id}
       />
       <Suspense fallback={null}>
         <UpgradeSuccess />

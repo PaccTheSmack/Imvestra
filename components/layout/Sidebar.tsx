@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { signOut } from "@/lib/auth-actions";
 import { motion, useReducedMotion } from "motion/react";
 import {
@@ -17,6 +18,7 @@ import {
   SignOut,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
+import { createClient } from "@/lib/supabase/client";
 
 const LOGO_FILTER =
   "brightness(0) saturate(100%) invert(58%) sepia(55%) saturate(450%) hue-rotate(110deg) brightness(95%)";
@@ -42,18 +44,18 @@ const navSections: NavSection[] = [
   {
     section: "ANALYSE",
     items: [
-      { Icon: Calculator, label: "Rechner",          href: "/calculator", badge: "NEU"  },
-      { Icon: MapPin,     label: "Standort",          href: "/standort",   badge: "Bald" },
-      { Icon: FilePdf,    label: "PDF Export",        href: "/pdf-export"                },
+      { Icon: Calculator, label: "Rechner",   href: "/calculator", badge: "NEU" },
+      { Icon: MapPin,     label: "Standort",  href: "/standort"                 },
+      { Icon: FilePdf,    label: "PDF Export", href: "/pdf-export"              },
     ],
   },
   {
     section: "VERWALTUNG",
     items: [
-      { Icon: Buildings,   label: "Portfolio", href: "/portfolio"                },
-      { Icon: UsersFour,   label: "Mieter",    href: "/mieter"                  },
-      { Icon: Bank,        label: "Finanzen",  href: "/finanzen",  badge: "Bald" },
-      { Icon: CheckSquare, label: "Aufgaben",  href: "/aufgaben",  badge: "Bald" },
+      { Icon: Buildings,   label: "Portfolio", href: "/portfolio" },
+      { Icon: UsersFour,   label: "Mieter",    href: "/mieter"    },
+      { Icon: Bank,        label: "Finanzen",  href: "/finanzen"  },
+      { Icon: CheckSquare, label: "Aufgaben",  href: "/aufgaben"  },
     ],
   },
 ];
@@ -68,9 +70,23 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ userEmail }: SidebarProps) {
-  const pathname = usePathname();
+  const pathname      = usePathname();
   const prefersReduced = useReducedMotion();
-  const avatarLetter = userEmail ? userEmail[0].toUpperCase() : "?";
+  const avatarLetter  = userEmail ? userEmail[0].toUpperCase() : "?";
+  const [openTaskCount, setOpenTaskCount] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("tasks")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("completed", false)
+        .then(({ count }) => setOpenTaskCount(count ?? 0));
+    });
+  }, []);
 
   return (
     <aside
@@ -104,7 +120,10 @@ export default function Sidebar({ userEmail }: SidebarProps) {
               </p>
             )}
             {section.items.map(({ Icon, label, href, badge }) => {
-              const active = isActive(href, pathname);
+              const active          = isActive(href, pathname);
+              const isAufgaben      = href === "/aufgaben";
+              const taskBadgeCount  = isAufgaben ? openTaskCount : 0;
+
               return (
                 <Link key={href} href={href} className="block mb-0.5">
                   <motion.div
@@ -134,12 +153,10 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                       }
                     }}
                   >
-                    <Icon
-                      size={16}
-                      color={active ? "#1DB87A" : "#444"}
-                    />
+                    <Icon size={16} color={active ? "#1DB87A" : "#444"} />
                     <span className="flex-1">{label}</span>
-                    {badge && (
+                    {/* Static badge (NEU etc.) */}
+                    {badge && !isAufgaben && (
                       <span
                         className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
                         style={badge === "NEU"
@@ -148,6 +165,15 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                         }
                       >
                         {badge}
+                      </span>
+                    )}
+                    {/* Dynamic task count badge */}
+                    {isAufgaben && taskBadgeCount > 0 && (
+                      <span
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
+                        style={{ background: "rgba(255,68,68,0.1)", color: "#FF4444" }}
+                      >
+                        {taskBadgeCount}
                       </span>
                     )}
                   </motion.div>

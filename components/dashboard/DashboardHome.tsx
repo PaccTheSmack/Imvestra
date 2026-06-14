@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Calculator,
   Buildings,
@@ -13,10 +15,12 @@ import {
   ChartLine,
   Warning,
   Bank,
+  Sparkle,
 } from "@phosphor-icons/react";
 import FadeIn from "@/components/ui/FadeIn";
 import HoverCard from "@/components/ui/HoverCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
+import { generateSmartTasks } from "@/lib/smart-tasks";
 import { tokens } from "@/lib/tokens";
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -56,6 +60,9 @@ interface DashboardHomeProps {
   financingAlertCount?: number;
   monthlyRentSoll?: number;
   monthlyRentIst?: number;
+  overdueTasks?: number;
+  highPriorityTasks?: number;
+  userId?: string;
 }
 
 function fmtCurrency(n: number) {
@@ -80,8 +87,24 @@ export default function DashboardHome({
   financingAlertCount = 0,
   monthlyRentSoll = 0,
   monthlyRentIst = 0,
+  overdueTasks = 0,
+  highPriorityTasks = 0,
+  userId,
 }: DashboardHomeProps) {
   const router = useRouter();
+  const [smartNotifCount, setSmartNotifCount] = useState(0);
+  const [showSmartNotif, setShowSmartNotif] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    generateSmartTasks(userId).then(({ created }) => {
+      if (created > 0) {
+        setSmartNotifCount(created);
+        setShowSmartNotif(true);
+        setTimeout(() => setShowSmartNotif(false), 8000);
+      }
+    });
+  }, [userId]);
 
   const statCards = [
     {
@@ -212,6 +235,60 @@ export default function DashboardHome({
                 Details →
               </Link>
             </div>
+          </div>
+        </FadeIn>
+      )}
+
+      {/* Smart tasks notification */}
+      <AnimatePresence>
+        {showSmartNotif && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="rounded-[10px] px-4 py-3 mb-4 flex items-center justify-between"
+            style={{ background: "rgba(29,184,122,0.06)", border: "1px solid rgba(29,184,122,0.12)" }}
+          >
+            <div className="flex items-center gap-2">
+              <Sparkle size={14} color="#1DB87A" weight="fill" />
+              <span className="text-xs" style={{ color: tokens.color.text }}>
+                Imvestra hat {smartNotifCount} neue Aufgabe{smartNotifCount > 1 ? "n" : ""} für dich erstellt
+              </span>
+            </div>
+            <Link href="/aufgaben" className="text-xs font-medium" style={{ color: "#1DB87A" }}>
+              Anzeigen →
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Task alert widget */}
+      {(overdueTasks > 0 || highPriorityTasks > 0) && (
+        <FadeIn delay={0.09}>
+          <div
+            className="rounded-[12px] px-5 py-3.5 mb-4 flex items-center justify-between"
+            style={{ background: "rgba(255,68,68,0.06)", border: "1px solid rgba(255,68,68,0.1)" }}
+          >
+            <div className="flex items-center gap-3">
+              <Warning size={16} color="#FF4444" />
+              <div>
+                <p className="text-sm font-medium" style={{ color: tokens.color.text }}>
+                  {overdueTasks > 0
+                    ? `${overdueTasks} überfällige Aufgabe${overdueTasks > 1 ? "n" : ""}`
+                    : `${highPriorityTasks} Aufgabe${highPriorityTasks > 1 ? "n" : ""} mit hoher Priorität`
+                  }
+                </p>
+                {overdueTasks > 0 && highPriorityTasks > 0 && (
+                  <p className="text-xs mt-0.5" style={{ color: "#555" }}>
+                    und {highPriorityTasks} mit hoher Priorität
+                  </p>
+                )}
+              </div>
+            </div>
+            <Link href="/aufgaben" className="text-xs font-medium" style={{ color: "#FF4444" }}>
+              Anzeigen →
+            </Link>
           </div>
         </FadeIn>
       )}
