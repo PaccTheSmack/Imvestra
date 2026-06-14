@@ -108,3 +108,33 @@ export interface SpekuResult {
   jahre_verbleibend: number;
   steuer_bei_verkauf_jetzt?: number;
 }
+
+export interface Tenant {
+  id: string;
+  property_id: string;
+  user_id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  move_in_date: string;
+  move_out_date?: string;
+  rent_monthly: number;
+  deposit: number;
+  unit_number?: string;
+  notes?: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface RentPayment {
+  id: string;
+  tenant_id: string;
+  property_id: string;
+  user_id: string;
+  amount: number;
+  due_date: string;
+  paid_date?: string;
+  status: "pending" | "paid" | "late" | "partial";
+  notes?: string;
+  created_at: string;
+}

@@ -9,6 +9,7 @@ import {
   HouseLine,
   Calculator,
   Buildings,
+  UsersFour,
   FilePdf,
   GearSix,
   SignOut,
@@ -19,6 +20,7 @@ const nav = [
   { Icon: HouseLine,  label: "Übersicht",    href: "/dashboard",   badge: null },
   { Icon: Calculator, label: "Rechner",       href: "/calculator",  badge: "NEU" },
   { Icon: Buildings,  label: "Portfolio",     href: "/portfolio",   badge: null },
+  { Icon: UsersFour,  label: "Mieter",        href: "/mieter",      badge: null },
   { Icon: FilePdf,    label: "PDF Export",    href: "/pdf-export",  badge: null },
   { Icon: GearSix,    label: "Einstellungen", href: "/settings",    badge: null },
 ];

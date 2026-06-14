@@ -12,6 +12,7 @@ import {
   MapPin,
   TrendUp,
   ShieldCheck,
+  UsersFour,
 } from "@phosphor-icons/react";
 import HoverCard from "@/components/ui/HoverCard";
 import GateOverlay from "@/components/ui/GateOverlay";
@@ -47,6 +48,7 @@ interface PortfolioViewProps {
   totalInvestment: number;
   avgGrossYield: number;
   plan: Plan;
+  tenantsByProperty?: Record<string, { count: number; totalRent: number }>;
 }
 
 function Sparkline() {
@@ -88,6 +90,7 @@ export default function PortfolioView({
   totalInvestment,
   avgGrossYield,
   plan,
+  tenantsByProperty = {},
 }: PortfolioViewProps) {
   const prefersReduced = useReducedMotion();
   const count = properties.length;
@@ -524,6 +527,14 @@ export default function PortfolioView({
                             </div>
                           )}
                         </div>
+                        {tenantsByProperty[p.id] && (
+                          <div className="flex items-center gap-1.5 mt-2" style={{ color: "#444" }}>
+                            <UsersFour size={12} color="#444" />
+                            <span className="text-[11px]">
+                              {tenantsByProperty[p.id].count} Mieter · {formatCurrency(tenantsByProperty[p.id].totalRent)}/Mo
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

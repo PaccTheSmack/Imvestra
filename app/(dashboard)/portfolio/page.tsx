@@ -7,7 +7,7 @@ export default async function PortfolioPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: properties }, { data: profile }] = await Promise.all([
+  const [{ data: properties }, { data: profile }, { data: tenants }] = await Promise.all([
     supabase
       .from("properties")
       .select("*")
@@ -18,7 +18,19 @@ export default async function PortfolioPage() {
       .select("plan")
       .eq("id", user!.id)
       .single(),
+    supabase
+      .from("tenants")
+      .select("property_id, rent_monthly, is_active")
+      .eq("user_id", user!.id),
   ]);
+
+  const tenantsByProperty: Record<string, { count: number; totalRent: number }> = {};
+  for (const t of tenants ?? []) {
+    if (!t.is_active) continue;
+    if (!tenantsByProperty[t.property_id]) tenantsByProperty[t.property_id] = { count: 0, totalRent: 0 };
+    tenantsByProperty[t.property_id].count += 1;
+    tenantsByProperty[t.property_id].totalRent += t.rent_monthly;
+  }
 
   const plan = (profile?.plan ?? "free") as Plan;
   const props = (properties ?? []) as Property[];
@@ -50,6 +62,7 @@ export default async function PortfolioPage() {
       totalInvestment={totalInvestment}
       avgGrossYield={avgGrossYield}
       plan={plan}
+      tenantsByProperty={tenantsByProperty}
     />
   );
 }
