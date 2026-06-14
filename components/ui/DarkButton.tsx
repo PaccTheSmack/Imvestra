@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "motion/react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
@@ -15,7 +14,7 @@ interface DarkButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-[#1DB87A] text-[#080808] font-semibold hover:bg-[#18A36A] active:bg-[#00D957] shadow-[0_0_0_1px_rgba(29,184,122,0.3),0_4px_16px_rgba(29,184,122,0.15)]",
+    "bg-[#1DB87A] text-[#080808] font-semibold hover:bg-[#18A36A] shadow-[0_0_0_1px_rgba(29,184,122,0.3),0_4px_16px_rgba(29,184,122,0.15)]",
   secondary:
     "bg-[#1A1A1A] text-white border border-[rgba(255,255,255,0.07)] hover:bg-[#222222] hover:border-[rgba(255,255,255,0.12)]",
   ghost:
@@ -40,16 +39,13 @@ export default function DarkButton({
   className = "",
   ...props
 }: DarkButtonProps) {
-  const prefersReduced = useReducedMotion();
-
   return (
-    <motion.button
-      whileTap={prefersReduced || disabled || loading ? {} : { scale: 0.97 }}
-      transition={{ duration: 0.1 }}
+    <button
       disabled={disabled || loading}
       className={[
         "inline-flex items-center justify-center font-medium transition-all duration-150",
-        "disabled:opacity-40 disabled:cursor-not-allowed",
+        "active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed",
+        "@media (prefers-reduced-motion: reduce) { transition: none }",
         variantStyles[variant],
         sizeStyles[size],
         className,
@@ -64,6 +60,6 @@ export default function DarkButton({
         icon
       )}
       {children}
-    </motion.button>
+    </button>
   );
 }
