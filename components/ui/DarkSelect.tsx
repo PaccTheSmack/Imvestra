@@ -24,7 +24,7 @@ export default function DarkSelect({ label, error, hint, options, className = ""
           className={[
             "w-full appearance-none bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px]",
             "px-3 py-2.5 pr-9 text-sm text-white",
-            "focus:outline-none focus:border-[rgba(0,200,150,0.4)] focus:bg-[#1A1A1A]",
+            "focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A]",
             "transition-all duration-150 cursor-pointer",
             "disabled:opacity-40 disabled:cursor-not-allowed",
             error ? "border-[rgba(255,68,68,0.4)]" : "",

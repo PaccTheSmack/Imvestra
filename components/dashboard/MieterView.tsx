@@ -36,7 +36,7 @@ function firstOfMonth() {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  paid:    { bg: "rgba(0,200,150,0.1)",  text: "#00C896",  label: "Bezahlt"     },
+  paid:    { bg: "rgba(0,224,215,0.1)",  text: "#00E0D7",  label: "Bezahlt"     },
   pending: { bg: "rgba(255,184,0,0.1)",   text: "#FFB800",  label: "Ausstehend"  },
   late:    { bg: "rgba(255,68,68,0.1)",   text: "#FF4444",  label: "Uberfällig"  },
   partial: { bg: "rgba(255,184,0,0.1)",   text: "#FFB800",  label: "Teilzahlung" },
@@ -189,7 +189,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
           {[
             { label: "AKTIVE MIETER",  value: String(activeTenantsCount), color: tokens.color.text },
             { label: "SOLL / MONAT",   value: fmtCurrency(totalRentExpected), color: tokens.color.text },
-            { label: "EINGEGANGEN",    value: fmtCurrency(paidAmt),   color: "#00C896" },
+            { label: "EINGEGANGEN",    value: fmtCurrency(paidAmt),   color: "#00E0D7" },
             { label: "AUSSTEHEND",     value: fmtCurrency(pendingAmt), color: pendingAmt > 0 ? "#FF4444" : tokens.color.text },
           ].map(({ label, value, color }) => (
             <div
@@ -219,7 +219,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 onClick={() => setSelectedPropertyId(id)}
                 className="px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-150"
                 style={active
-                  ? { background: "#00C896", color: "#080808", fontWeight: 600 }
+                  ? { background: "#00E0D7", color: "#080808", fontWeight: 600 }
                   : { background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }
                 }
                 onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
@@ -243,8 +243,8 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 onClick={() => setActiveTab(tab)}
                 className="text-sm font-medium px-1 mr-6 pb-2 transition-colors duration-150 capitalize"
                 style={{
-                  color: active ? "#00C896" : "#444",
-                  borderBottom: active ? "2px solid #00C896" : "2px solid transparent",
+                  color: active ? "#00E0D7" : "#444",
+                  borderBottom: active ? "2px solid #00E0D7" : "2px solid transparent",
                   marginBottom: -1,
                 }}
               >
@@ -302,7 +302,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                     {/* Accent bar */}
                     <div
                       className="w-[3px] flex-shrink-0"
-                      style={{ background: tenant.is_active ? "#00C896" : "#333" }}
+                      style={{ background: tenant.is_active ? "#00E0D7" : "#333" }}
                     />
                     {/* Content */}
                     <div className="flex-1 pl-5 pr-5 py-4 flex items-center justify-between gap-4">
@@ -337,7 +337,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                         <span
                           className="text-[10px] font-semibold px-2 py-1 rounded-full"
                           style={tenant.is_active
-                            ? { background: "rgba(0,200,150,0.1)", color: "#00C896" }
+                            ? { background: "rgba(0,224,215,0.1)", color: "#00E0D7" }
                             : { background: "#1A1A1A", color: "#444" }
                           }
                         >

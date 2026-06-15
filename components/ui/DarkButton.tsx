@@ -28,7 +28,7 @@ interface DarkButtonProps {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-[#00C896] text-[#080808] font-semibold shadow-[0_0_0_1px_rgba(0,200,150,0.3),0_4px_16px_rgba(0,200,150,0.15)] hover:brightness-110",
+    "bg-[#00E0D7] text-[#080808] font-semibold shadow-[0_0_0_1px_rgba(0,224,215,0.3),0_4px_16px_rgba(0,224,215,0.15)] hover:brightness-110",
   secondary:
     "bg-[#1A1A1A] text-white border border-[rgba(255,255,255,0.07)] hover:bg-[#222222] hover:border-[rgba(255,255,255,0.12)]",
   ghost:

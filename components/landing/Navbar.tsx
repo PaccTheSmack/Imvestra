@@ -29,7 +29,6 @@ export default function Navbar() {
           alt="Imvestra"
           width={100}
           height={26}
-          style={{ filter: tokens.logoFilter }}
           priority
         />
 

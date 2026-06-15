@@ -83,13 +83,13 @@ const URGENCY_COLOR: Record<UrgencyKind, string> = {
   expired:  "#FF4444",
   critical: "#FF4444",
   warning:  "#FFB800",
-  ok:       "#00C896",
+  ok:       "#00E0D7",
 };
 const URGENCY_BADGE: Record<UrgencyKind, { bg: string; text: string; label: string }> = {
   expired:  { bg: "rgba(255,68,68,0.1)",   text: "#FF4444", label: "Abgelaufen" },
   critical: { bg: "rgba(255,68,68,0.1)",   text: "#FF4444", label: "Kritisch"   },
   warning:  { bg: "rgba(255,184,0,0.1)",   text: "#FFB800", label: "Bald fallig"},
-  ok:       { bg: "rgba(0,200,150,0.1)",  text: "#00C896", label: "Lauft"      },
+  ok:       { bg: "rgba(0,224,215,0.1)",  text: "#00E0D7", label: "Lauft"      },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -378,9 +378,9 @@ export default function FinanzenHub({
   // ── Stat cards (summary bar) ───────────────────────────────────────────────
   const summaryCards = [
     { label: "SOLL / MONAT",   value: formatCurrency(sollEinnahmen),             color: tokens.color.text },
-    { label: "IST-EINNAHMEN",  value: formatCurrency(istEinnahmen),              color: istEinnahmen >= sollEinnahmen ? "#00C896" : "#FFB800" },
+    { label: "IST-EINNAHMEN",  value: formatCurrency(istEinnahmen),              color: istEinnahmen >= sollEinnahmen ? "#00E0D7" : "#FFB800" },
     { label: "AUSGABEN",       value: formatCurrency(ausgabenMonth),             color: "#FF4444" },
-    { label: "NET CASHFLOW",   value: formatCurrencySigned(netCashflow),         color: netCashflow >= 0 ? "#00C896" : "#FF4444" },
+    { label: "NET CASHFLOW",   value: formatCurrencySigned(netCashflow),         color: netCashflow >= 0 ? "#00E0D7" : "#FF4444" },
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -395,9 +395,9 @@ export default function FinanzenHub({
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(0,200,150,0.08)", border: "1px solid rgba(0,200,150,0.12)" }}
+            style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
           >
-            <Bank size={18} color="#00C896" />
+            <Bank size={18} color="#00E0D7" />
           </div>
           <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>
             Finanzen
@@ -447,7 +447,7 @@ export default function FinanzenHub({
             key={id}
             onClick={() => setActiveTab(id)}
             className="px-1 mr-6 pb-3 text-sm font-medium cursor-pointer transition-colors relative"
-            style={{ color: activeTab === id ? "#00C896" : "#444" }}
+            style={{ color: activeTab === id ? "#00E0D7" : "#444" }}
             onMouseEnter={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#666"; }}
             onMouseLeave={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#444"; }}
           >
@@ -456,7 +456,7 @@ export default function FinanzenHub({
               <motion.div
                 layoutId="tab-indicator"
                 className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full"
-                style={{ background: "#00C896" }}
+                style={{ background: "#00E0D7" }}
                 transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               />
             )}
@@ -505,7 +505,7 @@ export default function FinanzenHub({
                     animate={{ width: `${Math.min(sollCoveredPct, 100)}%` }}
                     transition={{ duration: prefersReduced ? 0 : 0.7, ease: "easeOut" }}
                     className="h-full rounded-full"
-                    style={{ background: sollCoveredPct >= 100 ? "#00C896" : "#FFB800" }}
+                    style={{ background: sollCoveredPct >= 100 ? "#00E0D7" : "#FFB800" }}
                   />
                 </div>
 
@@ -523,7 +523,7 @@ export default function FinanzenHub({
                       {thisMonthPayments.map((p) => {
                         const tenant = tenantsMap[p.tenant_id];
                         const prop   = propertiesMap[p.property_id];
-                        const statusColor = p.status === "paid" ? "#00C896" : p.status === "late" ? "#FF4444" : "#FFB800";
+                        const statusColor = p.status === "paid" ? "#00E0D7" : p.status === "late" ? "#FF4444" : "#FFB800";
                         return (
                           <div
                             key={p.id}
@@ -571,7 +571,7 @@ export default function FinanzenHub({
                           animate={{ height: `${(income / chartMax) * 100}%` }}
                           transition={{ duration: 0.6, delay: i * 0.07, ease: "easeOut" }}
                           className="flex-1 rounded-t-sm"
-                          style={{ background: "#00C896", opacity: 0.75, minHeight: income > 0 ? 2 : 0 }}
+                          style={{ background: "#00E0D7", opacity: 0.75, minHeight: income > 0 ? 2 : 0 }}
                         />
                         <motion.div
                           initial={prefersReduced ? {} : { height: 0 }}
@@ -587,7 +587,7 @@ export default function FinanzenHub({
                 </div>
                 <div className="flex items-center gap-4 mt-4">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#00C896", opacity: 0.75 }} />
+                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#00E0D7", opacity: 0.75 }} />
                     <span className="text-[11px]" style={{ color: "#555" }}>Einnahmen</span>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -1084,15 +1084,15 @@ export default function FinanzenHub({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="rounded-[12px] p-4"
-                    style={{ background: "rgba(0,200,150,0.06)", border: "1px solid rgba(0,200,150,0.15)" }}
+                    style={{ background: "rgba(0,224,215,0.06)", border: "1px solid rgba(0,224,215,0.15)" }}
                   >
                     <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: "#555" }}>NEUE RATE / MONAT</p>
-                    <p className="text-2xl font-semibold" style={{ color: "#00C896" }}>
+                    <p className="text-2xl font-semibold" style={{ color: "#00E0D7" }}>
                       {formatCurrency(newMonthlyRate)}
                     </p>
                     <div className="flex justify-between text-xs mt-3" style={{ color: "#555" }}>
                       <span>Aktuell: {formatCurrency(selectedFinancing.rate_monthly)}</span>
-                      <span style={{ color: newMonthlyRate - selectedFinancing.rate_monthly > 0 ? "#FF4444" : "#00C896" }}>
+                      <span style={{ color: newMonthlyRate - selectedFinancing.rate_monthly > 0 ? "#FF4444" : "#00E0D7" }}>
                         {formatCurrencySigned(newMonthlyRate - selectedFinancing.rate_monthly)}
                       </span>
                     </div>

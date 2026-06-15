@@ -61,7 +61,7 @@ const AFA_TYPE_LABELS: Record<AfAResult["afa_type"], string> = {
 };
 
 const INPUT =
-  "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#555555] focus:outline-none focus:border-[rgba(0,200,150,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
+  "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#555555] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
 const LABEL = "block text-xs font-medium text-[#888888] mb-1.5";
 const SECTION_LABEL =
   "text-[10px] font-semibold text-[#555555] uppercase tracking-widest mb-4";
@@ -583,7 +583,7 @@ export default function CalculatorPage() {
                   className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] transition-all disabled:opacity-60"
                   style={saved ? {
                     background: tokens.color.positiveBg,
-                    border: `1px solid rgba(0,200,150,0.2)`,
+                    border: `1px solid rgba(0,224,215,0.2)`,
                     color: tokens.color.positive,
                   } : {
                     background: tokens.color.surfaceHover,
@@ -825,7 +825,7 @@ export default function CalculatorPage() {
                           <input
                             type="checkbox" checked={steuerForm.is_denkmal}
                             onChange={(e) => setSteuerForm((f) => ({ ...f, is_denkmal: e.target.checked }))}
-                            className="w-4 h-4 accent-[#00C896]"
+                            className="w-4 h-4 accent-[#00E0D7]"
                           />
                           Denkmalschutz-Objekt
                         </label>
@@ -833,7 +833,7 @@ export default function CalculatorPage() {
                           <input
                             type="checkbox" checked={steuerForm.is_sanierung}
                             onChange={(e) => setSteuerForm((f) => ({ ...f, is_sanierung: e.target.checked }))}
-                            className="w-4 h-4 accent-[#00C896]"
+                            className="w-4 h-4 accent-[#00E0D7]"
                           />
                           Sanierung geplant
                         </label>
@@ -1255,7 +1255,7 @@ export default function CalculatorPage() {
                                             border: `1px solid ${tokens.color.border}`,
                                             color: isBase ? tokens.color.textMuted : tokens.color.text,
                                           }}
-                                          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,200,150,0.4)")}
+                                          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)")}
                                           onBlur={(e) => (e.currentTarget.style.borderColor = tokens.color.border)}
                                         />
                                       </div>
@@ -1398,7 +1398,7 @@ export default function CalculatorPage() {
                               {/* Steuerersparnis callout */}
                               <div
                                 className="rounded-[12px] px-4 py-4 flex items-start gap-3"
-                                style={{ background: tokens.color.positiveBg, border: `1px solid rgba(0,200,150,0.15)` }}
+                                style={{ background: tokens.color.positiveBg, border: `1px solid rgba(0,224,215,0.15)` }}
                               >
                                 <PiggyBank size={18} color={tokens.color.positive} className="mt-0.5 flex-shrink-0" />
                                 <div>

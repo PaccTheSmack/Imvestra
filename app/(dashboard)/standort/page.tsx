@@ -37,11 +37,11 @@ export default function StandortPage() {
         <div
           className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
           style={{
-            background: "rgba(0,200,150,0.08)",
-            border: "1px solid rgba(0,200,150,0.12)",
+            background: "rgba(0,224,215,0.08)",
+            border: "1px solid rgba(0,224,215,0.12)",
           }}
         >
-          <MapPin size={18} color="#00C896" />
+          <MapPin size={18} color="#00E0D7" />
         </div>
         <h1 className="text-[20px] font-semibold text-white tracking-[-0.02em]">
           Standortanalyse

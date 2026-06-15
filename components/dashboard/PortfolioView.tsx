@@ -21,9 +21,9 @@ import { tokens } from "@/lib/tokens";
 import type { Plan } from "@/types";
 
 const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  ETW:     { bg: "rgba(0,200,150,0.1)",   text: tokens.color.accent,  border: "rgba(0,200,150,0.2)" },
+  ETW:     { bg: "rgba(0,224,215,0.1)",   text: tokens.color.accent,  border: "rgba(0,224,215,0.2)" },
   MFH:     { bg: "rgba(139,92,246,0.1)",   text: "#A78BFA",            border: "rgba(139,92,246,0.2)" },
-  EFH:     { bg: "rgba(0,200,150,0.08)",  text: tokens.color.accent,  border: "rgba(0,200,150,0.15)" },
+  EFH:     { bg: "rgba(0,224,215,0.08)",  text: tokens.color.accent,  border: "rgba(0,224,215,0.15)" },
   DHH:     { bg: "rgba(251,146,60,0.1)",   text: "#FB923C",            border: "rgba(251,146,60,0.2)" },
   Gewerbe: { bg: "rgba(255,255,255,0.06)", text: tokens.color.textMuted, border: tokens.color.border },
 };

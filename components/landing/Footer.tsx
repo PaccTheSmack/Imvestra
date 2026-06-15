@@ -19,7 +19,6 @@ export default function Footer() {
             alt="Imvestra"
             width={80}
             height={21}
-            style={{ filter: tokens.logoFilter }}
           />
           <div className="flex items-center gap-6">
             {[

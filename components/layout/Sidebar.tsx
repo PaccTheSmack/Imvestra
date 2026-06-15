@@ -20,8 +20,6 @@ import {
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 
-const LOGO_FILTER =
-  "brightness(0) saturate(100%) invert(65%) sepia(60%) saturate(600%) hue-rotate(127deg) brightness(95%)";
 
 type NavItem = {
   Icon: PhosphorIcon;
@@ -103,7 +101,6 @@ export default function Sidebar({ userEmail }: SidebarProps) {
           alt="Imvestra"
           width={100}
           height={26}
-          style={{ filter: LOGO_FILTER }}
         />
       </div>
 
@@ -129,10 +126,10 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                   <motion.div
                     className="flex items-center gap-3 px-3 py-2 rounded-[8px] text-sm transition-colors duration-150 border"
                     style={active ? {
-                      color: "#00C896",
+                      color: "#00E0D7",
                       fontWeight: 500,
-                      background: "rgba(0,200,150,0.08)",
-                      borderColor: "rgba(0,200,150,0.12)",
+                      background: "rgba(0,224,215,0.08)",
+                      borderColor: "rgba(0,224,215,0.12)",
                     } : {
                       color: "#555",
                       background: "transparent",
@@ -153,14 +150,14 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                       }
                     }}
                   >
-                    <Icon size={16} color={active ? "#00C896" : "#444"} />
+                    <Icon size={16} color={active ? "#00E0D7" : "#444"} />
                     <span className="flex-1">{label}</span>
                     {/* Static badge (NEU etc.) */}
                     {badge && !isAufgaben && (
                       <span
                         className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
                         style={badge === "NEU"
-                          ? { background: "rgba(0,200,150,0.1)", color: "#00C896" }
+                          ? { background: "rgba(0,224,215,0.1)", color: "#00E0D7" }
                           : { background: "#1A1A1A", color: "#333" }
                         }
                       >
@@ -193,9 +190,9 @@ export default function Sidebar({ userEmail }: SidebarProps) {
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
             style={{
-              background: "rgba(0,200,150,0.1)",
-              border: "1px solid rgba(0,200,150,0.15)",
-              color: "#00C896",
+              background: "rgba(0,224,215,0.1)",
+              border: "1px solid rgba(0,224,215,0.15)",
+              color: "#00E0D7",
             }}
           >
             {avatarLetter}
