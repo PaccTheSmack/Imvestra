@@ -17,14 +17,14 @@ export default function FadeIn({
   className,
 }: FadeInProps) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReduced = useReducedMotion();
 
   const directionMap = {
-    up:    { y: 16, x: 0 },
-    down:  { y: -16, x: 0 },
-    left:  { x: 16, y: 0 },
-    right: { x: -16, y: 0 },
+    up:    { y: 24, x: 0 },
+    down:  { y: -24, x: 0 },
+    left:  { x: 24, y: 0 },
+    right: { x: -24, y: 0 },
     none:  { x: 0, y: 0 },
   };
 
@@ -37,7 +37,7 @@ export default function FadeIn({
       initial={prefersReduced ? { opacity: 0 } : { opacity: 0, x, y }}
       animate={inView ? { opacity: 1, x: 0, y: 0 } : {}}
       transition={{
-        duration: prefersReduced ? 0.01 : 0.45,
+        duration: prefersReduced ? 0.01 : 0.5,
         delay: prefersReduced ? 0 : delay,
         ease: [0.21, 0.47, 0.32, 0.98],
       }}

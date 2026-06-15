@@ -1,75 +1,70 @@
-import { TrendDown, FolderOpen, Bank } from "@phosphor-icons/react/dist/ssr";
-import { tokens } from "@/lib/tokens";
+"use client";
 
-const problems = [
+import { TrendDown, FolderOpen, Bank } from "@phosphor-icons/react";
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
+import FadeIn from "@/components/ui/FadeIn";
+
+const PROBLEMS: { Icon: PhosphorIcon; title: string; body: string }[] = [
   {
     Icon: TrendDown,
     title: "Falsche Renditeerwartung",
-    text: "Versteckte Kosten und Leerstand werden unterschätzt. Wer falsch rechnet, kauft falsch.",
+    body: "Instandhaltung, Verwaltung und Leerstand werden systematisch unterschätzt. Wer falsch rechnet, kauft falsch.",
   },
   {
     Icon: FolderOpen,
     title: "Kein Portfolio-Überblick",
-    text: "Wer mehrere Objekte hält, verliert schnell den Überblick über Cashflows und Zinsbindungen.",
+    body: "Wer mehrere Objekte hält, verliert den Überblick über Cashflows, Zinsbindungen und steuerliche Fristen.",
   },
   {
     Icon: Bank,
     title: "Bankgespräche ohne Vorbereitung",
-    text: "Ohne professionelle Unterlagen wirken Investoren unvorbereitet - und bekommen schlechtere Konditionen.",
+    body: "Ohne professionelle Unterlagen und klare Kennzahlen bekommst du schlechtere Konditionen – oder keine Finanzierung.",
   },
 ];
 
 export default function ProblemSection() {
   return (
-    <section className="py-24" style={{ background: tokens.color.bgSubtle }}>
-      <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-16 items-start">
-
-        {/* Left – sticky label */}
+    <section id="problem" className="bg-[#080808] py-32">
+      <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+        {/* LEFT */}
         <div className="lg:sticky lg:top-32">
-          <h2
-            className="text-[34px] font-semibold leading-[1.1] tracking-[-0.03em]"
-            style={{ color: tokens.color.text }}
-          >
-            Excel-Chaos<br />war gestern.
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed" style={{ color: tokens.color.textMuted }}>
-            Die meisten Investoren rechnen mit Bauchgefühl oder gar nicht.
-            Das kostet bares Geld.
-          </p>
+          <FadeIn direction="left">
+            <div className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#555] text-xs px-3 py-1 rounded-full mb-5">
+              Das Problem
+            </div>
+            <h2 className="text-[42px] font-semibold tracking-[-0.03em] leading-[1.1] text-white mb-5">
+              Immobilien-Investments<br />
+              verzeihen<br />
+              keine Fehler.
+            </h2>
+            <p className="text-base text-[#555] leading-relaxed max-w-[380px] mb-8">
+              Die meisten Investoren rechnen mit Excel-Tabellen, Bauchgefühl oder
+              gar nicht. Das kostet bares Geld und verhindert gute Deals.
+            </p>
+            <div className="border-l-2 border-[#00E0D7] pl-4 text-sm text-[#444] italic leading-relaxed">
+              Der Druck, irgendwas nicht auf dem Schirm zu haben – eine Frist,
+              eine Zinsbindung, eine schlechte Rendite – kostet Investoren
+              jährlich Tausende Euro.
+            </div>
+          </FadeIn>
         </div>
 
-        {/* Right – problem rows */}
-        <div
-          className="rounded-[14px] overflow-hidden"
-          style={{ border: `1px solid ${tokens.color.border}` }}
-        >
-          {problems.map(({ Icon, title, text }, i) => (
-            <div
-              key={title}
-              className="px-6 py-5 flex items-start gap-4"
-              style={{
-                background: tokens.color.surface,
-                borderTop: i > 0 ? `1px solid ${tokens.color.border}` : "none",
-              }}
-            >
-              <div
-                className="w-9 h-9 rounded-[8px] flex-shrink-0 flex items-center justify-center"
-                style={{ background: tokens.color.dangerBg }}
-              >
-                <Icon size={18} color={tokens.color.danger} />
+        {/* RIGHT */}
+        <div className="flex flex-col gap-3">
+          {PROBLEMS.map(({ Icon, title, body }, i) => (
+            <FadeIn key={title} delay={i * 0.1}>
+              <div className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-[16px] p-6 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#141414] transition-all duration-200 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-[10px] bg-[rgba(255,68,68,0.08)] flex items-center justify-center flex-shrink-0">
+                  <Icon size={18} color="#FF4444" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-white mb-1.5">{title}</p>
+                  <p className="text-sm text-[#555] leading-relaxed">{body}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                  {title}
-                </p>
-                <p className="text-sm mt-0.5 leading-relaxed" style={{ color: tokens.color.textMuted }}>
-                  {text}
-                </p>
-              </div>
-            </div>
+            </FadeIn>
           ))}
         </div>
-
       </div>
     </section>
   );

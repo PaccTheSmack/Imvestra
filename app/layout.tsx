@@ -15,8 +15,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Imvestra",
-  description: "Das Immobilien-Investment Tool für deutschsprachige Investoren",
+  title: "Imvestra – Vom ersten Maklertelefonat bis zum Exit",
+  description:
+    "Die Schaltzentrale für Immobilieninvestoren. Analysiere Deals, verwalte dein Portfolio und behalte jede Frist, Finanzierung und Kennzahl im Blick.",
 };
 
 export default function RootLayout({

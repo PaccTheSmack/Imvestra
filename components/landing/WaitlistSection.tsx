@@ -1,22 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle } from "@phosphor-icons/react";
-import { tokens } from "@/lib/tokens";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import {
+  CheckCircle,
+  ShieldCheck,
+  Lock,
+  Buildings,
+  CreditCard,
+} from "@phosphor-icons/react";
+import FadeIn from "@/components/ui/FadeIn";
 
-type State = "idle" | "loading" | "success" | "error";
+const GRADIENT_TEXT: React.CSSProperties = {
+  background: "linear-gradient(135deg, #00E0D7 0%, #007A74 100%)",
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
+
+const TRUST = [
+  { Icon: ShieldCheck, label: "DSGVO" },
+  { Icon: Lock, label: "SSL" },
+  { Icon: Buildings, label: "Frankfurt" },
+  { Icon: CreditCard, label: "Stripe" },
+];
 
 export default function WaitlistSection() {
+  const router = useRouter();
+  const prefersReduced = useReducedMotion();
+  const [showForm, setShowForm] = useState(false);
   const [email, setEmail] = useState("");
-  const [state, setState] = useState<State>("idle");
-  const [position, setPosition] = useState<number | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setState("loading");
+    setStatus("loading");
     setErrorMsg("");
-
     try {
       const res = await fetch("/api/waitlist", {
         method: "POST",
@@ -24,83 +45,116 @@ export default function WaitlistSection() {
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
-
-      if (data.success) {
-        setPosition(data.position);
-        setState("success");
+      if (res.ok && data.success) {
+        setStatus("success");
       } else {
-        setErrorMsg(data.message ?? "Fehler aufgetreten");
-        setState("error");
+        setStatus("error");
+        setErrorMsg(data.message === "Already on waitlist" ? "Du stehst bereits auf der Warteliste." : "Bitte gültige E-Mail eingeben.");
       }
     } catch {
-      setErrorMsg("Netzwerkfehler. Bitte erneut versuchen.");
-      setState("error");
+      setStatus("error");
+      setErrorMsg("Etwas ist schiefgelaufen. Bitte erneut versuchen.");
     }
   }
 
   return (
-    <section
-      id="waitlist"
-      className="py-24"
-      style={{ background: tokens.color.bg }}
-    >
-      <div className="max-w-[520px] mx-auto px-6 text-center">
-        <h2
-          className="text-[36px] font-semibold tracking-[-0.03em] leading-[1.08]"
-          style={{ color: tokens.color.text }}
-        >
-          Sei dabei wenn<br />Imvestra startet.
-        </h2>
-        <p className="mt-4 text-base leading-relaxed" style={{ color: tokens.color.textMuted }}>
-          Trage dich jetzt auf die Warteliste ein und erhalte
-          Early Access sobald wir live gehen.
-        </p>
+    <section id="waitlist" className="bg-[#080808] py-32 relative overflow-hidden">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(0,224,215,0.07) 0%, transparent 65%)",
+        }}
+      />
+      <div className="max-w-[640px] mx-auto px-6 text-center relative z-10">
+        <FadeIn>
+          <span className="inline-flex bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.15)] text-[#00E0D7] text-xs px-3 py-1 rounded-full">
+            Jetzt starten
+          </span>
+          <h2 className="text-[48px] font-semibold tracking-[-0.04em] leading-[1.05] text-white mt-4">
+            Damit kein Detail<br />
+            zum teuren<br />
+            <span style={GRADIENT_TEXT}>Fehler</span> wird.
+          </h2>
+          <p className="mt-5 text-[#555] text-lg leading-relaxed">
+            Starte kostenlos. Keine Kreditkarte. Keine Wartezeit. Einfach loslegen.
+          </p>
 
-        {state === "success" ? (
-          <div className="mt-10">
-            <CheckCircle size={40} color={tokens.color.positive} weight="fill" className="mx-auto" />
-            <p className="text-xl font-semibold mt-4" style={{ color: tokens.color.text }}>
-              Du bist auf der Liste!
-            </p>
-            <p className="text-sm mt-2" style={{ color: tokens.color.textMuted }}>
-              {position && `Platz ${position}. `}Wir melden uns wenn es losgeht.
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="mt-8">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="deine@email.de"
-              className="w-full px-4 py-3 rounded-[10px] text-sm text-white placeholder:text-[#555555] focus:outline-none transition-all"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.borderStrong}`,
-              }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)")}
-              onBlur={(e) => (e.currentTarget.style.borderColor = tokens.color.borderStrong)}
-            />
-            {state === "error" && (
-              <p className="text-xs mt-2 text-left" style={{ color: tokens.color.danger }}>
-                {errorMsg}
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={state === "loading"}
-              className="mt-3 w-full py-3 rounded-[10px] text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-60"
-              style={{
-                background: tokens.color.accent,
-                color: tokens.color.bg,
-                boxShadow: tokens.shadow.accent,
-              }}
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <motion.button
+              whileHover={prefersReduced ? {} : { scale: 1.02 }}
+              whileTap={prefersReduced ? {} : { scale: 0.97 }}
+              onClick={() => router.push("/register")}
+              className="bg-[#00E0D7] text-[#080808] font-bold px-8 py-4 rounded-[12px] text-base"
+              style={{ boxShadow: "0 0 40px rgba(0,224,215,0.2)" }}
             >
-              {state === "loading" ? "Wird eingetragen..." : "Jetzt eintragen"}
+              Jetzt kostenlos starten →
+            </motion.button>
+            <button
+              onClick={() => setShowForm((v) => !v)}
+              className="border border-[rgba(255,255,255,0.12)] text-white px-8 py-4 rounded-[12px] text-base hover:bg-[#111] transition-all"
+            >
+              Auf Warteliste eintragen
             </button>
-          </form>
-        )}
+          </div>
+
+          {/* Waitlist form */}
+          <AnimatePresence>
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                style={{ overflow: "hidden" }}
+                className="mt-8 max-w-[400px] mx-auto"
+              >
+                {status === "success" ? (
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <CheckCircle size={32} color="#00E0D7" weight="fill" className="mx-auto" />
+                    <p className="text-xl font-semibold text-white mt-3">Du bist dabei!</p>
+                    <p className="text-sm text-[#555] mt-1">Wir melden uns sobald Imvestra startet.</p>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={submit} className="flex flex-col gap-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="deine@email.de"
+                        className="flex-1 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[rgba(0,224,215,0.4)] transition-all"
+                      />
+                      <button
+                        type="submit"
+                        disabled={status === "loading"}
+                        className="bg-[#00E0D7] text-[#080808] font-semibold px-5 py-3 rounded-[10px] text-sm hover:bg-[#00C7BE] transition-colors disabled:opacity-60"
+                      >
+                        {status === "loading" ? "…" : "Eintragen"}
+                      </button>
+                    </div>
+                    {status === "error" && (
+                      <p className="text-xs text-[#FF4444]">{errorMsg}</p>
+                    )}
+                  </form>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="mt-10 flex justify-center gap-8 flex-wrap">
+            {TRUST.map(({ Icon, label }) => (
+              <div key={label} className="text-xs text-[#333] flex items-center gap-1.5">
+                <Icon size={13} color="#333" />
+                {label}
+              </div>
+            ))}
+          </div>
+        </FadeIn>
       </div>
     </section>
   );
