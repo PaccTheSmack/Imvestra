@@ -30,7 +30,6 @@ export default function Navbar() {
           width={100}
           height={26}
           priority
-          style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }}
         />
 
         {/* Center nav – desktop */}
