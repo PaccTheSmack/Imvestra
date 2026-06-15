@@ -16,6 +16,7 @@ import {
   Bank,
   CheckSquare,
   Receipt,
+  Tag,
   SignOut,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
@@ -43,8 +44,9 @@ const navSections: NavSection[] = [
   {
     section: "ANALYSE",
     items: [
-      { Icon: Calculator, label: "Rechner",   href: "/calculator", badge: "NEU" },
-      { Icon: MapPin,     label: "Standort",  href: "/standort"                 },
+      { Icon: Calculator, label: "Rechner",     href: "/calculator",  badge: "NEU" },
+      { Icon: Tag,        label: "Verhandlung", href: "/verhandlung"             },
+      { Icon: MapPin,     label: "Standort",   href: "/standort"                },
       { Icon: FilePdf,    label: "PDF Export", href: "/pdf-export"              },
     ],
   },

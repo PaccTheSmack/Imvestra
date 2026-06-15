@@ -43,7 +43,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/standort") ||
     request.nextUrl.pathname.startsWith("/finanzen") ||
     request.nextUrl.pathname.startsWith("/aufgaben") ||
-    request.nextUrl.pathname.startsWith("/steuern");
+    request.nextUrl.pathname.startsWith("/steuern") ||
+    request.nextUrl.pathname.startsWith("/verhandlung");
 
   if (isDashboard && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
