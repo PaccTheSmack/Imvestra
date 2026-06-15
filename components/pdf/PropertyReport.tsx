@@ -1,6 +1,6 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
-import type { CalculationResult, Financing, TilgungsplanRow, AfAResult } from "@/types";
+import type { CalculationResult, Financing, TilgungsplanRow, AfAResult, VerhandlungsResult } from "@/types";
 import { calculateSpekulationsfrist } from "@/lib/calculations";
 import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
 
@@ -170,6 +170,7 @@ interface PropertyReportProps {
   afa?: AfAResult;
   kaufdatum?: string;
   steuersatz?: number;
+  verhandlungsResult?: VerhandlungsResult;
 }
 
 export default function PropertyReport({
@@ -185,6 +186,7 @@ export default function PropertyReport({
   afa,
   kaufdatum,
   steuersatz = 42,
+  verhandlungsResult,
 }: PropertyReportProps) {
   const today = new Date().toLocaleDateString("de-DE", {
     day: "2-digit",
@@ -399,6 +401,26 @@ export default function PropertyReport({
                 <Text style={[s.tableCellBold, s.colRate, { textAlign: "right" }]}>
                   {formatCurrency(row.rate_jahres)}
                 </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Kaufpreisanalyse */}
+        {verhandlungsResult && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Kaufpreisanalyse</Text>
+            {[
+              { label: "Zielrendite (Brutto)",        value: formatPercent(verhandlungsResult.target_yield) },
+              { label: "Jahreskaltmiete",             value: formatCurrency(verhandlungsResult.rent_yearly) },
+              { label: "Max. Kaufpreis",              value: formatCurrency(Math.round(verhandlungsResult.max_kaufpreis)) },
+              { label: "Max. Kaufpreis inkl. 10% NK", value: formatCurrency(Math.round(verhandlungsResult.max_kaufpreis_mit_nk)) },
+              { label: "Zielgebot (−10%)",            value: formatCurrency(Math.round(verhandlungsResult.verhandlungspuffer_10)) },
+              { label: "Ausgangsgebot (−15%)",        value: formatCurrency(Math.round(verhandlungsResult.verhandlungspuffer_15)) },
+            ].map(({ label, value }) => (
+              <View key={label} style={s.row}>
+                <Text style={s.rowLabel}>{label}</Text>
+                <Text style={label === "Max. Kaufpreis" ? [s.rowValue, { color: GREEN }] : s.rowValue}>{value}</Text>
               </View>
             ))}
           </View>

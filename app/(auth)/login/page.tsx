@@ -38,6 +38,7 @@ export default function LoginPage() {
           width={160}
           height={42}
           priority
+          style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }}
         />
         <p
           className="text-xl font-medium max-w-xs text-center mt-8 leading-snug"
@@ -76,6 +77,7 @@ export default function LoginPage() {
               width={100}
               height={26}
               priority
+              style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }}
             />
           </div>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: tokens.color.text }}>

@@ -28,6 +28,8 @@ import {
   calculateAfA,
   checkKfWPrograms,
   calculateSpekulationsfrist,
+  calculateMaxKaufpreis,
+  compareWithAskingPrice,
 } from "@/lib/calculations";
 import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
@@ -42,6 +44,7 @@ import type {
   TilgungsplanRow,
   Financing,
   AfAResult,
+  VerhandlungsResult,
 } from "@/types";
 
 // ─── constants ────────────────────────────────────────────────
@@ -73,7 +76,8 @@ type TabId =
   | "Tilgung"
   | "Szenarien"
   | "AfA"
-  | "Förderung";
+  | "Förderung"
+  | "Verhandlung";
 
 // ─── helpers ──────────────────────────────────────────────────
 function getYieldColor(v: number, hi: number, mid: number) {
@@ -319,6 +323,9 @@ export default function CalculatorPage() {
   // tilgung
   const [tilgungYears, setTilgungYears] = useState<10 | 20 | 30>(20);
 
+  // verhandlung
+  const [verhandlungYield, setVerhandlungYield] = useState(0.05);
+
   // szenarien
   const [szenarien, setSzenarien] = useState<Szenario[]>([
     { id: "base", label: "Basis", kaufpreis: 0, miete_monthly: 0, zinssatz: 3.5, tilgung: 2.0, sqm: 0, units: 1 },
@@ -418,6 +425,9 @@ export default function CalculatorPage() {
 
   // 150er Regel
   const faktor150 = rent > 0 ? pp / rent : 0;
+
+  // verhandlung
+  const verhandlungsResult: VerhandlungsResult | null = rent > 0 ? calculateMaxKaufpreis(rent, verhandlungYield) : null;
 
   // auto-sync Basis szenario
   useEffect(() => {
@@ -529,10 +539,11 @@ export default function CalculatorPage() {
         afa: afaResult ?? undefined,
         kaufdatum: steuerForm.kaufdatum || undefined,
         steuersatz: parseFloat(steuerForm.steuersatz) || 42,
+        verhandlungsResult: verhandlungsResult ?? undefined,
       }
     : undefined;
 
-  const TABS: TabId[] = ["Übersicht", "Kosten", "Erträge", "Tilgung", "Szenarien", "AfA", "Förderung"];
+  const TABS: TabId[] = ["Übersicht", "Kosten", "Erträge", "Tilgung", "Szenarien", "AfA", "Förderung", "Verhandlung"];
 
   const szenarioResults = szenarien.map((s) => ({ s, r: getSzenarioResult(s) }));
 
@@ -1545,6 +1556,146 @@ export default function CalculatorPage() {
                                 Zur KfW Förderberatung →
                               </a>
                             </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* VERHANDLUNG */}
+                      {activeTab === "Verhandlung" && verhandlungsResult && (
+                        <div>
+                          {/* Yield selector */}
+                          <div className="mb-5">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: tokens.color.textMuted }}>
+                              Zielrendite (Brutto)
+                            </p>
+                            <div className="flex gap-2">
+                              {([0.04, 0.05, 0.06, 0.07, 0.08] as const).map((y) => (
+                                <button
+                                  key={y}
+                                  onClick={() => setVerhandlungYield(y)}
+                                  className="flex-1 py-2 rounded-[8px] text-xs font-semibold transition-all"
+                                  style={verhandlungYield === y ? {
+                                    background: tokens.color.accent,
+                                    color: tokens.color.bg,
+                                  } : {
+                                    background: tokens.color.surfaceHover,
+                                    color: tokens.color.textMuted,
+                                  }}
+                                >
+                                  {formatPercent(y, 0)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Hero result */}
+                          <div
+                            className="rounded-[12px] px-5 py-5 mb-4 text-center"
+                            style={{ background: tokens.color.positiveBg, border: `1px solid ${tokens.color.accentBorder}` }}
+                          >
+                            <p className="text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: tokens.color.positiveText }}>
+                              Max. Kaufpreis
+                            </p>
+                            <MetricValue
+                              value={verhandlungsResult.max_kaufpreis}
+                              formatter={(v) => formatCurrency(Math.round(v))}
+                              className="text-[32px] font-semibold tracking-[-0.03em]"
+                              style={{ color: tokens.color.positive }}
+                            />
+                            <p className="text-[11px] mt-1.5" style={{ color: tokens.color.textSubtle }}>
+                              Gesamtinvestition inkl. 10% NK: {formatCurrency(Math.round(verhandlungsResult.max_kaufpreis_mit_nk))}
+                            </p>
+                          </div>
+
+                          {/* Comparison with asking price */}
+                          {pp > 0 && (() => {
+                            const cmp = compareWithAskingPrice(verhandlungsResult.max_kaufpreis, pp);
+                            const verdictColor =
+                              cmp.verdict === "angemessen" ? tokens.color.positive
+                              : cmp.verdict === "verhandlungsbedarf" ? tokens.color.warning
+                              : tokens.color.danger;
+                            const verdictBg =
+                              cmp.verdict === "angemessen" ? tokens.color.positiveBg
+                              : cmp.verdict === "verhandlungsbedarf" ? tokens.color.warningBg
+                              : tokens.color.dangerBg;
+                            const verdictLabel =
+                              cmp.verdict === "angemessen" ? "Angemessen"
+                              : cmp.verdict === "verhandlungsbedarf" ? "Verhandlungsbedarf"
+                              : "Überteuert";
+                            const maxVal = Math.max(pp, verhandlungsResult.max_kaufpreis);
+                            const greenPct = (verhandlungsResult.max_kaufpreis / maxVal) * 100;
+                            const redPct = cmp.difference > 0 ? (cmp.difference / maxVal) * 100 : 0;
+                            return (
+                              <div
+                                className="rounded-[12px] px-4 py-4 mb-4"
+                                style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
+                              >
+                                <div className="flex items-center justify-between mb-3">
+                                  <p className="text-xs font-semibold" style={{ color: tokens.color.textMuted }}>Vergleich mit Anforderungspreis</p>
+                                  <span
+                                    className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                                    style={{ color: verdictColor, background: verdictBg }}
+                                  >
+                                    {verdictLabel}
+                                  </span>
+                                </div>
+
+                                {/* Range bar */}
+                                <div className="mb-3">
+                                  <div className="relative h-2 rounded-full overflow-hidden" style={{ background: tokens.color.surfaceActive }}>
+                                    <div className="absolute h-full rounded-l-full" style={{ width: `${greenPct}%`, background: tokens.color.positive }} />
+                                    {redPct > 0 && (
+                                      <div
+                                        className="absolute h-full"
+                                        style={{ left: `${greenPct}%`, width: `${redPct}%`, background: tokens.color.danger, borderRadius: redPct + greenPct >= 99 ? "0 9999px 9999px 0" : 0 }}
+                                      />
+                                    )}
+                                  </div>
+                                  <div className="flex justify-between mt-1.5 text-[9px]" style={{ color: tokens.color.textSubtle }}>
+                                    <span>Max. {formatCurrency(Math.round(verhandlungsResult.max_kaufpreis))}</span>
+                                    <span>Anforderung {formatCurrency(pp)}</span>
+                                  </div>
+                                </div>
+
+                                <div className="flex justify-between items-center pt-1" style={{ borderTop: `1px solid ${tokens.color.border}` }}>
+                                  <span className="text-xs" style={{ color: tokens.color.textMuted }}>Verhandlungsspielraum</span>
+                                  <span className="text-sm font-semibold" style={{ color: cmp.potential_savings > 0 ? tokens.color.danger : tokens.color.positive }}>
+                                    {cmp.potential_savings > 0 ? `−${formatCurrency(Math.round(cmp.potential_savings))}` : "Kein Abschlag nötig"}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Strategy rows */}
+                          <div
+                            className="rounded-[12px] px-4 py-4 mb-4"
+                            style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
+                          >
+                            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: tokens.color.textMuted }}>
+                              Verhandlungsstrategie
+                            </p>
+                            {[
+                              { label: "Ausgangsgebot (15% unter Max.)", value: verhandlungsResult.verhandlungspuffer_15 },
+                              { label: "Zielgebot (10% unter Max.)",     value: verhandlungsResult.verhandlungspuffer_10 },
+                              { label: "Maximum (Zielrendite genau)",    value: verhandlungsResult.max_kaufpreis },
+                            ].map(({ label, value }) => (
+                              <div key={label} className="flex justify-between items-center py-2.5" style={{ borderBottom: `1px solid ${tokens.color.border}` }}>
+                                <span className="text-xs" style={{ color: tokens.color.textMuted }}>{label}</span>
+                                <span className="text-sm font-semibold tabular-nums" style={{ color: tokens.color.text }}>{formatCurrency(Math.round(value))}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Tip box */}
+                          <div
+                            className="rounded-[10px] px-4 py-3 flex items-start gap-2"
+                            style={{ background: tokens.color.accentSubtle, border: `1px solid ${tokens.color.accentBorder}` }}
+                          >
+                            <PiggyBank size={14} color={tokens.color.accent} className="mt-0.5 flex-shrink-0" />
+                            <p className="text-[11px] leading-relaxed" style={{ color: tokens.color.textMuted }}>
+                              Der Maximalpreis basiert auf der Bruttomietrendite. Nebenkosten (Notar, Grunderwerbsteuer, Makler) sind im NK-Betrag berücksichtigt.
+                            </p>
                           </div>
                         </div>
                       )}

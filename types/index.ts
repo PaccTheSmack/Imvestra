@@ -109,6 +109,16 @@ export interface SpekuResult {
   steuer_bei_verkauf_jetzt?: number;
 }
 
+export interface VerhandlungsResult {
+  max_kaufpreis: number;
+  max_kaufpreis_mit_nk: number;
+  target_yield: number;
+  rent_monthly: number;
+  rent_yearly: number;
+  verhandlungspuffer_10: number;
+  verhandlungspuffer_15: number;
+}
+
 export interface Tenant {
   id: string;
   property_id: string;

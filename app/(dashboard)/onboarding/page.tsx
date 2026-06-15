@@ -141,7 +141,7 @@ export default function OnboardingPage() {
           className="px-6 pt-6 pb-4 flex items-center justify-between"
           style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
         >
-          <Image src="/logo.svg" alt="Imvestra" width={90} height={24} />
+          <Image src="/logo.svg" alt="Imvestra" width={90} height={24} style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }} />
           <span className="text-[11px] font-medium" style={{ color: "#444444" }}>
             Schritt {step} von 3
           </span>

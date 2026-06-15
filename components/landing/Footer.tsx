@@ -19,6 +19,7 @@ export default function Footer() {
             alt="Imvestra"
             width={80}
             height={21}
+            style={{ filter: "brightness(0) invert(1)" }}
           />
           <div className="flex items-center gap-6">
             {[

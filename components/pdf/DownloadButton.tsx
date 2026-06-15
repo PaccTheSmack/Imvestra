@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FilePdf } from "@phosphor-icons/react";
-import type { CalculationResult, Financing, TilgungsplanRow, AfAResult } from "@/types";
+import type { CalculationResult, Financing, TilgungsplanRow, AfAResult, VerhandlungsResult } from "@/types";
 
 export interface DownloadData {
   propertyName: string;
@@ -17,6 +17,7 @@ export interface DownloadData {
   afa?: AfAResult;
   kaufdatum?: string;
   steuersatz?: number;
+  verhandlungsResult?: VerhandlungsResult;
 }
 
 interface DownloadButtonProps {

@@ -1,4 +1,4 @@
-import { Property, CalculationResult, Financing, TilgungsplanRow, AfAResult, KfWProgram, SpekuResult } from "@/types";
+import { Property, CalculationResult, Financing, TilgungsplanRow, AfAResult, KfWProgram, SpekuResult, VerhandlungsResult } from "@/types";
 
 const ANCILLARY_COSTS_NDS = 0.10;
 const MAINTENANCE_PER_SQM = 10;
@@ -240,5 +240,44 @@ export function calculateSpekulationsfrist(
     tage_verbleibend,
     jahre_verbleibend,
     steuer_bei_verkauf_jetzt,
+  };
+}
+
+export function calculateMaxKaufpreis(rent_monthly: number, target_yield: number): VerhandlungsResult {
+  const rent_yearly = rent_monthly * 12;
+  const max_kaufpreis = rent_yearly / target_yield;
+  return {
+    max_kaufpreis,
+    max_kaufpreis_mit_nk: max_kaufpreis * 1.1,
+    target_yield,
+    rent_monthly,
+    rent_yearly,
+    verhandlungspuffer_10: max_kaufpreis * 0.9,
+    verhandlungspuffer_15: max_kaufpreis * 0.85,
+  };
+}
+
+export function compareWithAskingPrice(
+  max_kaufpreis: number,
+  asking_price: number
+): {
+  difference: number;
+  difference_pct: number;
+  verdict: "angemessen" | "verhandlungsbedarf" | "überteuert";
+  potential_savings: number;
+} {
+  const difference = asking_price - max_kaufpreis;
+  const difference_pct = asking_price > 0 ? difference / asking_price : 0;
+  const verdict =
+    difference_pct <= 0.02
+      ? "angemessen"
+      : difference_pct <= 0.10
+      ? "verhandlungsbedarf"
+      : "überteuert";
+  return {
+    difference,
+    difference_pct,
+    verdict,
+    potential_savings: Math.max(0, difference),
   };
 }

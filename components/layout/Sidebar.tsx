@@ -15,6 +15,7 @@ import {
   UsersFour,
   Bank,
   CheckSquare,
+  Receipt,
   SignOut,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
@@ -54,6 +55,7 @@ const navSections: NavSection[] = [
       { Icon: UsersFour,   label: "Mieter",    href: "/mieter"    },
       { Icon: Bank,        label: "Finanzen",  href: "/finanzen"  },
       { Icon: CheckSquare, label: "Aufgaben",  href: "/aufgaben"  },
+      { Icon: Receipt,     label: "Steuern",   href: "/steuern"   },
     ],
   },
 ];

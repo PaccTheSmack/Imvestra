@@ -370,7 +370,7 @@ export default function DashboardHome({
                 style={{ borderTop: `1px solid ${tokens.color.border}` }}
               >
                 <p className="text-xs" style={{ color: tokens.color.textSubtle }}>
-                  Bruttorendite · Nettomietrendite · Cashflow · ROE
+                  Bruttorendite · Cashflow · Maximalpreis berechnen
                 </p>
               </div>
             </div>
