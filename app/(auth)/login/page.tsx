@@ -55,7 +55,7 @@ export default function LoginPage() {
             <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: tokens.color.textMuted }}>
               <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tokens.color.accentMuted }}>
                 <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
-                  <path d="M1 3.5L3 5.5L7 1.5" stroke="#1DB87A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M1 3.5L3 5.5L7 1.5" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
               {item}
@@ -115,7 +115,7 @@ export default function LoginPage() {
                   border: `1px solid ${tokens.color.border}`,
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(29,184,122,0.4)";
+                  e.currentTarget.style.borderColor = "rgba(0,200,150,0.4)";
                   e.currentTarget.style.background = tokens.color.surfaceHover;
                 }}
                 onBlur={(e) => {
@@ -149,7 +149,7 @@ export default function LoginPage() {
                   border: `1px solid ${tokens.color.border}`,
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(29,184,122,0.4)";
+                  e.currentTarget.style.borderColor = "rgba(0,200,150,0.4)";
                   e.currentTarget.style.background = tokens.color.surfaceHover;
                 }}
                 onBlur={(e) => {

@@ -183,7 +183,7 @@ export interface Expense {
 
 export const EXPENSE_CATEGORIES = {
   maintenance: { label: "Instandhaltung", color: "#FFB800" },
-  management:  { label: "Verwaltung",      color: "#1DB87A" },
+  management:  { label: "Verwaltung",      color: "#00C896" },
   insurance:   { label: "Versicherung",    color: "#4B9EFF" },
   tax:         { label: "Steuern/Abgaben", color: "#FF4444" },
   utilities:   { label: "Nebenkosten",     color: "#A855F7" },

@@ -24,9 +24,9 @@ import { generateSmartTasks } from "@/lib/smart-tasks";
 import { tokens } from "@/lib/tokens";
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  ETW:     { bg: "rgba(29,184,122,0.08)",  text: "#1DB87A" },
+  ETW:     { bg: "rgba(0,200,150,0.08)",  text: "#00C896" },
   MFH:     { bg: "rgba(139,92,246,0.1)",   text: "#A78BFA" },
-  EFH:     { bg: "rgba(29,184,122,0.06)",  text: "#1DB87A" },
+  EFH:     { bg: "rgba(0,200,150,0.06)",  text: "#00C896" },
   DHH:     { bg: "rgba(255,184,0,0.08)",   text: "#FFB800" },
   Gewerbe: { bg: "rgba(255,255,255,0.05)", text: "#888888" },
 };
@@ -223,15 +223,15 @@ export default function DashboardHome({
                   className="h-full rounded-full transition-all duration-700"
                   style={{
                     width: `${Math.min((monthlyRentIst / monthlyRentSoll) * 100, 100)}%`,
-                    background: monthlyRentIst >= monthlyRentSoll ? "#1DB87A" : "#FFB800",
+                    background: monthlyRentIst >= monthlyRentSoll ? "#00C896" : "#FFB800",
                   }}
                 />
               </div>
             </div>
             <div className="text-right">
-              <p className="text-lg font-semibold" style={{ color: "#1DB87A" }}>{fmtCurrency(monthlyRentIst)}</p>
+              <p className="text-lg font-semibold" style={{ color: "#00C896" }}>{fmtCurrency(monthlyRentIst)}</p>
               <p className="text-[10px]" style={{ color: "#444" }}>von {fmtCurrency(monthlyRentSoll)}</p>
-              <Link href="/finanzen" className="text-[10px] mt-1 block" style={{ color: "#1DB87A" }}>
+              <Link href="/finanzen" className="text-[10px] mt-1 block" style={{ color: "#00C896" }}>
                 Details →
               </Link>
             </div>
@@ -248,15 +248,15 @@ export default function DashboardHome({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="rounded-[10px] px-4 py-3 mb-4 flex items-center justify-between"
-            style={{ background: "rgba(29,184,122,0.06)", border: "1px solid rgba(29,184,122,0.12)" }}
+            style={{ background: "rgba(0,200,150,0.06)", border: "1px solid rgba(0,200,150,0.12)" }}
           >
             <div className="flex items-center gap-2">
-              <Sparkle size={14} color="#1DB87A" weight="fill" />
+              <Sparkle size={14} color="#00C896" weight="fill" />
               <span className="text-xs" style={{ color: tokens.color.text }}>
                 Imvestra hat {smartNotifCount} neue Aufgabe{smartNotifCount > 1 ? "n" : ""} für dich erstellt
               </span>
             </div>
-            <Link href="/aufgaben" className="text-xs font-medium" style={{ color: "#1DB87A" }}>
+            <Link href="/aufgaben" className="text-xs font-medium" style={{ color: "#00C896" }}>
               Anzeigen →
             </Link>
           </motion.div>
@@ -431,7 +431,7 @@ export default function DashboardHome({
               <div className="flex items-center justify-between mb-5">
                 <div
                   className="w-10 h-10 rounded-[10px] flex items-center justify-center"
-                  style={{ background: "rgba(29,184,122,0.08)" }}
+                  style={{ background: "rgba(0,200,150,0.08)" }}
                 >
                   <MapPin size={20} color={tokens.color.accent} />
                 </div>

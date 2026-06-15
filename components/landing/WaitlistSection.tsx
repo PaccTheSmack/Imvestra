@@ -79,7 +79,7 @@ export default function WaitlistSection() {
                 background: tokens.color.surface,
                 border: `1px solid ${tokens.color.borderStrong}`,
               }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(29,184,122,0.4)")}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,200,150,0.4)")}
               onBlur={(e) => (e.currentTarget.style.borderColor = tokens.color.borderStrong)}
             />
             {state === "error" && (

@@ -1,20 +1,34 @@
 "use client";
 
 import * as React from "react";
+import { motion, useReducedMotion } from "motion/react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
-interface DarkButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface DarkButtonProps {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
+  disabled?: boolean;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: "button" | "submit" | "reset";
+  form?: string;
+  name?: string;
+  value?: string;
+  "aria-label"?: string;
+  title?: string;
+  id?: string;
+  tabIndex?: number;
+  style?: React.CSSProperties;
 }
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-[#1DB87A] text-[#080808] font-semibold hover:bg-[#18A36A] shadow-[0_0_0_1px_rgba(29,184,122,0.3),0_4px_16px_rgba(29,184,122,0.15)]",
+    "bg-[#00C896] text-[#080808] font-semibold shadow-[0_0_0_1px_rgba(0,200,150,0.3),0_4px_16px_rgba(0,200,150,0.15)] hover:brightness-110",
   secondary:
     "bg-[#1A1A1A] text-white border border-[rgba(255,255,255,0.07)] hover:bg-[#222222] hover:border-[rgba(255,255,255,0.12)]",
   ghost:
@@ -39,13 +53,17 @@ export default function DarkButton({
   className = "",
   ...props
 }: DarkButtonProps) {
+  const prefersReduced = useReducedMotion();
+
   return (
-    <button
+    <motion.button
       disabled={disabled || loading}
+      whileHover={prefersReduced ? {} : { scale: 1.01 }}
+      whileTap={prefersReduced ? {} : { scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 500, damping: 30 }}
       className={[
-        "inline-flex items-center justify-center font-medium transition-all duration-150",
-        "active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed",
-        "@media (prefers-reduced-motion: reduce) { transition: none }",
+        "inline-flex items-center justify-center font-medium transition-colors duration-150",
+        "disabled:opacity-40 disabled:cursor-not-allowed",
         variantStyles[variant],
         sizeStyles[size],
         className,
@@ -60,6 +78,6 @@ export default function DarkButton({
         icon
       )}
       {children}
-    </button>
+    </motion.button>
   );
 }

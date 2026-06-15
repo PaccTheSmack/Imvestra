@@ -47,7 +47,7 @@ type SortKind   = "due_date" | "priority" | "created";
 const PRIORITY_CONFIG = {
   high:   { label: "Hoch",    color: "#FF4444", bg: "rgba(255,68,68,0.1)"   },
   medium: { label: "Mittel",  color: "#FFB800", bg: "rgba(255,184,0,0.1)"  },
-  low:    { label: "Niedrig", color: "#1DB87A", bg: "rgba(29,184,122,0.1)" },
+  low:    { label: "Niedrig", color: "#00C896", bg: "rgba(0,200,150,0.1)" },
 } as const;
 
 const PRIORITY_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
@@ -206,9 +206,9 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(29,184,122,0.08)", border: "1px solid rgba(29,184,122,0.12)" }}
+            style={{ background: "rgba(0,200,150,0.08)", border: "1px solid rgba(0,200,150,0.12)" }}
           >
-            <CheckSquare size={18} color="#1DB87A" />
+            <CheckSquare size={18} color="#00C896" />
           </div>
           <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>
             Aufgaben
@@ -234,7 +234,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
             { label: "OFFEN",      value: openTasks,      color: tokens.color.text                          },
             { label: "ÜBERFÄLLIG", value: overdueTasks,   color: overdueTasks > 0 ? "#FF4444" : tokens.color.text },
             { label: "HOHE PRIO",  value: highPriority,   color: highPriority > 0 ? "#FFB800" : tokens.color.text },
-            { label: "ERLEDIGT",   value: completedTasks, color: "#1DB87A"                                  },
+            { label: "ERLEDIGT",   value: completedTasks, color: "#00C896"                                  },
           ].map(({ label, value, color }) => (
             <div
               key={label}
@@ -264,7 +264,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                 onClick={() => setFilter(f)}
                 className="px-3 py-1.5 rounded-full text-xs cursor-pointer transition-all"
                 style={active
-                  ? { background: "#1DB87A", color: "#080808", fontWeight: 600 }
+                  ? { background: "#00C896", color: "#080808", fontWeight: 600 }
                   : { background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }
                 }
                 onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = "#fff"; }}
@@ -365,33 +365,33 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                       style={{
                         background: "#111",
                         border: isAutoGen
-                          ? "1px solid rgba(29,184,122,0.15)"
+                          ? "1px solid rgba(0,200,150,0.15)"
                           : "1px solid rgba(255,255,255,0.07)",
-                        borderLeft: isAutoGen ? "2px solid rgba(29,184,122,0.4)" : undefined,
+                        borderLeft: isAutoGen ? "2px solid rgba(0,200,150,0.4)" : undefined,
                       }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.12)";
-                        if (isAutoGen) (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(29,184,122,0.6)";
+                        if (isAutoGen) (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(0,200,150,0.6)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLDivElement).style.borderColor = isAutoGen
-                          ? "rgba(29,184,122,0.15)"
+                          ? "rgba(0,200,150,0.15)"
                           : "rgba(255,255,255,0.07)";
-                        if (isAutoGen) (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(29,184,122,0.4)";
+                        if (isAutoGen) (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(0,200,150,0.4)";
                       }}
                     >
                       {/* Checkbox */}
                       <motion.div
                         className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-[5px] flex items-center justify-center cursor-pointer"
                         style={{
-                          border: task.completed ? "2px solid #1DB87A" : "2px solid rgba(255,255,255,0.15)",
-                          background: task.completed ? "#1DB87A" : "transparent",
+                          border: task.completed ? "2px solid #00C896" : "2px solid rgba(255,255,255,0.15)",
+                          background: task.completed ? "#00C896" : "transparent",
                           transition: "all 0.15s ease",
                         }}
                         whileTap={prefersReduced ? {} : { scale: 0.85 }}
                         onClick={() => toggleTask(task.id, !task.completed)}
                         onMouseEnter={(e) => {
-                          if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "#1DB87A";
+                          if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "#00C896";
                         }}
                         onMouseLeave={(e) => {
                           if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.15)";
@@ -414,7 +414,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                             {isAutoGen && (
                               <span
                                 className="text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide flex-shrink-0 flex items-center gap-0.5"
-                                style={{ background: "rgba(29,184,122,0.08)", color: "#1DB87A" }}
+                                style={{ background: "rgba(0,200,150,0.08)", color: "#00C896" }}
                               >
                                 <Sparkle size={7} weight="fill" />
                                 AUTO

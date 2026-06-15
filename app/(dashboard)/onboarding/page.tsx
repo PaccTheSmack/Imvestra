@@ -153,7 +153,7 @@ export default function OnboardingPage() {
         <div className="h-0.5" style={{ background: "rgba(255,255,255,0.06)" }}>
           <motion.div
             className="h-full rounded-full"
-            style={{ background: "#1DB87A" }}
+            style={{ background: "#00C896" }}
             animate={{ width: progressWidths[step - 1] }}
             transition={{ duration: prefersReduced ? 0 : 0.4, ease: "easeInOut" }}
           />
@@ -193,7 +193,7 @@ export default function OnboardingPage() {
                     placeholder="Dein Vorname"
                     value={data.name}
                     onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(29,184,122,0.4)")}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,200,150,0.4)")}
                     onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")}
                     autoFocus
                   />
@@ -214,17 +214,17 @@ export default function OnboardingPage() {
                           onClick={() => setData((d) => ({ ...d, experience_level: value }))}
                           className="flex items-center gap-3 rounded-[10px] px-4 py-3 text-left transition-all duration-150"
                           style={{
-                            background:     selected ? "rgba(29,184,122,0.08)" : "#0C0C0C",
-                            border: `1px solid ${selected ? "rgba(29,184,122,0.3)" : "rgba(255,255,255,0.07)"}`,
+                            background:     selected ? "rgba(0,200,150,0.08)" : "#0C0C0C",
+                            border: `1px solid ${selected ? "rgba(0,200,150,0.3)" : "rgba(255,255,255,0.07)"}`,
                           }}
                           onMouseEnter={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
                           onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; }}
                         >
                           <div
                             className="w-8 h-8 rounded-[8px] flex-shrink-0 flex items-center justify-center"
-                            style={{ background: selected ? "rgba(29,184,122,0.12)" : "#1A1A1A" }}
+                            style={{ background: selected ? "rgba(0,200,150,0.12)" : "#1A1A1A" }}
                           >
-                            <Icon size={15} color={selected ? "#1DB87A" : "#444444"} />
+                            <Icon size={15} color={selected ? "#00C896" : "#444444"} />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-white">{label}</p>
@@ -264,17 +264,17 @@ export default function OnboardingPage() {
                         onClick={() => setData((d) => ({ ...d, investment_goal: value }))}
                         className="flex flex-col items-center gap-2 rounded-[10px] p-4 text-center transition-all duration-150"
                         style={{
-                          background:     selected ? "rgba(29,184,122,0.08)" : "#0C0C0C",
-                          border: `1px solid ${selected ? "rgba(29,184,122,0.3)" : "rgba(255,255,255,0.07)"}`,
+                          background:     selected ? "rgba(0,200,150,0.08)" : "#0C0C0C",
+                          border: `1px solid ${selected ? "rgba(0,200,150,0.3)" : "rgba(255,255,255,0.07)"}`,
                         }}
                         onMouseEnter={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
                         onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; }}
                       >
                         <div
                           className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-                          style={{ background: selected ? "rgba(29,184,122,0.12)" : "#1A1A1A" }}
+                          style={{ background: selected ? "rgba(0,200,150,0.12)" : "#1A1A1A" }}
                         >
-                          <Icon size={18} color={selected ? "#1DB87A" : "#444444"} />
+                          <Icon size={18} color={selected ? "#00C896" : "#444444"} />
                         </div>
                         <p className="text-sm font-medium text-white mt-1">{label}</p>
                         <p className="text-[10px]" style={{ color: "#555555" }}>{sub}</p>
@@ -298,7 +298,7 @@ export default function OnboardingPage() {
                           onClick={() => setData((d) => ({ ...d, portfolio_size: value }))}
                           className="px-4 py-2 rounded-[8px] text-sm font-medium transition-all duration-150"
                           style={selected ? {
-                            background: "#1DB87A",
+                            background: "#00C896",
                             color: "#080808",
                             border: "1px solid transparent",
                           } : {
@@ -334,11 +334,11 @@ export default function OnboardingPage() {
                   transition={prefersReduced ? {} : { type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
                   className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
                   style={{
-                    background: "rgba(29,184,122,0.1)",
-                    border: "1px solid rgba(29,184,122,0.2)",
+                    background: "rgba(0,200,150,0.1)",
+                    border: "1px solid rgba(0,200,150,0.2)",
                   }}
                 >
-                  <CheckCircle size={32} color="#1DB87A" weight="fill" />
+                  <CheckCircle size={32} color="#00C896" weight="fill" />
                 </motion.div>
 
                 <h1 className="text-[22px] font-semibold text-white tracking-[-0.02em] mt-6">
@@ -414,9 +414,9 @@ export default function OnboardingPage() {
               else saveAndComplete();
             }}
             className="px-5 py-2.5 rounded-[10px] text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
-            style={{ background: "#1DB87A", color: "#080808" }}
-            onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "#18A36A"; }}
-            onMouseLeave={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "#1DB87A"; }}
+            style={{ background: "#00C896", color: "#080808" }}
+            onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "#00C896"; }}
+            onMouseLeave={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "#00C896"; }}
           >
             {step === 3 ? (saving ? "Wird gespeichert..." : "Imvestra starten") : "Weiter →"}
           </button>

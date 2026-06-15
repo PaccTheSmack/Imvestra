@@ -21,7 +21,7 @@ export default function DarkInput({ label, error, hint, className = "", id, ...p
         className={[
           "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px]",
           "px-3 py-2.5 text-sm text-white placeholder:text-[#555555]",
-          "focus:outline-none focus:border-[rgba(29,184,122,0.4)] focus:bg-[#1A1A1A]",
+          "focus:outline-none focus:border-[rgba(0,200,150,0.4)] focus:bg-[#1A1A1A]",
           "transition-all duration-150",
           "disabled:opacity-40 disabled:cursor-not-allowed",
           error ? "border-[rgba(255,68,68,0.4)] focus:border-[rgba(255,68,68,0.6)]" : "",
