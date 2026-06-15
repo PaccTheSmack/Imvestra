@@ -214,7 +214,7 @@ export default function DashboardHome({
             style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
           >
             <div>
-              <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "#555" }}>
+              <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "#777" }}>
                 Mieteinnahmen{" "}
                 {new Date().toLocaleDateString("de-DE", { month: "long" })}
               </p>
@@ -230,7 +230,7 @@ export default function DashboardHome({
             </div>
             <div className="text-right">
               <p className="text-lg font-semibold" style={{ color: "#00E0D7" }}>{fmtCurrency(monthlyRentIst)}</p>
-              <p className="text-[10px]" style={{ color: "#444" }}>von {fmtCurrency(monthlyRentSoll)}</p>
+              <p className="text-[10px]" style={{ color: "#666" }}>von {fmtCurrency(monthlyRentSoll)}</p>
               <Link href="/finanzen" className="text-[10px] mt-1 block" style={{ color: "#00E0D7" }}>
                 Details →
               </Link>
@@ -280,7 +280,7 @@ export default function DashboardHome({
                   }
                 </p>
                 {overdueTasks > 0 && highPriorityTasks > 0 && (
-                  <p className="text-xs mt-0.5" style={{ color: "#555" }}>
+                  <p className="text-xs mt-0.5" style={{ color: "#777" }}>
                     und {highPriorityTasks} mit hoher Priorität
                   </p>
                 )}

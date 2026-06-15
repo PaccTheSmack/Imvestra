@@ -62,10 +62,10 @@ const AFA_TYPE_LABELS: Record<AfAResult["afa_type"], string> = {
 };
 
 const INPUT =
-  "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#555555] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
+  "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#777777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
 const LABEL = "block text-xs font-medium text-[#888888] mb-1.5";
 const SECTION_LABEL =
-  "text-[10px] font-semibold text-[#555555] uppercase tracking-widest mb-4";
+  "text-[10px] font-semibold text-[#777777] uppercase tracking-widest mb-4";
 
 type TabId =
   | "Übersicht"

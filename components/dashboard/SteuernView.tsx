@@ -193,7 +193,7 @@ export default function SteuernView({ properties, payments, expenses, financings
               <button
                 onClick={() => setSelectedYear(y => y - 1)}
                 className="w-8 h-8 flex items-center justify-center rounded-[6px] transition-colors"
-                style={{ color: "#444" }}
+                style={{ color: "#666" }}
                 onMouseEnter={e => (e.currentTarget.style.background = tokens.color.surfaceHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
@@ -203,7 +203,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                 onClick={() => setSelectedYear(y => y + 1)}
                 disabled={selectedYear >= currentYear}
                 className="w-8 h-8 flex items-center justify-center rounded-[6px] transition-colors disabled:opacity-30"
-                style={{ color: "#444" }}
+                style={{ color: "#666" }}
                 onMouseEnter={e => { if (selectedYear < currentYear) (e.currentTarget.style.background = tokens.color.surfaceHover); }}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
@@ -305,13 +305,13 @@ export default function SteuernView({ properties, payments, expenses, financings
                       className="px-5 py-3"
                       style={{ background: "#0C0C0C", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
                     >
-                      <p className="text-[10px] uppercase tracking-widest" style={{ color: "#555" }}>
+                      <p className="text-[10px] uppercase tracking-widest" style={{ color: "#777" }}>
                         Anlage V – Vorbereitung {selectedYear}
                       </p>
                     </div>
 
                     <div className="px-5 py-4">
-                      <p className="text-[10px] uppercase tracking-wider pt-3 pb-2" style={{ color: "#444" }}>
+                      <p className="text-[10px] uppercase tracking-wider pt-3 pb-2" style={{ color: "#666" }}>
                         Einnahmen aus Vermietung
                       </p>
                       <AnlageVRow
@@ -321,7 +321,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                         highlight
                       />
 
-                      <p className="text-[10px] uppercase tracking-wider pt-4 pb-2" style={{ color: "#444" }}>
+                      <p className="text-[10px] uppercase tracking-wider pt-4 pb-2" style={{ color: "#666" }}>
                         Werbungskosten
                       </p>
                       <AnlageVRow label="Schuldzinsen (Zeile 35)"                  value={formatCurrency(zinsen)} />
@@ -345,7 +345,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                       className="px-5 py-3"
                       style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
                     >
-                      <p className="text-[10px] leading-relaxed" style={{ color: "#333" }}>
+                      <p className="text-[10px] leading-relaxed" style={{ color: "#555" }}>
                         * Näherungswerte. Zeilen beziehen sich auf Anlage V (2024). Bitte mit Steuerberater abstimmen.
                       </p>
                     </div>
@@ -356,7 +356,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                     className="rounded-[14px] p-5"
                     style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
                   >
-                    <p className="text-[10px] uppercase tracking-widest mb-4" style={{ color: "#555" }}>
+                    <p className="text-[10px] uppercase tracking-widest mb-4" style={{ color: "#777" }}>
                       Steuerersparnis durch AfA
                     </p>
 
@@ -375,11 +375,11 @@ export default function SteuernView({ properties, payments, expenses, financings
                               {i > 0 && <div className="mb-4" style={{ borderTop: `1px solid ${tokens.color.border}` }} />}
                               <p className="text-sm font-semibold mb-2" style={{ color: tokens.color.text }}>{p.name}</p>
                               <div className="flex justify-between text-xs mb-1">
-                                <span style={{ color: "#555" }}>AfA / Jahr</span>
+                                <span style={{ color: "#777" }}>AfA / Jahr</span>
                                 <span style={{ color: tokens.color.text }}>{formatCurrency(afa)}</span>
                               </div>
                               <div className="flex justify-between text-xs">
-                                <span style={{ color: "#555" }}>Ersparnis (42% Steuersatz)</span>
+                                <span style={{ color: "#777" }}>Ersparnis (42% Steuersatz)</span>
                                 <span className="font-medium" style={{ color: "#00E0D7" }}>{formatCurrency(ersparnis)}</span>
                               </div>
                             </div>
@@ -404,7 +404,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                       </div>
                     )}
 
-                    <p className="mt-4 text-[10px] leading-relaxed" style={{ color: "#333" }}>
+                    <p className="mt-4 text-[10px] leading-relaxed" style={{ color: "#555" }}>
                       Schätzwert bei 42% Grenzsteuersatz, 80% Gebäudeanteil, 2% AfA.
                     </p>
                   </div>
@@ -424,11 +424,11 @@ export default function SteuernView({ properties, payments, expenses, financings
                           className="rounded-[12px] p-4"
                           style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)" }}
                         >
-                          <p className="text-xs uppercase tracking-wide" style={{ color: "#555" }}>{month}</p>
-                          <p className="text-lg font-semibold mt-2 tabular-nums" style={{ color: amount > 0 ? "#00E0D7" : "#333" }}>
+                          <p className="text-xs uppercase tracking-wide" style={{ color: "#777" }}>{month}</p>
+                          <p className="text-lg font-semibold mt-2 tabular-nums" style={{ color: amount > 0 ? "#00E0D7" : "#555" }}>
                             {formatCurrency(amount)}
                           </p>
-                          <p className="text-[10px] mt-1" style={{ color: "#444" }}>
+                          <p className="text-[10px] mt-1" style={{ color: "#666" }}>
                             {count} Zahlung{count !== 1 ? "en" : ""}
                           </p>
                           <div className="mt-2 rounded-full h-1 overflow-hidden" style={{ background: "#1A1A1A" }}>
@@ -586,14 +586,14 @@ export default function SteuernView({ properties, payments, expenses, financings
                                 className="rounded-[10px] p-3"
                                 style={{ background: "#0C0C0C" }}
                               >
-                                <p className="text-[10px] uppercase tracking-wide mb-1.5" style={{ color: "#444" }}>{label}</p>
+                                <p className="text-[10px] uppercase tracking-wide mb-1.5" style={{ color: "#666" }}>{label}</p>
                                 <p className="text-sm font-semibold" style={{ color }}>{value}</p>
                               </div>
                             ))}
                           </div>
 
                           <div className="mt-4">
-                            <div className="flex justify-between text-[10px] mb-1.5" style={{ color: "#444" }}>
+                            <div className="flex justify-between text-[10px] mb-1.5" style={{ color: "#666" }}>
                               <span>Abgeschrieben</span>
                               <span>Verbleibend</span>
                             </div>
@@ -603,7 +603,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                                 style={{ width: `${abgeschrieben_pct}%`, background: "#00E0D7" }}
                               />
                             </div>
-                            <div className="flex justify-between text-[10px] mt-1" style={{ color: "#444" }}>
+                            <div className="flex justify-between text-[10px] mt-1" style={{ color: "#666" }}>
                               <span>{formatPercent(abgeschrieben_pct / 100, 0)}</span>
                               <span>{formatPercent(remaining_years / 50, 0)}</span>
                             </div>

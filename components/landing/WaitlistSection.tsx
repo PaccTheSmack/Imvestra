@@ -62,7 +62,8 @@ export default function WaitlistSection() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(0,224,215,0.07) 0%, transparent 65%)",
+          background:
+            "radial-gradient(ellipse 90% 70% at 50% 120%, rgba(0,224,215,0.08) 0%, rgba(0,224,215,0.03) 40%, transparent 65%), radial-gradient(ellipse 60% 50% at 30% 100%, rgba(0,224,215,0.04) 0%, transparent 55%)",
         }}
       />
       <div className="max-w-[640px] mx-auto px-6 text-center relative z-10">
@@ -75,7 +76,7 @@ export default function WaitlistSection() {
             zum teuren<br />
             <span style={GRADIENT_TEXT}>Fehler</span> wird.
           </h2>
-          <p className="mt-5 text-[#555] text-lg leading-relaxed">
+          <p className="mt-5 text-[#777] text-lg leading-relaxed">
             Starte kostenlos. Keine Kreditkarte. Keine Wartezeit. Einfach loslegen.
           </p>
 
@@ -116,7 +117,7 @@ export default function WaitlistSection() {
                   >
                     <CheckCircle size={32} color="#00E0D7" weight="fill" className="mx-auto" />
                     <p className="text-xl font-semibold text-white mt-3">Du bist dabei!</p>
-                    <p className="text-sm text-[#555] mt-1">Wir melden uns sobald Imvestra startet.</p>
+                    <p className="text-sm text-[#777] mt-1">Wir melden uns sobald Imvestra startet.</p>
                   </motion.div>
                 ) : (
                   <form onSubmit={submit} className="flex flex-col gap-3">
@@ -127,7 +128,7 @@ export default function WaitlistSection() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="deine@email.de"
-                        className="flex-1 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[rgba(0,224,215,0.4)] transition-all"
+                        className="flex-1 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-4 py-3 text-sm text-white placeholder:text-[#777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] transition-all"
                       />
                       <button
                         type="submit"
@@ -148,8 +149,8 @@ export default function WaitlistSection() {
 
           <div className="mt-10 flex justify-center gap-8 flex-wrap">
             {TRUST.map(({ Icon, label }) => (
-              <div key={label} className="text-xs text-[#333] flex items-center gap-1.5">
-                <Icon size={13} color="#333" />
+              <div key={label} className="text-xs text-[#555] flex items-center gap-1.5">
+                <Icon size={13} color="#555" />
                 {label}
               </div>
             ))}

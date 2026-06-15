@@ -29,7 +29,7 @@ export default function ProblemSection() {
         {/* LEFT */}
         <div className="lg:sticky lg:top-32">
           <FadeIn direction="left">
-            <div className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#555] text-xs px-3 py-1 rounded-full mb-5">
+            <div className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full mb-5">
               Das Problem
             </div>
             <h2 className="text-[42px] font-semibold tracking-[-0.03em] leading-[1.1] text-white mb-5">
@@ -37,11 +37,11 @@ export default function ProblemSection() {
               verzeihen<br />
               keine Fehler.
             </h2>
-            <p className="text-base text-[#555] leading-relaxed max-w-[380px] mb-8">
+            <p className="text-base text-[#777] leading-relaxed max-w-[380px] mb-8">
               Die meisten Investoren rechnen mit Excel-Tabellen, Bauchgefühl oder
               gar nicht. Das kostet bares Geld und verhindert gute Deals.
             </p>
-            <div className="border-l-2 border-[#00E0D7] pl-4 text-sm text-[#444] italic leading-relaxed">
+            <div className="border-l-2 border-[#00E0D7] pl-4 text-sm text-[#666] italic leading-relaxed">
               Der Druck, irgendwas nicht auf dem Schirm zu haben – eine Frist,
               eine Zinsbindung, eine schlechte Rendite – kostet Investoren
               jährlich Tausende Euro.
@@ -59,7 +59,7 @@ export default function ProblemSection() {
                 </div>
                 <div>
                   <p className="text-base font-semibold text-white mb-1.5">{title}</p>
-                  <p className="text-sm text-[#555] leading-relaxed">{body}</p>
+                  <p className="text-sm text-[#777] leading-relaxed">{body}</p>
                 </div>
               </div>
             </FadeIn>

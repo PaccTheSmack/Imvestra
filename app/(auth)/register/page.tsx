@@ -21,7 +21,7 @@ export default function RegisterPage() {
   }
 
   const inputClass = [
-    "w-full rounded-[8px] px-4 py-2.5 text-sm text-white placeholder:text-[#555555]",
+    "w-full rounded-[8px] px-4 py-2.5 text-sm text-white placeholder:text-[#777777]",
     "focus:outline-none transition-all mt-1 block",
   ].join(" ");
 

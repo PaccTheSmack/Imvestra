@@ -79,22 +79,12 @@ export default function HeroSection() {
 
   return (
     <section className="min-h-screen bg-[#080808] flex items-center pt-16 relative overflow-hidden">
-      {/* Background decorations */}
-      <div
-        className="absolute top-0 right-0 pointer-events-none"
-        style={{
-          width: 700,
-          height: 700,
-          background: "radial-gradient(circle, rgba(0,224,215,0.07) 0%, transparent 65%)",
-        }}
-      />
+      {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          opacity: 0.3,
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+          background:
+            "radial-gradient(ellipse 80% 60% at 85% 10%, rgba(0,224,215,0.09) 0%, rgba(0,224,215,0.04) 35%, transparent 65%), radial-gradient(ellipse 50% 40% at 70% 0%, rgba(0,224,215,0.05) 0%, transparent 55%)",
         }}
       />
 
@@ -117,7 +107,7 @@ export default function HeroSection() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="text-lg text-[#555] leading-relaxed max-w-[460px] mb-8">
+            <p className="text-lg text-[#777] leading-relaxed max-w-[460px] mb-8">
               Die Schaltzentrale für Immobilieninvestoren. Analysiere Deals,
               verwalte dein Portfolio und behalte jede Frist, Finanzierung und
               Kennzahl im Blick.
@@ -139,7 +129,7 @@ export default function HeroSection() {
               </motion.button>
               <button
                 onClick={() => scrollTo("screenshots")}
-                className="flex items-center gap-2 text-sm text-[#555] hover:text-white transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-[#777] hover:text-white transition-colors cursor-pointer"
               >
                 <PlayCircle size={16} weight="fill" color="#00E0D7" />
                 Produkt ansehen
@@ -148,7 +138,7 @@ export default function HeroSection() {
           </FadeIn>
 
           <FadeIn delay={0.4}>
-            <div className="flex items-center gap-5 flex-wrap text-xs text-[#444]">
+            <div className="flex items-center gap-5 flex-wrap text-xs text-[#666]">
               {["Kostenlos starten", "Keine Kreditkarte", "DSGVO · Server Frankfurt"].map((t) => (
                 <div key={t} className="flex items-center gap-1.5">
                   <CheckCircle size={13} color="#00E0D7" weight="fill" />
@@ -167,7 +157,7 @@ export default function HeroSection() {
               ].map(({ value, label }) => (
                 <div key={label}>
                   <p className="text-[28px] font-semibold text-white tracking-[-0.02em]">{value}</p>
-                  <p className="text-xs text-[#444] mt-0.5">{label}</p>
+                  <p className="text-xs text-[#666] mt-0.5">{label}</p>
                 </div>
               ))}
             </div>
@@ -191,7 +181,7 @@ export default function HeroSection() {
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FF5F57" }} />
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FFBD2E" }} />
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#28CA41" }} />
-              <span className="text-xs text-[#444] ml-2">Imvestra – Renditerechner</span>
+              <span className="text-xs text-[#666] ml-2">Imvestra – Renditerechner</span>
             </div>
 
             <div className="px-5 py-5">
@@ -199,7 +189,7 @@ export default function HeroSection() {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm font-semibold text-white">Altbauwohnung Goslar</p>
-                  <p className="text-xs text-[#555] mt-0.5">185.000 € · 68 m²</p>
+                  <p className="text-xs text-[#777] mt-0.5">185.000 € · 68 m²</p>
                 </div>
                 <span className="bg-[rgba(0,224,215,0.1)] text-[#00E0D7] border border-[rgba(0,224,215,0.2)] text-[10px] font-semibold px-2 py-0.5 rounded-full">
                   Positiver Cashflow
@@ -210,7 +200,7 @@ export default function HeroSection() {
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {METRIC_PILLS.map((m) => (
                   <div key={m.label} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5">
-                    <p className="text-[9px] text-[#444] uppercase tracking-wide">{m.label}</p>
+                    <p className="text-[9px] text-[#666] uppercase tracking-wide">{m.label}</p>
                     <CountUp to={m.to} formatter={m.formatter} color={m.color} />
                   </div>
                 ))}
@@ -221,7 +211,7 @@ export default function HeroSection() {
               <div className="flex flex-col gap-1.5">
                 {DETAIL_ROWS.map((r) => (
                   <div key={r.label} className="flex justify-between text-xs">
-                    <span className="text-[#444]">{r.label}</span>
+                    <span className="text-[#666]">{r.label}</span>
                     <span style={{ color: r.color, fontWeight: r.bold ? 600 : 500 }}>{r.value}</span>
                   </div>
                 ))}
@@ -238,7 +228,7 @@ export default function HeroSection() {
           >
             <ChartLine size={15} color="#00E0D7" weight="fill" />
             <div>
-              <p className="text-[10px] text-[#555]">Rendite berechnet</p>
+              <p className="text-[10px] text-[#777]">Rendite berechnet</p>
               <p className="text-sm font-semibold text-white mt-0.5">5,51 %</p>
             </div>
           </motion.div>

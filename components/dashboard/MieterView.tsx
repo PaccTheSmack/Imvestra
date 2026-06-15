@@ -243,7 +243,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 onClick={() => setActiveTab(tab)}
                 className="text-sm font-medium px-1 mr-6 pb-2 transition-colors duration-150 capitalize"
                 style={{
-                  color: active ? "#00E0D7" : "#444",
+                  color: active ? "#00E0D7" : "#666",
                   borderBottom: active ? "2px solid #00E0D7" : "2px solid transparent",
                   marginBottom: -1,
                 }}
@@ -267,12 +267,12 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
                 style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
               >
-                <UsersFour size={24} color="#444" />
+                <UsersFour size={24} color="#666" />
               </motion.div>
               <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>
                 Noch keine Mieter
               </p>
-              <p className="text-sm mt-2" style={{ color: "#555" }}>
+              <p className="text-sm mt-2" style={{ color: "#777" }}>
                 Fuege deinen ersten Mieter hinzu.
               </p>
               <div className="mt-5">
@@ -302,7 +302,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                     {/* Accent bar */}
                     <div
                       className="w-[3px] flex-shrink-0"
-                      style={{ background: tenant.is_active ? "#00E0D7" : "#333" }}
+                      style={{ background: tenant.is_active ? "#00E0D7" : "#555" }}
                     />
                     {/* Content */}
                     <div className="flex-1 pl-5 pr-5 py-4 flex items-center justify-between gap-4">
@@ -311,15 +311,15 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                         <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
                           {tenant.name}
                           {tenant.unit_number && (
-                            <span className="ml-2 text-[10px] font-normal" style={{ color: "#444" }}>
+                            <span className="ml-2 text-[10px] font-normal" style={{ color: "#666" }}>
                               {tenant.unit_number}
                             </span>
                           )}
                         </p>
-                        <p className="text-[11px] mt-0.5" style={{ color: "#444" }}>
+                        <p className="text-[11px] mt-0.5" style={{ color: "#666" }}>
                           {propertyName(tenant.property_id)}
                         </p>
-                        <p className="text-[11px]" style={{ color: "#444" }}>
+                        <p className="text-[11px]" style={{ color: "#666" }}>
                           Eingezogen: {fmtDate(tenant.move_in_date)}
                         </p>
                       </div>
@@ -327,7 +327,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                       {/* Center */}
                       <div className="flex gap-6 items-center flex-shrink-0">
                         <div>
-                          <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: "#555" }}>
+                          <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: "#777" }}>
                             Kaltmiete
                           </p>
                           <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
@@ -338,7 +338,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                           className="text-[10px] font-semibold px-2 py-1 rounded-full"
                           style={tenant.is_active
                             ? { background: "rgba(0,224,215,0.1)", color: "#00E0D7" }
-                            : { background: "#1A1A1A", color: "#444" }
+                            : { background: "#1A1A1A", color: "#666" }
                           }
                         >
                           {tenant.is_active ? "Aktiv" : "Ausgezogen"}
@@ -360,9 +360,9 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                         </DarkButton>
                         <button
                           className="p-1.5 transition-colors duration-150"
-                          style={{ color: "#444" }}
+                          style={{ color: "#666" }}
                           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
-                          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#444"; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#666"; }}
                         >
                           <DotsThree size={16} />
                         </button>
@@ -380,7 +380,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
       {activeTab === "zahlungen" && tenants.length > 0 && (
         <div className="flex flex-col gap-2">
           {allPaymentsSorted.length === 0 ? (
-            <p className="text-sm text-center mt-12" style={{ color: "#444" }}>
+            <p className="text-sm text-center mt-12" style={{ color: "#666" }}>
               Noch keine Zahlungen erfasst.
             </p>
           ) : (
@@ -396,7 +396,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                     <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
                       {p.tenantName}
                     </p>
-                    <p className="text-[11px] mt-0.5" style={{ color: "#444" }}>
+                    <p className="text-[11px] mt-0.5" style={{ color: "#666" }}>
                       Fallig: {fmtDate(p.due_date)}
                     </p>
                   </div>
@@ -411,7 +411,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                       {st.label}
                     </span>
                     {p.paid_date && (
-                      <p className="text-[10px] mt-1" style={{ color: "#444" }}>
+                      <p className="text-[10px] mt-1" style={{ color: "#666" }}>
                         Eingegangen: {fmtDate(p.paid_date)}
                       </p>
                     )}
@@ -458,9 +458,9 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 <button
                   onClick={() => setShowAddTenant(false)}
                   className="transition-colors duration-150"
-                  style={{ color: "#444" }}
+                  style={{ color: "#666" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#444"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#666"; }}
                 >
                   <X size={18} />
                 </button>
@@ -581,16 +581,16 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                   <p className="text-base font-semibold" style={{ color: tokens.color.text }}>
                     Zahlung erfassen
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: "#444" }}>
+                  <p className="text-xs mt-0.5" style={{ color: "#666" }}>
                     {selectedTenant.name} · {fmtCurrency(selectedTenant.rent_monthly)}/Mo
                   </p>
                 </div>
                 <button
                   onClick={() => { setShowAddPayment(false); setSelectedTenant(null); }}
                   className="transition-colors duration-150"
-                  style={{ color: "#444" }}
+                  style={{ color: "#666" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#444"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#666"; }}
                 >
                   <X size={18} />
                 </button>

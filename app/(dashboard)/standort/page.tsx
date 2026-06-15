@@ -102,13 +102,13 @@ function StandortContent() {
         </div>
         <div>
           <h1 className="text-[20px] font-semibold text-white tracking-[-0.02em]">Standortanalyse</h1>
-          <p className="text-sm mt-0.5" style={{ color: "#555" }}>Marktdaten und Investoren-Score per PLZ</p>
+          <p className="text-sm mt-0.5" style={{ color: "#777" }}>Marktdaten und Investoren-Score per PLZ</p>
         </div>
       </div>
 
       {/* PLZ Search */}
       <div className="mb-8" style={{ maxWidth: 400 }}>
-        <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#555" }}>
+        <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#777" }}>
           Postleitzahl eingeben
         </p>
         <div className="relative">
@@ -171,7 +171,7 @@ function StandortContent() {
                   >
                     <div>
                       <p className="text-base font-semibold text-white">{stadtDaten.city}</p>
-                      <p className="text-xs mt-0.5" style={{ color: "#444" }}>
+                      <p className="text-xs mt-0.5" style={{ color: "#666" }}>
                         {stadtDaten.state} · {
                           plzInfo.region === "grossstadt" ? "Großstadt" :
                           plzInfo.region === "mittelstadt" ? "Mittelstadt" :
@@ -206,7 +206,7 @@ function StandortContent() {
                       },
                     ].map(({ label, value, color }) => (
                       <div key={label}>
-                        <p className="text-[10px] uppercase tracking-wide" style={{ color: "#444" }}>{label}</p>
+                        <p className="text-[10px] uppercase tracking-wide" style={{ color: "#666" }}>{label}</p>
                         <p className="text-lg font-semibold mt-1.5" style={{ color: color ?? "#fff" }}>{value}</p>
                       </div>
                     ))}
@@ -216,7 +216,7 @@ function StandortContent() {
                 {/* Object Comparison */}
                 {hasObjectData && (
                   <div className="rounded-[14px] p-5" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#555" }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#777" }}>
                       Dein Objekt im Vergleich
                     </p>
                     {[
@@ -239,7 +239,7 @@ function StandortContent() {
                       const objektPct = (objekt / maxVal) * 100
                       return (
                         <div key={label} className="flex items-center gap-4 mb-4 last:mb-0">
-                          <p className="text-xs w-28 flex-shrink-0" style={{ color: "#555" }}>{label}</p>
+                          <p className="text-xs w-28 flex-shrink-0" style={{ color: "#777" }}>{label}</p>
                           <div className="flex-1 relative h-1.5 rounded-full overflow-hidden" style={{ background: "#1A1A1A" }}>
                             <div className="absolute h-full rounded-full" style={{ width: `${marktPct}%`, background: "rgba(255,255,255,0.15)" }} />
                             <motion.div
@@ -250,7 +250,7 @@ function StandortContent() {
                               transition={{ duration: prefersReduced ? 0 : 0.6, ease: "easeOut" }}
                             />
                           </div>
-                          <p className="text-xs text-right w-40 flex-shrink-0" style={{ color: "#555" }}>
+                          <p className="text-xs text-right w-40 flex-shrink-0" style={{ color: "#777" }}>
                             Markt: {format(markt)} · Objekt: <span style={{ color: "#fff" }}>{format(objekt)}</span>
                           </p>
                         </div>
@@ -277,7 +277,7 @@ function StandortContent() {
                         <span className="text-xs text-white">{s}</span>
                       </div>
                     )) : (
-                      <p className="text-xs" style={{ color: "#444" }}>Keine besonderen Stärken</p>
+                      <p className="text-xs" style={{ color: "#666" }}>Keine besonderen Stärken</p>
                     )}
                   </div>
                   <div className="rounded-[12px] p-4" style={{ background: "rgba(255,68,68,0.04)", border: "1px solid rgba(255,68,68,0.1)" }}>
@@ -290,7 +290,7 @@ function StandortContent() {
                         <span className="text-xs text-white">{r}</span>
                       </div>
                     )) : (
-                      <p className="text-xs" style={{ color: "#444" }}>Keine wesentlichen Risiken</p>
+                      <p className="text-xs" style={{ color: "#666" }}>Keine wesentlichen Risiken</p>
                     )}
                   </div>
                 </div>
@@ -300,7 +300,7 @@ function StandortContent() {
               <div className="flex flex-col gap-4" style={{ position: "sticky", top: 32, alignSelf: "start" }}>
                 {/* Score Card */}
                 <div className="rounded-[14px] p-5" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#555" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#777" }}>
                     Investoren-Score
                   </p>
 
@@ -308,7 +308,7 @@ function StandortContent() {
                   <div className="text-center mb-5">
                     <div className="flex items-end justify-center gap-1">
                       <AnimatedScore value={score.gesamt} prefersReduced={prefersReduced} />
-                      <span className="text-xl mb-2" style={{ color: "#333" }}>/100</span>
+                      <span className="text-xl mb-2" style={{ color: "#555" }}>/100</span>
                     </div>
                   </div>
 
@@ -337,7 +337,7 @@ function StandortContent() {
                     ].map(({ label, val }) => (
                       <div key={label}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span style={{ color: "#555" }}>{label}</span>
+                          <span style={{ color: "#777" }}>{label}</span>
                           <span style={{ color: "#fff" }}>{val}/25</span>
                         </div>
                         <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#1A1A1A" }}>
@@ -356,7 +356,7 @@ function StandortContent() {
 
                 {/* Quick Actions */}
                 <div className="rounded-[14px] p-4" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#555" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#777" }}>
                     Aktionen
                   </p>
                   <div className="flex flex-col gap-2">
@@ -382,7 +382,7 @@ function StandortContent() {
                 </div>
 
                 {/* Disclaimer */}
-                <p className="text-[10px] leading-relaxed px-1" style={{ color: "#333" }}>
+                <p className="text-[10px] leading-relaxed px-1" style={{ color: "#555" }}>
                   Daten basieren auf öffentlichen Marktberichten (Stand 2026). Keine Gewähr für Richtigkeit. Eigene Recherche empfohlen.
                 </p>
               </div>
@@ -403,10 +403,10 @@ function StandortContent() {
               animate={prefersReduced ? {} : { y: [0, -6, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              <MapPin size={28} color="#333" />
+              <MapPin size={28} color="#555" />
             </motion.div>
             <p className="text-base font-semibold text-white mt-6">PLZ eingeben um Marktdaten zu laden</p>
-            <p className="text-sm mt-2" style={{ color: "#555" }}>Standortdaten, Investoren-Score und Marktvergleich.</p>
+            <p className="text-sm mt-2" style={{ color: "#777" }}>Standortdaten, Investoren-Score und Marktvergleich.</p>
 
             {/* Popular PLZs */}
             <div className="mt-6 flex flex-wrap gap-2 justify-center">
@@ -415,9 +415,9 @@ function StandortContent() {
                   key={p}
                   onClick={() => setPlz(p)}
                   className="text-xs px-3 py-1.5 rounded-full transition-all duration-150"
-                  style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#555" }}
+                  style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#777" }}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,224,215,0.2)"; e.currentTarget.style.color = "#00E0D7" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#555" }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#777" }}
                 >
                   {label}
                 </button>

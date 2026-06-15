@@ -130,14 +130,6 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
             className="flex items-center justify-center px-12 py-16 relative overflow-hidden"
             style={{ background: tokens.color.bg }}
           >
-            <div
-              className="absolute inset-0 pointer-events-none opacity-20"
-              style={{
-                backgroundImage: `radial-gradient(circle, ${tokens.color.border} 1px, transparent 1px)`,
-                backgroundSize: "24px 24px",
-              }}
-            />
-
             {/* Main floating PDF card */}
             <motion.div
               animate={prefersReduced ? {} : { y: [0, -8, 0] }}

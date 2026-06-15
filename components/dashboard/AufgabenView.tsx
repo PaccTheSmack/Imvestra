@@ -86,9 +86,9 @@ const BAND_ORDER: DueBand[] = ["overdue", "today", "upcoming", "no_date", "done"
 const BAND_META: Record<DueBand, { label: string; color: string }> = {
   overdue:  { label: "ÜBERFÄLLIG", color: "#FF4444" },
   today:    { label: "HEUTE",      color: "#FFB800" },
-  upcoming: { label: "DEMNÄCHST",  color: "#555"    },
-  no_date:  { label: "KEIN DATUM", color: "#444"    },
-  done:     { label: "ERLEDIGT",   color: "#444"    },
+  upcoming: { label: "DEMNÄCHST",  color: "#777"    },
+  no_date:  { label: "KEIN DATUM", color: "#666"    },
+  done:     { label: "ERLEDIGT",   color: "#666"    },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -305,7 +305,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
             className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
             style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
           >
-            <CheckSquare size={24} color="#444" />
+            <CheckSquare size={24} color="#666" />
           </motion.div>
           <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>
             {filter === "done" && completedTasks === 0
@@ -314,7 +314,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
               ? "Alles erledigt!"
               : "Keine Aufgaben"}
           </p>
-          <p className="text-sm mt-2 max-w-[260px]" style={{ color: "#555" }}>
+          <p className="text-sm mt-2 max-w-[260px]" style={{ color: "#777" }}>
             {filter === "done" && completedTasks === 0
               ? "Erledigte Aufgaben erscheinen hier."
               : filter === "open" && openTasks === 0
@@ -407,7 +407,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                           <div className="flex items-center gap-1.5 min-w-0">
                             <p
                               className="text-sm font-medium truncate"
-                              style={{ color: task.completed ? "#444" : tokens.color.text, textDecoration: task.completed ? "line-through" : "none" }}
+                              style={{ color: task.completed ? "#666" : tokens.color.text, textDecoration: task.completed ? "line-through" : "none" }}
                             >
                               {task.title}
                             </p>
@@ -432,7 +432,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                               <span
                                 className="text-[10px]"
                                 style={{
-                                  color: isOverdue ? "#FF4444" : isToday ? "#FFB800" : "#444",
+                                  color: isOverdue ? "#FF4444" : isToday ? "#FFB800" : "#666",
                                   fontWeight: isOverdue || isToday ? 600 : 400,
                                 }}
                               >
@@ -444,18 +444,18 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
 
                         {/* Description */}
                         {task.description && (
-                          <p className="text-xs mt-0.5 truncate" style={{ color: "#444" }}>
+                          <p className="text-xs mt-0.5 truncate" style={{ color: "#666" }}>
                             {task.description}
                           </p>
                         )}
 
                         {/* Bottom row */}
                         <div className="mt-2 flex items-center gap-3">
-                          <span className="text-[10px]" style={{ color: "#444" }}>
+                          <span className="text-[10px]" style={{ color: "#666" }}>
                             {catConfig.label}
                           </span>
                           {task.properties?.name && (
-                            <span className="text-[10px]" style={{ color: "#333" }}>
+                            <span className="text-[10px]" style={{ color: "#555" }}>
                               · {task.properties.name}
                             </span>
                           )}
@@ -464,18 +464,18 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                             {!isAutoGen && (
                               <button
                                 className="p-1 rounded transition-colors"
-                                style={{ color: "#444" }}
+                                style={{ color: "#666" }}
                                 onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = "#444")}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
                               >
                                 <PencilSimple size={13} />
                               </button>
                             )}
                             <button
                               className="p-1 rounded transition-colors"
-                              style={{ color: "#444" }}
+                              style={{ color: "#666" }}
                               onMouseEnter={(e) => (e.currentTarget.style.color = "#FF4444")}
-                              onMouseLeave={(e) => (e.currentTarget.style.color = "#444")}
+                              onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
                               onClick={() => deleteTask(task.id)}
                             >
                               <Trash size={13} />
@@ -514,9 +514,9 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
             >
               <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 <p className="text-base font-semibold" style={{ color: tokens.color.text }}>Aufgabe hinzufugen</p>
-                <button onClick={() => setShowAddTask(false)} style={{ color: "#444" }}
+                <button onClick={() => setShowAddTask(false)} style={{ color: "#666" }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#444")}>
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}>
                   <X size={18} />
                 </button>
               </div>

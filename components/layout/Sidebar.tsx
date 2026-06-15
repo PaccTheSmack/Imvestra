@@ -115,7 +115,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
             {section.section && (
               <p
                 className="px-3 pt-4 pb-1.5 text-[9px] font-semibold uppercase"
-                style={{ color: "#333", letterSpacing: "0.12em" }}
+                style={{ color: "#555", letterSpacing: "0.12em" }}
               >
                 {section.section}
               </p>
@@ -135,7 +135,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                       background: "rgba(0,224,215,0.08)",
                       borderColor: "rgba(0,224,215,0.12)",
                     } : {
-                      color: "#555",
+                      color: "#777",
                       background: "transparent",
                       borderColor: "transparent",
                     }}
@@ -149,12 +149,12 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                     }}
                     onMouseLeave={(e) => {
                       if (!active) {
-                        (e.currentTarget as HTMLDivElement).style.color = "#555";
+                        (e.currentTarget as HTMLDivElement).style.color = "#777";
                         (e.currentTarget as HTMLDivElement).style.background = "transparent";
                       }
                     }}
                   >
-                    <Icon size={16} color={active ? "#00E0D7" : "#444"} />
+                    <Icon size={16} color={active ? "#00E0D7" : "#666"} />
                     <span className="flex-1">{label}</span>
                     {/* Static badge (NEU etc.) */}
                     {badge && !isAufgaben && (
@@ -162,7 +162,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                         className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
                         style={badge === "NEU"
                           ? { background: "rgba(0,224,215,0.1)", color: "#00E0D7" }
-                          : { background: "#1A1A1A", color: "#333" }
+                          : { background: "#1A1A1A", color: "#555" }
                         }
                       >
                         {badge}
@@ -204,16 +204,16 @@ export default function Sidebar({ userEmail }: SidebarProps) {
           <div className="min-w-0">
             <p
               className="text-[10px] truncate"
-              style={{ color: "#444", maxWidth: 120 }}
+              style={{ color: "#666", maxWidth: 120 }}
             >
               {userEmail ?? ""}
             </p>
             <button
               onClick={() => signOut()}
               className="flex items-center gap-1 text-[9px] mt-0.5 transition-colors duration-150"
-              style={{ color: "#333" }}
+              style={{ color: "#666" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#FF4444")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#333")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
             >
               <SignOut size={10} />
               Abmelden

@@ -173,14 +173,6 @@ export default function PortfolioView({
             className="flex items-center justify-center px-12 py-16 relative overflow-hidden"
             style={{ background: tokens.color.bg }}
           >
-            <div
-              className="absolute inset-0 pointer-events-none opacity-20"
-              style={{
-                backgroundImage: `radial-gradient(circle, ${tokens.color.border} 1px, transparent 1px)`,
-                backgroundSize: "24px 24px",
-              }}
-            />
-
             {/* Main floating card */}
             <motion.div
               animate={prefersReduced ? {} : { y: [0, -8, 0] }}
@@ -547,8 +539,8 @@ export default function PortfolioView({
                           )}
                         </div>
                         {tenantsByProperty[p.id] && (
-                          <div className="flex items-center gap-1.5 mt-2" style={{ color: "#444" }}>
-                            <UsersFour size={12} color="#444" />
+                          <div className="flex items-center gap-1.5 mt-2" style={{ color: "#666" }}>
+                            <UsersFour size={12} color="#666" />
                             <span className="text-[11px]">
                               {tenantsByProperty[p.id].count} Mieter · {formatCurrency(tenantsByProperty[p.id].totalRent)}/Mo
                             </span>

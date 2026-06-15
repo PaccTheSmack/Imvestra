@@ -48,7 +48,7 @@ export default function FAQSection() {
       <div className="max-w-[680px] mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-12">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#555] text-xs px-3 py-1 rounded-full">
+            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
               FAQ
             </span>
             <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
@@ -68,7 +68,7 @@ export default function FAQSection() {
                 >
                   <span className="text-base font-medium text-white pr-4">{item.q}</span>
                   <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0">
-                    <CaretDown size={18} color="#555" />
+                    <CaretDown size={18} color="#777" />
                   </motion.div>
                 </button>
                 <AnimatePresence initial={false}>
@@ -80,7 +80,7 @@ export default function FAQSection() {
                       transition={{ duration: 0.25 }}
                       style={{ overflow: "hidden" }}
                     >
-                      <p className="pb-5 text-sm text-[#555] leading-relaxed">{item.a}</p>
+                      <p className="pb-5 text-sm text-[#777] leading-relaxed">{item.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

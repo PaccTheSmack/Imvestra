@@ -42,12 +42,12 @@ export default function DarkSelect({ label, error, hint, options, className = ""
         </select>
         <CaretDown
           size={13}
-          color="#555555"
+          color="#777777"
           className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
         />
       </div>
       {error && <p className="text-xs text-[#FF4444]">{error}</p>}
-      {hint && !error && <p className="text-xs text-[#555555]">{hint}</p>}
+      {hint && !error && <p className="text-xs text-[#777777]">{hint}</p>}
     </div>
   );
 }

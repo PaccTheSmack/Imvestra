@@ -142,7 +142,7 @@ export default function OnboardingPage() {
           style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
         >
           <Image src="/logo.svg" alt="Imvestra" width={90} height={24} style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }} />
-          <span className="text-[11px] font-medium" style={{ color: "#444444" }}>
+          <span className="text-[11px] font-medium" style={{ color: "#666666" }}>
             Schritt {step} von 3
           </span>
         </div>
@@ -173,17 +173,17 @@ export default function OnboardingPage() {
                 >
                   Willkommen bei Imvestra.
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#555555" }}>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#777777" }}>
                   Lass uns kurz dein Profil einrichten - damit Imvestra zu dir passt.
                 </p>
 
                 {/* Name */}
                 <div className="mt-8">
-                  <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: "#555555" }}>
+                  <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: "#777777" }}>
                     Wie heisst du?
                   </label>
                   <input
-                    className="w-full rounded-[10px] px-4 py-3 text-sm text-white placeholder:text-[#333333] focus:outline-none transition-all duration-150"
+                    className="w-full rounded-[10px] px-4 py-3 text-sm text-white placeholder:text-[#555555] focus:outline-none transition-all duration-150"
                     style={{
                       background: "#0C0C0C",
                       border: "1px solid rgba(255,255,255,0.08)",
@@ -199,7 +199,7 @@ export default function OnboardingPage() {
 
                 {/* Experience */}
                 <div className="mt-6">
-                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#555555" }}>
+                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#777777" }}>
                     Wie erfahren bist du mit Immobilien-Investments?
                   </label>
                   <div className="flex flex-col gap-2">
@@ -222,11 +222,11 @@ export default function OnboardingPage() {
                             className="w-8 h-8 rounded-[8px] flex-shrink-0 flex items-center justify-center"
                             style={{ background: selected ? "rgba(0,224,215,0.12)" : "#1A1A1A" }}
                           >
-                            <Icon size={15} color={selected ? "#00E0D7" : "#444444"} />
+                            <Icon size={15} color={selected ? "#00E0D7" : "#666666"} />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-white">{label}</p>
-                            <p className="text-[11px] mt-0.5" style={{ color: "#555555" }}>{sub}</p>
+                            <p className="text-[11px] mt-0.5" style={{ color: "#777777" }}>{sub}</p>
                           </div>
                         </button>
                       );
@@ -247,7 +247,7 @@ export default function OnboardingPage() {
                 <h1 className="text-[22px] font-semibold text-white tracking-[-0.02em]">
                   Was ist dein Investment-Ziel?
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#555555" }}>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#777777" }}>
                   Imvestra passt sich deinen Zielen an.
                 </p>
 
@@ -272,10 +272,10 @@ export default function OnboardingPage() {
                           className="w-10 h-10 rounded-[12px] flex items-center justify-center"
                           style={{ background: selected ? "rgba(0,224,215,0.12)" : "#1A1A1A" }}
                         >
-                          <Icon size={18} color={selected ? "#00E0D7" : "#444444"} />
+                          <Icon size={18} color={selected ? "#00E0D7" : "#666666"} />
                         </div>
                         <p className="text-sm font-medium text-white mt-1">{label}</p>
-                        <p className="text-[10px]" style={{ color: "#555555" }}>{sub}</p>
+                        <p className="text-[10px]" style={{ color: "#777777" }}>{sub}</p>
                       </button>
                     );
                   })}
@@ -283,7 +283,7 @@ export default function OnboardingPage() {
 
                 {/* Portfolio size */}
                 <div className="mt-6">
-                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#555555" }}>
+                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#777777" }}>
                     Wie viele Objekte hast du aktuell?
                   </label>
                   <div className="flex gap-2 flex-wrap">
@@ -342,7 +342,7 @@ export default function OnboardingPage() {
                 <h1 className="text-[22px] font-semibold text-white tracking-[-0.02em] mt-6">
                   Alles bereit.
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed max-w-[320px] mx-auto" style={{ color: "#555555" }}>
+                <p className="mt-2 text-sm leading-relaxed max-w-[320px] mx-auto" style={{ color: "#777777" }}>
                   Dein Profil ist eingerichtet. Starte jetzt mit deiner ersten Renditeberechnung.
                 </p>
 
@@ -370,7 +370,7 @@ export default function OnboardingPage() {
                         border: "1px solid rgba(255,255,255,0.07)",
                       }}
                     >
-                      <span className="text-xs" style={{ color: "#555555" }}>{label}</span>
+                      <span className="text-xs" style={{ color: "#777777" }}>{label}</span>
                       <span className="text-xs font-medium text-white">{value}</span>
                     </div>
                   ))}
@@ -391,9 +391,9 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={() => setStep(step - 1)}
                 className="text-sm transition-colors duration-150"
-                style={{ color: "#444444" }}
+                style={{ color: "#666666" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#444444")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#666666")}
               >
                 Zuruck
               </button>
@@ -426,9 +426,9 @@ export default function OnboardingPage() {
         type="button"
         onClick={handleSkip}
         className="mt-4 text-xs transition-colors duration-150"
-        style={{ color: "#333333" }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#555555")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#333333")}
+        style={{ color: "#555555" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#777777")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#555555")}
       >
         Uberspringen
       </button>

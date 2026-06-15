@@ -20,7 +20,7 @@ export default function DarkInput({ label, error, hint, className = "", id, ...p
         id={inputId}
         className={[
           "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px]",
-          "px-3 py-2.5 text-sm text-white placeholder:text-[#555555]",
+          "px-3 py-2.5 text-sm text-white placeholder:text-[#777777]",
           "focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A]",
           "transition-all duration-150",
           "disabled:opacity-40 disabled:cursor-not-allowed",
@@ -32,7 +32,7 @@ export default function DarkInput({ label, error, hint, className = "", id, ...p
         {...props}
       />
       {error && <p className="text-xs text-[#FF4444]">{error}</p>}
-      {hint && !error && <p className="text-xs text-[#555555]">{hint}</p>}
+      {hint && !error && <p className="text-xs text-[#777777]">{hint}</p>}
     </div>
   );
 }

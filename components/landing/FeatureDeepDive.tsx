@@ -19,7 +19,7 @@ function WindowBar({ title }: { title: string }) {
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FF5F57" }} />
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FFBD2E" }} />
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#28CA41" }} />
-      <span className="text-xs text-[#444] ml-2">{title}</span>
+      <span className="text-xs text-[#666] ml-2">{title}</span>
     </div>
   );
 }
@@ -50,7 +50,7 @@ function TextSide({
       <h3 className="text-[32px] font-semibold tracking-[-0.02em] text-white leading-[1.2] mb-4">
         {title}
       </h3>
-      <p className="text-base text-[#555] leading-relaxed mb-6">{description}</p>
+      <p className="text-base text-[#777] leading-relaxed mb-6">{description}</p>
       <div className="flex flex-col gap-3">
         {features.map((f) => (
           <div key={f} className="flex items-start gap-3">
@@ -83,13 +83,13 @@ export default function FeatureDeepDive() {
         {/* Header */}
         <FadeIn>
           <div className="text-center mb-20">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#555] text-xs px-3 py-1 rounded-full">
+            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
               Im Detail
             </span>
             <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
               Die besten Features erklärt.
             </h2>
-            <p className="text-[#555] text-lg mt-4">
+            <p className="text-[#777] text-lg mt-4">
               Nicht nur ein Rechner. Eine komplette Investitionsplattform.
             </p>
           </div>
@@ -120,7 +120,7 @@ export default function FeatureDeepDive() {
                     <span
                       key={t}
                       className="text-xs px-3 py-1.5 rounded-[6px]"
-                      style={i === 0 ? { background: "#00E0D7", color: "#080808", fontWeight: 600 } : { background: "#0C0C0C", color: "#555" }}
+                      style={i === 0 ? { background: "#00E0D7", color: "#080808", fontWeight: 600 } : { background: "#0C0C0C", color: "#777" }}
                     >
                       {t}
                     </span>
@@ -134,7 +134,7 @@ export default function FeatureDeepDive() {
                   ))}
                 </div>
                 <div className="mt-4">
-                  <p className="text-xs text-[#555] mb-1.5">Objektqualität</p>
+                  <p className="text-xs text-[#777] mb-1.5">Objektqualität</p>
                   <div className="h-2 rounded-full bg-[#1A1A1A] overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: "78%", background: "#00E0D7" }} />
                   </div>
@@ -158,7 +158,7 @@ export default function FeatureDeepDive() {
                 <div className="flex items-center gap-4 mt-4">
                   <div className="text-center">
                     <span className="text-[48px] font-semibold tracking-[-0.05em] text-[#00E0D7] leading-none">62</span>
-                    <span className="text-sm text-[#333]">/100</span>
+                    <span className="text-sm text-[#555]">/100</span>
                   </div>
                   <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[rgba(255,184,0,0.1)] text-[#FFB800] border border-[rgba(255,184,0,0.2)]">
                     Solider Standort mit Potenzial
@@ -172,7 +172,7 @@ export default function FeatureDeepDive() {
                     ["RENDITE", "5,2 %"],
                   ].map(([l, v]) => (
                     <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2">
-                      <p className="text-[9px] text-[#444] uppercase tracking-wide">{l}</p>
+                      <p className="text-[9px] text-[#666] uppercase tracking-wide">{l}</p>
                       <p className="text-sm font-semibold text-white mt-0.5">{v}</p>
                     </div>
                   ))}
@@ -224,7 +224,7 @@ export default function FeatureDeepDive() {
               <Warning size={16} color="#FF4444" className="mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-white">Zinsbindung läuft ab</p>
-                <p className="text-xs text-[#555] mt-0.5">MFH Leipzig · In 87 Tagen</p>
+                <p className="text-xs text-[#777] mt-0.5">MFH Leipzig · In 87 Tagen</p>
                 <button className="text-xs text-[#FF4444] mt-2">Anschluss berechnen</button>
               </div>
             </div>
@@ -235,7 +235,7 @@ export default function FeatureDeepDive() {
                   <span className="bg-[rgba(0,224,215,0.1)] text-[#00E0D7] text-[9px] font-bold px-1.5 py-0.5 rounded-full">AUTO</span>
                 </div>
                 <p className="text-sm font-semibold text-white">Nebenkostenabrechnung 2025 – M. Müller</p>
-                <p className="text-xs text-[#555] mt-0.5">Fällig bis 31.03.2026</p>
+                <p className="text-xs text-[#777] mt-0.5">Fällig bis 31.03.2026</p>
               </div>
             </div>
           </FadeIn>
@@ -253,7 +253,7 @@ export default function FeatureDeepDive() {
                 <p className="text-sm font-semibold text-[#080808] text-right">Altbauwohnung Goslar</p>
               </div>
               <div className="px-5 py-4">
-                <p className="text-[9px] text-[#444] uppercase tracking-widest mb-3">Kerndaten</p>
+                <p className="text-[9px] text-[#666] uppercase tracking-widest mb-3">Kerndaten</p>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     ["BRUTTO", "5,51 %"],
@@ -262,19 +262,19 @@ export default function FeatureDeepDive() {
                     ["LTV", "72 %"],
                   ].map(([l, v]) => (
                     <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2">
-                      <p className="text-[9px] text-[#444] uppercase tracking-wide">{l}</p>
+                      <p className="text-[9px] text-[#666] uppercase tracking-wide">{l}</p>
                       <p className="text-sm font-semibold text-white mt-0.5">{v}</p>
                     </div>
                   ))}
                 </div>
-                <p className="text-[9px] text-[#444] uppercase tracking-widest mb-2 mt-4">Steuer &amp; AfA</p>
+                <p className="text-[9px] text-[#666] uppercase tracking-widest mb-2 mt-4">Steuer &amp; AfA</p>
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between text-xs">
-                    <span className="text-[#444]">AfA / Jahr</span>
+                    <span className="text-[#666]">AfA / Jahr</span>
                     <span className="text-[#888] font-medium">2.960 €</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-[#444]">Steuerersparnis</span>
+                    <span className="text-[#666]">Steuerersparnis</span>
                     <span className="text-[#00E0D7] font-semibold">1.243 €</span>
                   </div>
                 </div>

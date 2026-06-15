@@ -39,14 +39,14 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <Image src="/logo.svg" alt="Imvestra" width={100} height={26} />
-          <p className="mt-4 text-sm text-[#444] leading-relaxed max-w-[200px]">
+          <p className="mt-4 text-sm text-[#666] leading-relaxed max-w-[200px]">
             Das Betriebssystem für Immobilieninvestoren.
           </p>
         </div>
 
         {COLUMNS.map((col) => (
           <div key={col.heading}>
-            <p className="text-xs text-[#333] uppercase tracking-widest mb-4 font-semibold">
+            <p className="text-xs text-[#555] uppercase tracking-widest mb-4 font-semibold">
               {col.heading}
             </p>
             <ul className="flex flex-col gap-2.5">
@@ -54,7 +54,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[#444] hover:text-white transition-colors"
+                    className="text-sm text-[#666] hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -67,8 +67,8 @@ export default function Footer() {
 
       {/* Bottom */}
       <div className="py-6 border-t border-[rgba(255,255,255,0.06)] max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <p className="text-xs text-[#333]">© 2026 Imvestra. Alle Rechte vorbehalten.</p>
-        <p className="text-xs text-[#333]">Nicht als Finanzberatung zu verstehen.</p>
+        <p className="text-xs text-[#555]">© 2026 Imvestra. Alle Rechte vorbehalten.</p>
+        <p className="text-xs text-[#555]">Nicht als Finanzberatung zu verstehen.</p>
       </div>
     </footer>
   );
