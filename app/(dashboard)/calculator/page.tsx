@@ -21,6 +21,7 @@ import {
   PiggyBank,
   CurrencyEur,
   Warning,
+  MapPin,
 } from "@phosphor-icons/react";
 import {
   calculateProperty,
@@ -575,6 +576,32 @@ export default function CalculatorPage() {
         <div className="flex flex-col items-end gap-1">
           {result && (
             <div className="flex items-center gap-3">
+              {(() => {
+                const plzMatch = address.match(/\d{5}/)
+                const plzFromAddress = plzMatch?.[0]
+                if (!plzFromAddress) return null
+                return (
+                  <button
+                    onClick={() => router.push(
+                      `/standort?plz=${plzFromAddress}` +
+                      `&kaufpreis=${pp}` +
+                      `&miete=${rent}` +
+                      `&sqm=${Number(sqm) || 0}`
+                    )}
+                    className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all"
+                    style={{
+                      background: "transparent",
+                      border: `1px solid ${tokens.color.border}`,
+                      color: tokens.color.textMuted,
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,224,215,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#00E0D7" }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = tokens.color.border; (e.currentTarget as HTMLButtonElement).style.color = tokens.color.textMuted }}
+                  >
+                    <MapPin size={13} />
+                    Standort prüfen
+                  </button>
+                )
+              })()}
               {canSave ? (
                 <motion.button
                   onClick={handleSave}
