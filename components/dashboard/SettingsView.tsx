@@ -13,39 +13,9 @@ import { createClient } from "@/lib/supabase/client";
 import FadeIn from "@/components/ui/FadeIn";
 import { tokens } from "@/lib/tokens";
 import type { Plan } from "@/types";
+import { PLAN_CONFIG } from "@/types";
 
-const PLAN_META: Record<Plan, { label: string; badge: string; color: string; bg: string; desc: string }> = {
-  free: {
-    label: "Imvestra Free",
-    badge: "Free",
-    color: tokens.color.textMuted,
-    bg: tokens.color.surfaceHover,
-    desc: "1 Objekt · Kein Speichern · Kein PDF-Export",
-  },
-  pro: {
-    label: "Imvestra Pro",
-    badge: "Pro",
-    color: tokens.color.accent,
-    bg: tokens.color.accentMuted,
-    desc: "Unbegrenzt · PDF-Export · Portfolio",
-  },
-  team: {
-    label: "Imvestra Team",
-    badge: "Team",
-    color: tokens.color.positive,
-    bg: tokens.color.positiveBg,
-    desc: "Alles aus Pro · Bis zu 5 Nutzer",
-  },
-};
-
-const FREE_FEATURES = ["1 Objekt analysieren", "Vollständiger Rechner"];
-const PRO_FEATURES = [
-  "Unbegrenzte Objekte",
-  "Portfolio Dashboard",
-  "PDF Bankpräsentation",
-  "Finanzierungsanalyse",
-  "Szenario-Vergleich",
-];
+const PLAN_ORDER: Plan[] = ["free", "investor", "manager", "team"];
 
 interface SettingsViewProps {
   user: { id: string; email?: string };
@@ -60,7 +30,8 @@ interface SettingsViewProps {
 export default function SettingsView({ user, profile }: SettingsViewProps) {
   const prefersReduced = useReducedMotion();
   const plan = (profile?.plan ?? "free") as Plan;
-  const meta = PLAN_META[plan];
+  const planConfig = PLAN_CONFIG[plan];
+  const higherTiers = PLAN_ORDER.slice(PLAN_ORDER.indexOf(plan) + 1);
 
   const displayName = profile?.name ?? "";
   const displayEmail = user.email ?? profile?.email ?? "";
@@ -178,9 +149,9 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
                 </p>
                 <span
                   className="mt-2 inline-block text-xs font-semibold px-2.5 py-1 rounded-full"
-                  style={{ background: meta.bg, color: meta.color }}
+                  style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
                 >
-                  {meta.badge}
+                  {planConfig.name}
                 </span>
               </div>
             </div>
@@ -249,25 +220,16 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
           <SectionHeader icon={<CreditCard size={15} color={tokens.color.textSubtle} />} label="Abonnement" />
 
           <div className="px-6 py-5">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-base font-semibold" style={{ color: tokens.color.text }}>
-                  {meta.label}
+                  Imvestra {planConfig.name}
                 </p>
                 <p className="text-sm mt-1" style={{ color: tokens.color.textMuted }}>
-                  {meta.desc}
+                  {planConfig.description}
                 </p>
               </div>
-              {plan === "free" ? (
-                <motion.button
-                  onClick={() => handleCheckout("pro_monthly")}
-                  whileTap={prefersReduced ? {} : { scale: 0.98 }}
-                  className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-[8px] transition-all"
-                  style={{ background: tokens.color.accent, color: tokens.color.bg }}
-                >
-                  Auf Pro upgraden
-                </motion.button>
-              ) : (
+              {plan !== "free" && (
                 <motion.button
                   onClick={handlePortal}
                   whileTap={prefersReduced ? {} : { scale: 0.98 }}
@@ -283,64 +245,71 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
               )}
             </div>
 
-            {plan === "free" && (
-              <div
-                className="mt-5 pt-5"
-                style={{ borderTop: `1px solid ${tokens.color.border}` }}
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: tokens.color.textSubtle }}>
-                      Free
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      {FREE_FEATURES.map((f) => (
-                        <div key={f} className="flex items-center gap-2 text-xs" style={{ color: tokens.color.textMuted }}>
-                          <CheckCircle size={13} color={tokens.color.textSubtle} />
-                          {f}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            {/* Current plan features */}
+            <div className="mt-4 flex flex-col gap-2">
+              {planConfig.features.map((f) => (
+                <div key={f} className="flex items-center gap-2 text-xs" style={{ color: tokens.color.textMuted }}>
+                  <CheckCircle size={13} color={tokens.color.accent} weight="fill" />
+                  {f}
+                </div>
+              ))}
+            </div>
 
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: tokens.color.accent }}>
-                      Pro - 19€/Mo
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      {PRO_FEATURES.map((f) => (
-                        <div key={f} className="flex items-center gap-2 text-xs" style={{ color: tokens.color.text }}>
-                          <CheckCircle size={13} color={tokens.color.positive} weight="fill" />
-                          {f}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="col-span-2 mt-2">
+            {/* Upgrade options */}
+            {higherTiers.length > 0 && (
+              <div className="mt-5 pt-5 grid grid-cols-1 gap-3" style={{ borderTop: `1px solid ${tokens.color.border}` }}>
+                {higherTiers.map((tier) => {
+                  const cfg = PLAN_CONFIG[tier];
+                  return (
                     <div
-                      className="rounded-[10px] px-4 py-3 flex items-center justify-between"
-                      style={{ background: tokens.color.accentSubtle, border: `1px solid ${tokens.color.borderAccent}` }}
+                      key={tier}
+                      className="rounded-[12px] p-4 flex items-center justify-between gap-4"
+                      style={{
+                        background: tokens.color.bgSubtle,
+                        border: `1px solid ${cfg.highlighted ? tokens.color.borderAccent : tokens.color.border}`,
+                      }}
                     >
                       <div>
                         <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                          Jährlich zahlen und 34% sparen
+                          {cfg.name}
+                          {cfg.highlighted && (
+                            <span
+                              className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                              style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
+                            >
+                              Beliebt
+                            </span>
+                          )}
                         </p>
                         <p className="text-xs mt-0.5" style={{ color: tokens.color.textMuted }}>
-                          149€/Jahr statt 228€
+                          {cfg.description}
                         </p>
                       </div>
-                      <motion.button
-                        onClick={() => handleCheckout("pro_yearly")}
-                        whileTap={prefersReduced ? {} : { scale: 0.98 }}
-                        className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-[8px] transition-all"
-                        style={{ background: tokens.color.accent, color: tokens.color.bg }}
-                      >
-                        Pro Yearly
-                      </motion.button>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <motion.button
+                          onClick={() => handleCheckout(`${tier}_yearly`)}
+                          whileTap={prefersReduced ? {} : { scale: 0.98 }}
+                          className="text-xs font-bold px-3 py-2 rounded-[8px] transition-all whitespace-nowrap"
+                          style={{ background: tokens.color.accent, color: tokens.color.bg }}
+                        >
+                          {cfg.price_yearly}€/Jahr
+                        </motion.button>
+                        <motion.button
+                          onClick={() => handleCheckout(`${tier}_monthly`)}
+                          whileTap={prefersReduced ? {} : { scale: 0.98 }}
+                          className="text-xs font-medium px-3 py-2 rounded-[8px] transition-all whitespace-nowrap"
+                          style={{
+                            background: "transparent",
+                            color: tokens.color.textMuted,
+                            border: `1px solid ${tokens.color.border}`,
+                          }}
+                        >
+                          {cfg.price_monthly}€/Mo
+                        </motion.button>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             )}
           </div>

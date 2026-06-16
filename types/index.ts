@@ -1,4 +1,4 @@
-export type Plan = "free" | "pro" | "team";
+export type Plan = "free" | "investor" | "manager" | "team";
 
 export interface User {
   id: string;
@@ -200,3 +200,92 @@ export const EXPENSE_CATEGORIES = {
   renovation:  { label: "Renovierung",     color: "#FF8C00" },
   other:       { label: "Sonstiges",       color: "#666"    },
 } as const;
+
+export interface PlanConfig {
+  id: Plan;
+  name: string;
+  price_monthly: number;
+  price_yearly: number;
+  description: string;
+  max_properties: number | "unlimited";
+  max_tenants: number | "unlimited";
+  features: string[];
+  highlighted: boolean;
+}
+
+export const PLAN_CONFIG: Record<Plan, PlanConfig> = {
+  free: {
+    id: "free",
+    name: "Free",
+    price_monthly: 0,
+    price_yearly: 0,
+    description: "Zum Kennenlernen",
+    max_properties: 1,
+    max_tenants: 0,
+    features: [
+      "1 Objekt analysieren",
+      "Vollständiger Rechner",
+      "Standortanalyse (3x/Monat)",
+      "Kaufpreis-Verhandlungsrechner",
+    ],
+    highlighted: false,
+  },
+  investor: {
+    id: "investor",
+    name: "Investor",
+    price_monthly: 19.99,
+    price_yearly: 159,
+    description: "Für aktive Käufer",
+    max_properties: 10,
+    max_tenants: 10,
+    features: [
+      "Bis zu 10 Objekte",
+      "Portfolio Dashboard",
+      "PDF Bankpräsentation",
+      "Standortanalyse unbegrenzt",
+      "Mietverwaltung (10 Mieter)",
+      "AfA & Steuerübersicht",
+      "KfW-Fördercheck",
+      "Spekulationsfrist-Rechner",
+    ],
+    highlighted: false,
+  },
+  manager: {
+    id: "manager",
+    name: "Manager",
+    price_monthly: 49.99,
+    price_yearly: 399,
+    description: "Für ernsthafte Investoren",
+    max_properties: "unlimited",
+    max_tenants: "unlimited",
+    features: [
+      "Unbegrenzte Objekte",
+      "Unbegrenzte Mieter",
+      "Alles aus Investor",
+      "Finanzen Hub komplett",
+      "Smart Task Engine",
+      "Zinsbindungsende-Tracker",
+      "Szenario-Vergleich",
+      "Priority Support",
+    ],
+    highlighted: true,
+  },
+  team: {
+    id: "team",
+    name: "Team",
+    price_monthly: 99.99,
+    price_yearly: 799,
+    description: "Für mehrere Nutzer",
+    max_properties: "unlimited",
+    max_tenants: "unlimited",
+    features: [
+      "Alles aus Manager",
+      "Bis zu 5 Nutzer",
+      "Shared Portfolio",
+      "Rollen & Berechtigungen",
+      "Dedizierter Support",
+      "Team-Dashboard",
+    ],
+    highlighted: false,
+  },
+};

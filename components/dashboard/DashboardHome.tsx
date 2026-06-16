@@ -684,7 +684,7 @@ export default function DashboardHome({
       {isFreePlan && (
         <FadeIn delay={0.25}>
           <div className="mt-2">
-            <UpgradeBanner />
+            <UpgradeBanner currentPlan="free" />
           </div>
         </FadeIn>
       )}
