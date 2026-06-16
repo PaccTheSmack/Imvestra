@@ -292,7 +292,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
                           className="text-xs font-bold px-3 py-2 rounded-[8px] transition-all whitespace-nowrap"
                           style={{ background: tokens.color.accent, color: tokens.color.bg }}
                         >
-                          {cfg.price_yearly}€/Jahr
+                          30 Tage gratis · dann {cfg.price_yearly}€/Jahr
                         </motion.button>
                         <motion.button
                           onClick={() => handleCheckout(`${tier}_monthly`)}
@@ -304,7 +304,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
                             border: `1px solid ${tokens.color.border}`,
                           }}
                         >
-                          {cfg.price_monthly}€/Mo
+                          30 Tage gratis · dann {cfg.price_monthly}€/Mo
                         </motion.button>
                       </div>
                     </div>

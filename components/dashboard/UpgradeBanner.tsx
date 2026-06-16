@@ -65,7 +65,7 @@ export default function UpgradeBanner({ currentPlan }: UpgradeBannerProps) {
         >
           {loading === `${nextPlan}_yearly`
             ? "Wird geladen…"
-            : `${nextConfig.name} – ${nextConfig.price_yearly}€/Jahr`}
+            : "30 Tage gratis testen →"}
         </button>
         <button
           onClick={() => handleUpgrade(`${nextPlan}_monthly`)}

@@ -77,7 +77,7 @@ export default function WaitlistSection() {
             <span style={GRADIENT_TEXT}>Fehler</span> wird.
           </h2>
           <p className="mt-5 text-[#777] text-lg leading-relaxed">
-            Starte kostenlos. Keine Kreditkarte. Keine Wartezeit. Einfach loslegen.
+            30 Tage kostenlos testen. Kein Risiko. Jederzeit kündbar.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
@@ -88,7 +88,7 @@ export default function WaitlistSection() {
               className="bg-[#00E0D7] text-[#080808] font-bold px-8 py-4 rounded-[12px] text-base"
               style={{ boxShadow: "0 0 40px rgba(0,224,215,0.2)" }}
             >
-              Jetzt kostenlos starten →
+              Jetzt starten →
             </motion.button>
             <button
               onClick={() => setShowForm((v) => !v)}

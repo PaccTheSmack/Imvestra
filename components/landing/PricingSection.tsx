@@ -113,6 +113,9 @@ export default function PricingSection() {
                       {interval && <span className="text-sm text-[#777] mb-1">{interval}</span>}
                     </div>
                     <p className="text-xs text-[#666] mt-2">{cfg.description}</p>
+                    {!isFree && (
+                      <p className="text-xs text-[#00E0D7] mt-1">30 Tage kostenlos testen</p>
+                    )}
                   </div>
 
                   <div className="mt-5 flex flex-col gap-2.5 flex-1">
@@ -134,7 +137,7 @@ export default function PricingSection() {
                         : { background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }
                     }
                   >
-                    {isFree ? "Kostenlos starten" : `${cfg.name} starten`}
+                    {isFree ? "Kostenlos starten" : "30 Tage gratis starten →"}
                   </motion.button>
                 </div>
               </FadeIn>

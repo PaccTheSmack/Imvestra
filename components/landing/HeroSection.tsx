@@ -12,6 +12,7 @@ import {
   PlayCircle,
   CheckCircle,
   ChartLine,
+  Gift,
 } from "@phosphor-icons/react";
 import FadeIn from "@/components/ui/FadeIn";
 
@@ -139,7 +140,11 @@ export default function HeroSection() {
 
           <FadeIn delay={0.4}>
             <div className="flex items-center gap-5 flex-wrap text-xs text-[#666]">
-              {["Kostenlos starten", "Keine Kreditkarte", "DSGVO · Server Frankfurt"].map((t) => (
+              <div className="flex items-center gap-1.5">
+                <Gift size={13} color="#00E0D7" />
+                30 Tage kostenlos
+              </div>
+              {["Keine Kreditkarte", "DSGVO · Server Frankfurt"].map((t) => (
                 <div key={t} className="flex items-center gap-1.5">
                   <CheckCircle size={13} color="#00E0D7" weight="fill" />
                   {t}

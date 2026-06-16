@@ -53,7 +53,7 @@ export default function GateOverlay({ feature, description }: GateOverlayProps) 
         }}
       >
         <Lightning size={13} weight="fill" />
-        Auf Pro upgraden
+        30 Tage kostenlos testen
       </motion.button>
     </motion.div>
   );
