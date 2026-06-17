@@ -44,7 +44,7 @@ const navSections: NavSection[] = [
   {
     section: "ANALYSE",
     items: [
-      { Icon: Calculator, label: "Rechner",     href: "/calculator",  badge: "NEU" },
+      { Icon: Calculator, label: "Rechner",     href: "/calculator" },
       { Icon: Tag,        label: "Verhandlung", href: "/verhandlung"             },
       { Icon: MapPin,     label: "Standort",   href: "/standort"                },
       { Icon: FilePdf,    label: "PDF Export", href: "/pdf-export"              },

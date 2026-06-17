@@ -22,6 +22,7 @@ import {
   CurrencyEur,
   Warning,
   MapPin,
+  FilePdf,
 } from "@phosphor-icons/react";
 import {
   calculateProperty,
@@ -65,7 +66,7 @@ const INPUT =
   "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#777777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
 const LABEL = "block text-xs font-medium text-[#888888] mb-1.5";
 const SECTION_LABEL =
-  "text-[10px] font-semibold text-[#777777] uppercase tracking-widest mb-4";
+  "text-[10px] font-semibold text-[#555] uppercase tracking-widest mb-4";
 
 type TabId =
   | "Übersicht"
@@ -554,28 +555,21 @@ export default function CalculatorPage() {
   // ─── render ───────────────────────────────────────────────────
   return (
     <div className="h-full flex flex-col" style={{ background: tokens.color.bg }}>
-      {/* Topbar */}
-      <div
-        className="sticky top-0 z-20 px-8 py-4 flex items-center justify-between flex-shrink-0"
-        style={{ background: tokens.color.surface, borderBottom: `1px solid ${tokens.color.border}` }}
-      >
-        <div>
-          <p className="text-xs flex items-center gap-1.5" style={{ color: tokens.color.textSubtle }}>
-            <span>Imvestra</span>
-            <span style={{ color: tokens.color.border }}>/</span>
-            <span className="font-medium" style={{ color: tokens.color.text }}>Renditerechner</span>
-          </p>
-          <h1
-            className="text-[20px] font-semibold tracking-[-0.02em] mt-0.5"
-            style={{ color: tokens.color.text }}
-          >
-            Renditerechner
-          </h1>
+      {/* Header */}
+      <div className="sticky top-0 z-20 flex-shrink-0 px-6 py-5 flex items-center justify-between bg-[#0C0C0C] border-b border-[rgba(255,255,255,0.06)]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.12)] rounded-[10px] flex items-center justify-center flex-shrink-0">
+            <Calculator size={18} color="#00E0D7" />
+          </div>
+          <div>
+            <p className="text-[20px] font-semibold text-white tracking-[-0.02em] leading-tight">Renditerechner</p>
+            <p className="text-xs text-[#666] mt-0.5">Objekt analysieren und Rendite berechnen</p>
+          </div>
         </div>
 
         <div className="flex flex-col items-end gap-1">
           {result && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {(() => {
                 const plzMatch = address.match(/\d{5}/)
                 const plzFromAddress = plzMatch?.[0]
@@ -588,12 +582,8 @@ export default function CalculatorPage() {
                       `&miete=${rent}` +
                       `&sqm=${Number(sqm) || 0}`
                     )}
-                    className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all"
-                    style={{
-                      background: "transparent",
-                      border: `1px solid ${tokens.color.border}`,
-                      color: tokens.color.textMuted,
-                    }}
+                    className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all border"
+                    style={{ borderColor: tokens.color.border, color: tokens.color.textMuted, background: "transparent" }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,224,215,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#00E0D7" }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = tokens.color.border; (e.currentTarget as HTMLButtonElement).style.color = tokens.color.textMuted }}
                   >
@@ -607,7 +597,7 @@ export default function CalculatorPage() {
                   onClick={handleSave}
                   disabled={isPending}
                   whileTap={prefersReduced ? {} : { scale: 0.98 }}
-                  className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] transition-all disabled:opacity-60"
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-[8px] transition-all disabled:opacity-60"
                   style={saved ? {
                     background: tokens.color.positiveBg,
                     border: `1px solid rgba(0,224,215,0.2)`,
@@ -624,12 +614,8 @@ export default function CalculatorPage() {
               ) : (
                 <button
                   onClick={() => router.push("/settings")}
-                  className="flex items-center gap-2 text-sm px-4 py-2 rounded-[8px] transition-all"
-                  style={{
-                    border: `1px solid ${tokens.color.border}`,
-                    color: tokens.color.textMuted,
-                    background: "transparent",
-                  }}
+                  className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all"
+                  style={{ border: `1px solid ${tokens.color.border}`, color: tokens.color.textMuted, background: "transparent" }}
                 >
                   <Lock size={14} />Speichern (Pro)
                 </button>
@@ -639,14 +625,10 @@ export default function CalculatorPage() {
               ) : (
                 <button
                   onClick={() => router.push("/settings")}
-                  className="flex items-center gap-2 text-sm px-4 py-2 rounded-[8px] transition-all"
-                  style={{
-                    border: `1px solid ${tokens.color.border}`,
-                    color: tokens.color.textMuted,
-                    background: "transparent",
-                  }}
+                  className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all"
+                  style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.2)", color: "#FF4444" }}
                 >
-                  <Lock size={14} />PDF Export (Pro)
+                  <FilePdf size={14} />PDF Export
                 </button>
               )}
             </div>
@@ -668,10 +650,7 @@ export default function CalculatorPage() {
       <div className="flex flex-1 min-h-0">
 
         {/* Left: Inputs */}
-        <div
-          className="w-[420px] flex-shrink-0 overflow-y-auto"
-          style={{ background: tokens.color.surface, borderRight: `1px solid ${tokens.color.border}` }}
-        >
+        <div className="w-[420px] flex-shrink-0 overflow-y-auto bg-[#0C0C0C] border-r border-[rgba(255,255,255,0.06)]">
           <div className="px-6 py-6 flex flex-col gap-6">
 
             {/* Section 1 – Objekt */}
