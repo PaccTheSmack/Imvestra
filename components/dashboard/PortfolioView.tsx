@@ -13,7 +13,6 @@ import {
   calculatePortfolioSummary,
   calculatePropertyMetrics,
   type PortfolioSummary,
-  type PropertyMetrics,
 } from "@/lib/portfolio-calculations"
 import type { Property, Financing, RentPayment, Expense } from "@/types"
 

@@ -56,8 +56,8 @@ export interface PortfolioSummary {
 export function calculatePropertyMetrics(
   property: Property,
   financings: Financing[],
-  _payments: RentPayment[],
-  _expenses: Expense[],
+  _payments: RentPayment[], // eslint-disable-line @typescript-eslint/no-unused-vars
+  _expenses: Expense[], // eslint-disable-line @typescript-eslint/no-unused-vars
 ): PropertyMetrics {
   const financing = financings.find(f => f.property_id === property.id)
 

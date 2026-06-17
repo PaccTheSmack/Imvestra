@@ -8,9 +8,11 @@ interface Props {
   onChange: (value: string) => void
   label?: string
   helper?: string
+  minYear?: number
+  maxYear?: number
 }
 
-export default function MonthYearPicker({ value, onChange, label, helper }: Props) {
+export default function MonthYearPicker({ value, onChange, label, helper, minYear = 1900, maxYear = 2100 }: Props) {
   const today = new Date()
 
   const [day, setDay] = useState(1)
@@ -156,18 +158,18 @@ export default function MonthYearPicker({ value, onChange, label, helper }: Prop
           <div className="px-2 py-3 flex items-center justify-between gap-1">
             <Arrow
               dir="left"
-              onClick={() => setYear(y => y - 1)}
+              onClick={() => setYear(y => Math.max(minYear, y - 1))}
             />
             <NumberField
               value={year}
-              min={1900}
-              max={today.getFullYear() + 30}
+              min={minYear}
+              max={maxYear}
               onChange={setYear}
               width="w-14"
             />
             <Arrow
               dir="right"
-              onClick={() => setYear(y => y + 1)}
+              onClick={() => setYear(y => Math.min(maxYear, y + 1))}
             />
           </div>
 
