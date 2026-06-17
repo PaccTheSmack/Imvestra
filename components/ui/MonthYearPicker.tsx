@@ -1,127 +1,182 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { useState, useEffect } from "react"
+import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 
-const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
-const CURRENT_YEAR = new Date().getFullYear();
-
-interface MonthYearPickerProps {
-  value: string;
-  onChange: (value: string) => void;
-  label?: string;
-  helper?: string;
-  error?: string;
-  minYear?: number;
-  maxYear?: number;
+interface Props {
+  value: string // YYYY-MM-DD
+  onChange: (value: string) => void
+  label?: string
+  helper?: string
 }
 
-function parseValue(value: string): { month: number; year: number } {
-  if (value && /^\d{4}-\d{2}/.test(value)) {
-    const [y, m] = value.split("-");
-    return { month: parseInt(m) - 1, year: parseInt(y) };
+export default function MonthYearPicker({ value, onChange, label, helper }: Props) {
+  const today = new Date()
+
+  const [day, setDay] = useState(1)
+  const [month, setMonth] = useState(today.getMonth() + 1)
+  const [year, setYear] = useState(today.getFullYear())
+
+  // Initialize from value
+  useEffect(() => {
+    if (value) {
+      const d = new Date(value)
+      if (!isNaN(d.getTime())) {
+        setDay(d.getDate())
+        setMonth(d.getMonth() + 1)
+        setYear(d.getFullYear())
+      }
+    }
+  }, [])
+
+  // Emit change whenever day/month/year changes
+  useEffect(() => {
+    const maxDay = new Date(year, month, 0).getDate()
+    const safeDay = Math.min(day, maxDay)
+    const dateStr = `${year}-${month.toString().padStart(2, "0")}-${safeDay.toString().padStart(2, "0")}`
+    onChange(dateStr)
+  }, [day, month, year])
+
+  const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
+    "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+
+  const maxDay = new Date(year, month, 0).getDate()
+
+  function Arrow({ onClick, dir }: {
+    onClick: () => void
+    dir: "left" | "right"
+  }) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="w-6 h-6 flex items-center justify-center hover:bg-[rgba(255,255,255,0.08)] rounded-[4px] transition-colors flex-shrink-0"
+      >
+        {dir === "left"
+          ? <CaretLeft size={11} color="#666" />
+          : <CaretRight size={11} color="#666" />}
+      </button>
+    )
   }
-  const now = new Date();
-  return { month: now.getMonth(), year: now.getFullYear() };
-}
 
-function toISODate(month: number, year: number): string {
-  return `${year}-${String(month + 1).padStart(2, "0")}-01`;
-}
+  function NumberField({
+    value: val, min, max, onChange: onCh, width = "w-10"
+  }: {
+    value: number
+    min: number
+    max: number
+    onChange: (n: number) => void
+    width?: string
+  }) {
+    const [editing, setEditing] = useState(false)
+    const [raw, setRaw] = useState(val.toString())
 
-export default function MonthYearPicker({
-  value,
-  onChange,
-  label,
-  helper,
-  error,
-  minYear = CURRENT_YEAR - 40,
-  maxYear = CURRENT_YEAR + 30,
-}: MonthYearPickerProps) {
-  const parsed = parseValue(value);
-  const [month, setMonth] = useState(parsed.month);
-  const [year, setYear] = useState(parsed.year);
+    useEffect(() => {
+      if (!editing) setRaw(val.toString())
+    }, [val, editing])
 
-  function updateMonth(delta: number) {
-    let m = month + delta;
-    let y = year;
-    if (m > 11) { m = 0; y += 1; }
-    if (m < 0)  { m = 11; y -= 1; }
-    y = Math.max(minYear, Math.min(maxYear, y));
-    setMonth(m);
-    setYear(y);
-    onChange(toISODate(m, y));
+    return (
+      <input
+        type="number"
+        value={editing ? raw : val}
+        min={min}
+        max={max}
+        onChange={e => {
+          setRaw(e.target.value)
+          const n = parseInt(e.target.value)
+          if (!isNaN(n) && n >= min && n <= max) onCh(n)
+        }}
+        onFocus={() => { setEditing(true); setRaw(val.toString()) }}
+        onBlur={() => {
+          setEditing(false)
+          const n = parseInt(raw)
+          if (isNaN(n) || n < min) onCh(min)
+          else if (n > max) onCh(max)
+          else onCh(n)
+        }}
+        className={`${width} bg-transparent text-sm font-semibold text-white text-center border-none outline-none focus:bg-[rgba(255,255,255,0.06)] rounded-[4px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+      />
+    )
   }
-
-  function updateYear(delta: number) {
-    const y = Math.max(minYear, Math.min(maxYear, year + delta));
-    setYear(y);
-    onChange(toISODate(month, y));
-  }
-
-  const borderColor = error
-    ? "rgba(255,68,68,0.4)"
-    : "rgba(255,255,255,0.07)";
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div>
       {label && (
-        <label className="text-xs font-medium text-[#888888] uppercase tracking-wide">
+        <label className="text-[11px] text-[#666] uppercase tracking-wider mb-2 block">
           {label}
         </label>
       )}
-      <div
-        className="rounded-[8px] overflow-hidden"
-        style={{ border: `1px solid ${borderColor}`, background: "#141414" }}
-      >
-        <div className="grid grid-cols-2 divide-x divide-[rgba(255,255,255,0.06)]">
-          {/* Month column */}
-          <div className="flex items-center justify-between px-3 py-2.5 gap-2">
-            <button
-              type="button"
-              onClick={() => updateMonth(-1)}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-[rgba(255,255,255,0.06)] transition-colors cursor-pointer flex-shrink-0"
-            >
-              <CaretLeft size={11} color="#666" />
-            </button>
-            <span className="text-sm text-white font-medium w-8 text-center select-none">
-              {MONTHS[month]}
-            </span>
-            <button
-              type="button"
-              onClick={() => updateMonth(1)}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-[rgba(255,255,255,0.06)] transition-colors cursor-pointer flex-shrink-0"
-            >
-              <CaretRight size={11} color="#666" />
-            </button>
+
+      <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[8px] overflow-hidden">
+
+        {/* Column headers */}
+        <div className="grid grid-cols-3 border-b border-[rgba(255,255,255,0.05)]">
+          {["TAG", "MONAT", "JAHR"].map(h => (
+            <div key={h} className="px-3 py-1.5 text-center text-[9px] text-[#444] uppercase tracking-wide border-r border-[rgba(255,255,255,0.05)] last:border-0">
+              {h}
+            </div>
+          ))}
+        </div>
+
+        {/* Controls */}
+        <div className="grid grid-cols-3 divide-x divide-[rgba(255,255,255,0.05)]">
+
+          {/* DAY */}
+          <div className="px-2 py-3 flex items-center justify-between gap-1">
+            <Arrow
+              dir="left"
+              onClick={() => setDay(d => d <= 1 ? maxDay : d - 1)}
+            />
+            <NumberField
+              value={day} min={1} max={maxDay}
+              onChange={setDay}
+            />
+            <Arrow
+              dir="right"
+              onClick={() => setDay(d => d >= maxDay ? 1 : d + 1)}
+            />
           </div>
 
-          {/* Year column */}
-          <div className="flex items-center justify-between px-3 py-2.5 gap-2">
-            <button
-              type="button"
-              onClick={() => updateYear(-1)}
-              disabled={year <= minYear}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-[rgba(255,255,255,0.06)] transition-colors cursor-pointer flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <CaretLeft size={11} color="#666" />
-            </button>
-            <span className="text-sm text-white font-medium w-10 text-center select-none tabular-nums">
-              {year}
+          {/* MONTH */}
+          <div className="px-2 py-3 flex items-center justify-between gap-1">
+            <Arrow
+              dir="left"
+              onClick={() => setMonth(m => m <= 1 ? 12 : m - 1)}
+            />
+            <span className="text-sm font-semibold text-white w-10 text-center select-none">
+              {MONTHS[month - 1]}
             </span>
-            <button
-              type="button"
-              onClick={() => updateYear(1)}
-              disabled={year >= maxYear}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-[rgba(255,255,255,0.06)] transition-colors cursor-pointer flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <CaretRight size={11} color="#666" />
-            </button>
+            <Arrow
+              dir="right"
+              onClick={() => setMonth(m => m >= 12 ? 1 : m + 1)}
+            />
           </div>
+
+          {/* YEAR */}
+          <div className="px-2 py-3 flex items-center justify-between gap-1">
+            <Arrow
+              dir="left"
+              onClick={() => setYear(y => y - 1)}
+            />
+            <NumberField
+              value={year}
+              min={1900}
+              max={today.getFullYear() + 30}
+              onChange={setYear}
+              width="w-14"
+            />
+            <Arrow
+              dir="right"
+              onClick={() => setYear(y => y + 1)}
+            />
+          </div>
+
         </div>
       </div>
-      {error && <p className="text-xs text-[#FF4444]">{error}</p>}
-      {helper && !error && <p className="text-xs text-[#777777]">{helper}</p>}
+
+      {helper && (
+        <p className="text-[10px] text-[#555] mt-1.5">{helper}</p>
+      )}
     </div>
-  );
+  )
 }

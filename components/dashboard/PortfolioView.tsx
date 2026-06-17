@@ -1,591 +1,1197 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "motion/react";
+import { useState, useRef, useEffect, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import {
-  Buildings,
-  Calculator,
-  ArrowRight,
-  ChartLine,
-  CurrencyEur,
-  FilePdf,
-  MapPin,
-  TrendUp,
-  TrendDown,
-  ShieldCheck,
-  UsersFour,
-} from "@phosphor-icons/react";
-import HoverCard from "@/components/ui/HoverCard";
-import GateOverlay from "@/components/ui/GateOverlay";
-import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
-import { tokens } from "@/lib/tokens";
-import type { Plan } from "@/types";
+  Buildings, Plus, DotsThree, ArrowUpRight,
+  ChartLine, ListBullets, Compass, SquaresFour,
+} from "@phosphor-icons/react"
+import Tooltip from "@/components/ui/Tooltip"
+import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format"
+import {
+  calculatePortfolioSummary,
+  calculatePropertyMetrics,
+  type PortfolioSummary,
+  type PropertyMetrics,
+} from "@/lib/portfolio-calculations"
+import type { Property, Financing, RentPayment, Expense } from "@/types"
 
-const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  ETW:     { bg: "rgba(0,224,215,0.1)",   text: tokens.color.accent,  border: "rgba(0,224,215,0.2)" },
-  MFH:     { bg: "rgba(139,92,246,0.1)",   text: "#A78BFA",            border: "rgba(139,92,246,0.2)" },
-  EFH:     { bg: "rgba(0,224,215,0.08)",  text: tokens.color.accent,  border: "rgba(0,224,215,0.15)" },
-  DHH:     { bg: "rgba(251,146,60,0.1)",   text: "#FB923C",            border: "rgba(251,146,60,0.2)" },
-  Gewerbe: { bg: "rgba(255,255,255,0.06)", text: tokens.color.textMuted, border: tokens.color.border },
-};
+// ─── helpers ────────────────────────────────────────────────────────────────
 
-export interface PortfolioCard {
-  id: string;
-  name: string;
-  address: string;
-  type: string;
-  sqm: number;
-  purchase_price: number;
-  gross_yield: number;
-  net_yield: number;
-  cashflow_monthly: number;
-  ltv: number;
-  total_investment: number;
-  market_value_estimated?: number;
-  kaufdatum?: string;
+function formatShort(n: number): string {
+  if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".", ",") + " Mio"
+  if (Math.abs(n) >= 1_000) return (n / 1_000).toFixed(0) + "K"
+  return n.toFixed(0)
 }
+
+function colorByValue(v: number, lo: number, hi: number) {
+  if (v >= hi) return "#00E0D7"
+  if (v >= lo) return "#FFB800"
+  return "#FF4444"
+}
+
+const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
+  ETW:     { bg: "rgba(0,224,215,0.1)",   text: "#00E0D7" },
+  MFH:     { bg: "rgba(255,184,0,0.1)",   text: "#FFB800" },
+  EFH:     { bg: "rgba(168,85,247,0.1)",  text: "#A855F7" },
+  DHH:     { bg: "rgba(59,130,246,0.1)",  text: "#3B82F6" },
+  Gewerbe: { bg: "rgba(255,255,255,0.06)", text: "#888" },
+  Sonstige:{ bg: "rgba(255,255,255,0.06)", text: "#888" },
+}
+
+// ─── props ───────────────────────────────────────────────────────────────────
 
 interface PortfolioViewProps {
-  properties: PortfolioCard[];
-  totalCashflow: number;
-  totalInvestment: number;
-  avgGrossYield: number;
-  totalMarketValue: number;
-  plan: Plan;
-  tenantsByProperty?: Record<string, { count: number; totalRent: number }>;
-  financingAlertsByProperty?: Record<string, "critical" | "warning">;
+  properties: Property[]
+  financings: Financing[]
+  payments: RentPayment[]
+  expenses: Expense[]
 }
 
-function Sparkline() {
-  return (
-    <svg width="40" height="16" viewBox="0 0 40 16" fill="none">
-      <polyline
-        points="2,13 10,9 20,11 30,5 38,2"
-        stroke={tokens.color.positive}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+type ViewMode = "overview" | "chart" | "properties" | "analyse"
+type ChartMetric = "wert" | "eigenkapital"
+type TimeRange = "1J" | "3J" | "5J" | "Alle"
 
-const DEMO_ROWS = [
-  { name: "Altbauwohnung Goslar",     type: "ETW", cashflow: "+148 €" },
-  { name: "Mehrfamilienhaus Leipzig", type: "MFH", cashflow: "+512 €" },
-  { name: "ETW München",              type: "ETW", cashflow: "+232 €" },
-];
+// ─── Donut Chart ─────────────────────────────────────────────────────────────
 
-const FEATURES = [
-  { Icon: ChartLine,   title: "Gesamtperformance",  body: "Rendite und Cashflow aller Objekte summiert." },
-  { Icon: CurrencyEur, title: "Cashflow-Tracking",  body: "Monatlicher Netto-Cashflow nach allen Kosten." },
-  { Icon: Buildings,   title: "Objekt-Vergleich",   body: "Welches Objekt performt am besten?" },
-  { Icon: FilePdf,     title: "PDF-Export",         body: "Bankpräsentation für jedes Objekt in Sekunden." },
-];
+function DonutChart({ summary }: { summary: PortfolioSummary }) {
+  const total = summary.total_marktwert
+  if (total <= 0) return null
+  const segments = [
+    { value: summary.total_eingesetztes_eigenkapital, color: "#00E0D7" },
+    { value: Math.max(0, summary.total_wertentwicklung_eur), color: "rgba(0,224,215,0.4)" },
+    { value: summary.total_getilgtes_kapital, color: "#FFB800" },
+    { value: summary.total_restschuld, color: "#2A2A2A" },
+  ]
+  const r = 54, cx = 64, cy = 64, stroke = 12
+  let cumAngle = -90
+  const arcs = segments.map(seg => {
+    const pct = Math.max(0, seg.value) / total
+    const angle = pct * 360
+    const start = cumAngle
+    cumAngle += angle
+    return { ...seg, pct, startAngle: start, sweepAngle: angle }
+  })
 
-const BOTTOM_STATS = [
-  { value: "10 %",    label: "Ø Bruttorendite in Deutschland" },
-  { value: "3 %",     label: "Leerstandsrisiko einkalkuliert" },
-  { value: "10 €/m²", label: "Instandhaltung pro Jahr" },
-];
-
-export default function PortfolioView({
-  properties,
-  totalCashflow,
-  totalInvestment,
-  avgGrossYield,
-  totalMarketValue,
-  plan,
-  tenantsByProperty = {},
-  financingAlertsByProperty = {},
-}: PortfolioViewProps) {
-  const prefersReduced = useReducedMotion();
-  const router = useRouter();
-  const count = properties.length;
-
-  if (count === 0) {
-    return (
-      <div className="min-h-screen flex flex-col" style={{ background: tokens.color.bg }}>
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2">
-          {/* Left */}
-          <div
-            className="flex flex-col justify-center px-12 py-16"
-            style={{
-              background: tokens.color.bgSubtle,
-              borderRight: `1px solid ${tokens.color.border}`,
-            }}
-          >
-            <span
-              className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full mb-6 self-start"
-              style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
-            >
-              <ChartLine size={12} />
-              Portfolio-Ubersicht
-            </span>
-
-            <h1
-              className="text-[40px] font-semibold tracking-[-0.03em] leading-[1.1]"
-              style={{ color: tokens.color.text }}
-            >
-              Dein Portfolio<br />wartet.
-            </h1>
-
-            <p className="mt-4 text-base leading-relaxed max-w-[380px]" style={{ color: tokens.color.textMuted }}>
-              Berechne dein erstes Objekt und speichere es hier.
-              Alle Kennzahlen auf einen Blick.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-4">
-              {FEATURES.map(({ Icon, title, body }) => (
-                <div key={title} className="flex items-start gap-3">
-                  <div
-                    className="w-9 h-9 rounded-[8px] flex items-center justify-center flex-shrink-0"
-                    style={{ background: tokens.color.surface }}
-                  >
-                    <Icon size={16} color={tokens.color.textMuted} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{title}</p>
-                    <p className="text-xs mt-0.5 leading-relaxed" style={{ color: tokens.color.textSubtle }}>{body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-10">
-              <Link href="/calculator">
-                <motion.span
-                  whileHover={prefersReduced ? {} : { scale: 1.02 }}
-                  whileTap={prefersReduced ? {} : { scale: 0.97 }}
-                  className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 rounded-[10px] transition-all"
-                  style={{
-                    background: tokens.color.accent,
-                    color: tokens.color.bg,
-                    boxShadow: tokens.shadow.accent,
-                  }}
-                >
-                  Erstes Objekt berechnen
-                  <ArrowRight size={15} />
-                </motion.span>
-              </Link>
-              <p className="text-xs mt-3" style={{ color: tokens.color.textSubtle }}>
-                Kostenlos - Keine Kreditkarte notig
-              </p>
-            </div>
-          </div>
-
-          {/* Right */}
-          <div
-            className="flex items-center justify-center px-12 py-16 relative overflow-hidden"
-            style={{ background: tokens.color.bg }}
-          >
-            {/* Main floating card */}
-            <motion.div
-              animate={prefersReduced ? {} : { y: [0, -8, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="relative z-10 rounded-[20px] overflow-hidden w-full max-w-[400px]"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.borderStrong}`,
-                boxShadow: tokens.shadow.lg,
-              }}
-            >
-              <div
-                className="px-5 pt-5 pb-4 flex justify-between items-center"
-                style={{ borderBottom: `1px solid ${tokens.color.border}` }}
-              >
-                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>Mein Portfolio</p>
-                <span
-                  className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                  style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
-                >
-                  3 Objekte
-                </span>
-              </div>
-
-              <div
-                className="grid grid-cols-3 gap-px"
-                style={{ background: tokens.color.border }}
-              >
-                {[
-                  { label: "CASHFLOW / MO.", value: "+892 €",  color: tokens.color.positive },
-                  { label: "Ø RENDITE",      value: "4,8 %",   color: tokens.color.positive },
-                  { label: "INVESTIERT",     value: "612 T€",  color: tokens.color.text },
-                ].map(({ label, value, color }) => (
-                  <div key={label} className="px-4 py-3" style={{ background: tokens.color.surface }}>
-                    <p className="text-[9px] uppercase tracking-wide" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                    <p className="text-sm font-semibold mt-1" style={{ color }}>{value}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col" style={{ borderTop: `1px solid ${tokens.color.border}` }}>
-                {DEMO_ROWS.map((row, i) => (
-                  <div
-                    key={row.name}
-                    className="px-5 py-3.5 flex items-center justify-between"
-                    style={{ borderBottom: i < DEMO_ROWS.length - 1 ? `1px solid ${tokens.color.border}` : undefined }}
-                  >
-                    <div className="flex items-center">
-                      <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{row.name}</p>
-                      <span
-                        className="text-[10px] px-1.5 py-0.5 rounded ml-2"
-                        style={{ background: tokens.color.surfaceHover, color: tokens.color.textMuted }}
-                      >
-                        {row.type}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <p className="text-sm font-semibold" style={{ color: tokens.color.positive }}>{row.cashflow}</p>
-                      <Sparkline />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div
-                className="px-5 py-3 flex items-center justify-between"
-                style={{
-                  background: tokens.color.bgSubtle,
-                  borderTop: `1px solid ${tokens.color.border}`,
-                }}
-              >
-                <p className="text-xs" style={{ color: tokens.color.textMuted }}>Gesamt Cashflow / Monat</p>
-                <p className="text-sm font-semibold" style={{ color: tokens.color.positive }}>+892 €</p>
-              </div>
-            </motion.div>
-
-            {/* Secondary floating card */}
-            <motion.div
-              animate={prefersReduced ? {} : { y: [0, -4, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute bottom-8 right-4 z-20"
-              style={{ transform: "rotate(3deg)" }}
-            >
-              <div
-                className="rounded-[14px] px-4 py-3 w-[180px]"
-                style={{
-                  background: tokens.color.surface,
-                  border: `1px solid ${tokens.color.borderStrong}`,
-                  boxShadow: tokens.shadow.md,
-                }}
-              >
-                <p className="text-xs font-semibold" style={{ color: tokens.color.text }}>Neue Analyse</p>
-                <p className="text-[10px] mt-0.5" style={{ color: tokens.color.textSubtle }}>Renditeobjekt Hannover</p>
-                <div
-                  className="mt-2 rounded-full h-1 overflow-hidden"
-                  style={{ background: tokens.color.surfaceHover }}
-                >
-                  <div
-                    className="w-[70%] h-full rounded-full"
-                    style={{ background: tokens.color.accent }}
-                  />
-                </div>
-                <p className="text-[9px] mt-1.5" style={{ color: tokens.color.textSubtle }}>Berechnung lauft...</p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Bottom bar */}
-        <div
-          className="px-12 py-5 flex items-center justify-between flex-shrink-0"
-          style={{
-            background: tokens.color.bgSubtle,
-            borderTop: `1px solid ${tokens.color.border}`,
-          }}
-        >
-          <div className="flex items-center gap-8">
-            {BOTTOM_STATS.map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <p className="text-lg font-semibold" style={{ color: tokens.color.text }}>{value}</p>
-                <p className="text-xs" style={{ color: tokens.color.textSubtle }}>{label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: tokens.color.textSubtle }}>
-            <ShieldCheck size={12} color={tokens.color.positive} />
-            DSGVO-konform - Daten in Europa
-          </div>
-        </div>
-      </div>
-    );
+  function arc(startDeg: number, sweepDeg: number) {
+    if (sweepDeg <= 0) return ""
+    const clamp = Math.min(sweepDeg, 359.99)
+    const start = (startDeg * Math.PI) / 180
+    const end = ((startDeg + clamp) * Math.PI) / 180
+    const x1 = cx + r * Math.cos(start)
+    const y1 = cy + r * Math.sin(start)
+    const x2 = cx + r * Math.cos(end)
+    const y2 = cy + r * Math.sin(end)
+    const large = clamp > 180 ? 1 : 0
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`
   }
 
-  const isGated = plan === "free" && count > 0;
+  return (
+    <svg width="128" height="128" viewBox="0 0 128 128">
+      {arcs.map((seg, i) => (
+        <path
+          key={i}
+          d={arc(seg.startAngle, seg.sweepAngle)}
+          fill="none"
+          stroke={seg.color}
+          strokeWidth={stroke}
+          strokeLinecap="butt"
+        />
+      ))}
+      <text x={cx} y={cy - 6} textAnchor="middle" fill="#fff" fontSize="11" fontWeight="600">
+        {formatShort(total)}
+      </text>
+      <text x={cx} y={cy + 8} textAnchor="middle" fill="#444" fontSize="9">
+        Marktwert
+      </text>
+    </svg>
+  )
+}
+
+// ─── SVG Line Chart ──────────────────────────────────────────────────────────
+
+function LineChart({
+  data, metric, timeRange,
+}: {
+  data: { date: string; wert: number; eigenkapital: number }[]
+  metric: ChartMetric
+  timeRange: TimeRange
+}) {
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [hover, setHover] = useState<{ x: number; y: number; idx: number } | null>(null)
+  const [dims, setDims] = useState({ w: 600, h: 280 })
+
+  useEffect(() => {
+    const el = svgRef.current
+    if (!el) return
+    const ro = new ResizeObserver(e => {
+      const r = e[0].contentRect
+      setDims({ w: r.width, h: 280 })
+    })
+    ro.observe(el.parentElement!)
+    return () => ro.disconnect()
+  }, [])
+
+  const now = new Date()
+  const cutoff = timeRange === "1J" ? new Date(now.getFullYear() - 1, now.getMonth())
+    : timeRange === "3J" ? new Date(now.getFullYear() - 3, now.getMonth())
+    : timeRange === "5J" ? new Date(now.getFullYear() - 5, now.getMonth())
+    : null
+
+  const filtered = cutoff
+    ? data.filter(d => new Date(d.date) >= cutoff)
+    : data
+
+  if (filtered.length < 2) return <div className="h-[280px] flex items-center justify-center text-xs text-[#444]">Nicht genug Daten</div>
+
+  const pad = { t: 20, r: 60, b: 40, l: 20 }
+  const W = dims.w, H = dims.h
+  const chartW = W - pad.l - pad.r
+  const chartH = H - pad.t - pad.b
+
+  const vals1 = filtered.map(d => d[metric === "wert" ? "wert" : "eigenkapital"])
+  const vals2 = metric === "wert" ? filtered.map(d => d.eigenkapital) : null
+  const allVals = vals2 ? [...vals1, ...vals2] : vals1
+  const minV = Math.min(...allVals) * 0.97
+  const maxV = Math.max(...allVals) * 1.03
+
+  const xOf = (i: number) => pad.l + (i / (filtered.length - 1)) * chartW
+  const yOf = (v: number) => pad.t + chartH - ((v - minV) / (maxV - minV)) * chartH
+
+  function smoothPath(points: [number, number][]) {
+    if (points.length < 2) return ""
+    let d = `M ${points[0][0]} ${points[0][1]}`
+    for (let i = 1; i < points.length; i++) {
+      const [x0, y0] = points[i - 1]
+      const [x1, y1] = points[i]
+      const cpx = (x0 + x1) / 2
+      d += ` C ${cpx} ${y0} ${cpx} ${y1} ${x1} ${y1}`
+    }
+    return d
+  }
+
+  const pts1 = vals1.map((v, i) => [xOf(i), yOf(v)] as [number, number])
+  const pts2 = vals2 ? vals2.map((v, i) => [xOf(i), yOf(v)] as [number, number]) : null
+
+  const line1 = smoothPath(pts1)
+  const area1 = line1 + ` L ${pts1[pts1.length - 1][0]} ${pad.t + chartH} L ${pts1[0][0]} ${pad.t + chartH} Z`
+
+  const gridCount = 5
+  const gridVals = Array.from({ length: gridCount }, (_, i) =>
+    minV + (maxV - minV) * (i / (gridCount - 1))
+  )
+
+  const xLabelCount = Math.min(6, filtered.length)
+  const xLabels = Array.from({ length: xLabelCount }, (_, i) => {
+    const idx = Math.round((i / (xLabelCount - 1)) * (filtered.length - 1))
+    const d = new Date(filtered[idx].date)
+    return { x: xOf(idx), label: `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getFullYear()).slice(2)}` }
+  })
+
+  function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
+    const rect = svgRef.current!.getBoundingClientRect()
+    const mx = e.clientX - rect.left - pad.l
+    const ratio = Math.max(0, Math.min(1, mx / chartW))
+    const idx = Math.round(ratio * (filtered.length - 1))
+    setHover({ x: xOf(idx), y: yOf(vals1[idx]), idx })
+  }
+
+  const hd = hover ? filtered[hover.idx] : null
 
   return (
-    <div className="p-8 max-w-[1200px] relative">
-      {isGated && (
-        <GateOverlay
-          feature="Portfolio (Pro)"
-          description="Upgrade auf Pro um dein Portfolio zu sehen."
+    <div className="relative">
+      <svg
+        ref={svgRef}
+        width="100%"
+        height={H}
+        viewBox={`0 0 ${W} ${H}`}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setHover(null)}
+        style={{ overflow: "visible" }}
+      >
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#00E0D7" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#00E0D7" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Grid lines */}
+        {gridVals.map((v, i) => (
+          <g key={i}>
+            <line
+              x1={pad.l} y1={yOf(v)} x2={pad.l + chartW} y2={yOf(v)}
+              stroke="rgba(255,255,255,0.04)" strokeWidth="1"
+            />
+            <text x={pad.l + chartW + 8} y={yOf(v) + 4} fill="#444" fontSize="10" textAnchor="start">
+              {formatShort(v)}
+            </text>
+          </g>
+        ))}
+
+        {/* X labels */}
+        {xLabels.map((l, i) => (
+          <text key={i} x={l.x} y={H - 8} fill="#444" fontSize="10" textAnchor="middle">
+            {l.label}
+          </text>
+        ))}
+
+        {/* Area fill */}
+        <path d={area1} fill="url(#areaGrad)" />
+
+        {/* EK line (dashed) */}
+        {pts2 && (
+          <path d={smoothPath(pts2)} fill="none" stroke="#FFB800" strokeWidth="1.5" strokeDasharray="4,4" />
+        )}
+
+        {/* Main line */}
+        <motion.path
+          d={line1} fill="none" stroke="#00E0D7" strokeWidth="2"
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
         />
+
+        {/* Hover vertical line */}
+        {hover && (
+          <line
+            x1={hover.x} y1={pad.t} x2={hover.x} y2={pad.t + chartH}
+            stroke="rgba(255,255,255,0.12)" strokeWidth="1"
+          />
+        )}
+
+        {/* Hover dot */}
+        {hover && (
+          <circle cx={hover.x} cy={hover.y} r="4" fill="#00E0D7" />
+        )}
+      </svg>
+
+      {/* Hover tooltip */}
+      {hover && hd && (
+        <div
+          className="absolute pointer-events-none bg-[#1A1A1A] border border-[rgba(255,255,255,0.12)] rounded-[8px] px-3 py-2 text-xs shadow-[0_8px_24px_rgba(0,0,0,0.6)] -translate-x-1/2"
+          style={{ left: hover.x, top: hover.y - 60 }}
+        >
+          <p className="text-[#555] mb-1">{new Date(hd.date).toLocaleDateString("de-DE", { month: "short", year: "numeric" })}</p>
+          <p className="text-white font-semibold">{formatCurrency(hd[metric === "wert" ? "wert" : "eigenkapital"])}</p>
+          {metric === "wert" && <p className="text-[#FFB800]">EK: {formatCurrency(hd.eigenkapital)}</p>}
+        </div>
       )}
-      <div className={isGated ? "blur-sm pointer-events-none select-none" : ""}>
-        {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h1
-              className="text-[22px] font-semibold tracking-[-0.02em]"
-              style={{ color: tokens.color.text }}
-            >
-              Portfolio
-            </h1>
-            <p className="text-sm mt-0.5" style={{ color: tokens.color.textMuted }}>
-              {count} Objekt{count !== 1 ? "e" : ""}
-            </p>
+    </div>
+  )
+}
+
+// ─── Mini bar chart ───────────────────────────────────────────────────────────
+
+function MiniBarChart({ data }: { data: number[] }) {
+  const max = Math.max(...data.map(Math.abs), 1)
+  return (
+    <div className="flex items-end gap-0.5 h-16">
+      {data.map((v, i) => (
+        <div key={i} className="flex-1 flex flex-col justify-end items-center">
+          <motion.div
+            className="w-full rounded-[2px]"
+            style={{ background: v >= 0 ? "#00E0D7" : "#FF4444" }}
+            initial={{ height: 0 }}
+            animate={{ height: `${(Math.abs(v) / max) * 100}%` }}
+            transition={{ delay: i * 0.03, duration: 0.4 }}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+function EmptyState() {
+  const router = useRouter()
+  return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
+      <motion.div
+        animate={{ y: [0, -8, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="w-20 h-20 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[20px] flex items-center justify-center mx-auto"
+      >
+        <Buildings size={36} color="#333" />
+      </motion.div>
+
+      <h2 className="text-[28px] font-semibold text-white tracking-[-0.02em] mt-8">
+        Dein Portfolio wartet
+      </h2>
+      <p className="text-sm text-[#555] mt-3 max-w-[360px]">
+        Lege dein erstes Objekt an und Imvestra berechnet automatisch alle Kennzahlen.
+      </p>
+
+      <button
+        onClick={() => router.push("/portfolio/neu")}
+        className="mt-6 bg-[#00E0D7] text-[#080808] font-bold px-8 py-3.5 rounded-[10px] shadow-[0_0_30px_rgba(0,224,215,0.2)] hover:bg-[#00C7BE] transition-all cursor-pointer text-sm"
+      >
+        Objekt anlegen
+      </button>
+
+      <div className="mt-10 grid grid-cols-3 gap-4 max-w-[500px] opacity-40 select-none pointer-events-none">
+        {["Portfoliowert", "Eigenkapital", "Cashflow/Mo"].map(label => (
+          <div key={label} className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-[12px] p-4 blur-[2px]">
+            <p className="text-[9px] text-[#555] uppercase tracking-widest">{label}</p>
+            <p className="text-[18px] font-semibold text-white mt-1">—</p>
           </div>
-          <motion.button
-            onClick={() => router.push("/portfolio/neu")}
-            whileTap={prefersReduced ? {} : { scale: 0.97 }}
-            className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] transition-colors"
-            style={{ background: tokens.color.accent, color: tokens.color.bg }}
-          >
-            <Calculator size={14} />
-            Objekt hinzufugen
-          </motion.button>
-        </div>
-
-        {/* Summary strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Investiert",      value: formatCurrency(totalInvestment),             color: tokens.color.text },
-            { label: "Cashflow / Mo.",  value: formatCurrencySigned(totalCashflow),         color: totalCashflow >= 0 ? tokens.color.positive : tokens.color.danger },
-            { label: "Ø Bruttorendite", value: formatPercent(avgGrossYield),                color: tokens.color.accent },
-            { label: "Gesamtvermögen",  value: totalMarketValue > 0 ? formatCurrency(totalMarketValue) : "–", color: tokens.color.text },
-          ].map(({ label, value, color }) => (
-            <div
-              key={label}
-              className="rounded-[12px] px-5 py-4"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-            >
-              <p
-                className="text-xs font-medium uppercase tracking-wide mb-1"
-                style={{ color: tokens.color.textSubtle }}
-              >
-                {label}
-              </p>
-              <p className="text-xl font-semibold tracking-tight" style={{ color }}>
-                {value}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Property grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {properties.map((p, i) => {
-            const colors = TYPE_COLORS[p.type] ?? TYPE_COLORS.ETW;
-            const positive = p.cashflow_monthly >= 0;
-
-            const financingAlert = financingAlertsByProperty[p.id];
-
-            return (
-              <motion.div
-                key={p.id}
-                initial={prefersReduced ? {} : { opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: prefersReduced ? 0 : i * 0.06, duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
-                className="h-full"
-              >
-                <HoverCard intensity={3} className="h-full">
-                  <div
-                    className="relative rounded-[16px] overflow-hidden h-full transition-all duration-300"
-                    style={{
-                      background: tokens.color.surface,
-                      border: financingAlert
-                        ? `1px solid ${financingAlert === "critical" ? "rgba(255,68,68,0.25)" : "rgba(255,184,0,0.2)"}`
-                        : `1px solid ${tokens.color.border}`,
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = tokens.color.borderStrong;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = tokens.color.border;
-                    }}
-                  >
-                    {/* Left accent bar */}
-                    <div
-                      className="absolute left-0 top-0 bottom-0 w-[3px]"
-                      style={{ backgroundColor: positive ? tokens.color.positive : tokens.color.danger }}
-                    />
-
-                    <div className="pl-8 pr-6 py-5 flex flex-col h-full">
-                      <div className="flex items-start justify-between mb-4">
-                        <div
-                          className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
-                          style={{ background: colors.bg }}
-                        >
-                          <Buildings size={18} color={colors.text} />
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          {financingAlert && (
-                            <span
-                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                              style={{
-                                background: financingAlert === "critical" ? "rgba(255,68,68,0.1)" : "rgba(255,184,0,0.1)",
-                                color: financingAlert === "critical" ? "#FF4444" : "#FFB800",
-                              }}
-                            >
-                              Zins bald fallig
-                            </span>
-                          )}
-                          <span
-                            className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                            style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}
-                          >
-                            {p.type}
-                          </span>
-                        </div>
-                      </div>
-
-                      <h3 className="text-sm font-semibold leading-snug" style={{ color: tokens.color.text }}>
-                        {p.name}
-                      </h3>
-                      {p.market_value_estimated && p.market_value_estimated > 0 && (
-                        <div className="mt-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px]" style={{ color: tokens.color.textSubtle }}>
-                              Geschätzter Wert:
-                            </span>
-                            <span className="text-xs font-semibold" style={{ color: tokens.color.text }}>
-                              {formatCurrency(p.market_value_estimated)}
-                            </span>
-                          </div>
-                          {p.purchase_price > 0 && (() => {
-                            const gain = p.market_value_estimated - p.purchase_price;
-                            const pct = gain / p.purchase_price;
-                            const positive = gain >= 0;
-                            return (
-                              <div className="flex items-center gap-1 mt-0.5" style={{ color: positive ? "#00E0D7" : "#FF4444" }}>
-                                {positive ? <TrendUp size={11} /> : <TrendDown size={11} />}
-                                <span className="text-[10px]">
-                                  {formatCurrencySigned(gain)} ({formatPercent(pct)})
-                                </span>
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      )}
-                      {p.address ? (
-                        <p
-                          className="flex items-center gap-1 text-xs mt-1 mb-3"
-                          style={{ color: tokens.color.textSubtle }}
-                        >
-                          <MapPin size={11} />
-                          {p.address}
-                        </p>
-                      ) : (
-                        <div className="mb-3" />
-                      )}
-
-                      <div
-                        className="mt-auto pt-4"
-                        style={{ borderTop: `1px solid ${tokens.color.border}` }}
-                      >
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                          <div>
-                            <p
-                              className="text-[10px] uppercase tracking-wide font-medium mb-0.5"
-                              style={{ color: tokens.color.textSubtle }}
-                            >
-                              Kaufpreis
-                            </p>
-                            <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                              {formatCurrency(p.purchase_price)}
-                            </p>
-                          </div>
-                          <div>
-                            <p
-                              className="text-[10px] uppercase tracking-wide font-medium mb-0.5"
-                              style={{ color: tokens.color.textSubtle }}
-                            >
-                              Flache
-                            </p>
-                            <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                              {p.sqm > 0 ? `${p.sqm} m²` : "-"}
-                            </p>
-                          </div>
-                          <div>
-                            <p
-                              className="text-[10px] uppercase tracking-wide font-medium mb-0.5 flex items-center gap-1"
-                              style={{ color: tokens.color.textSubtle }}
-                            >
-                              <TrendUp size={10} />
-                              Bruttorendite
-                            </p>
-                            <p className="text-sm font-semibold" style={{ color: tokens.color.accent }}>
-                              {formatPercent(p.gross_yield)}
-                            </p>
-                          </div>
-                          <div>
-                            <p
-                              className="text-[10px] uppercase tracking-wide font-medium mb-0.5 flex items-center gap-1"
-                              style={{ color: tokens.color.textSubtle }}
-                            >
-                              <ChartLine size={10} />
-                              Cashflow / Mo.
-                            </p>
-                            <p
-                              className="text-sm font-semibold"
-                              style={{ color: positive ? tokens.color.positive : tokens.color.danger }}
-                            >
-                              {formatCurrencySigned(p.cashflow_monthly)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div
-                          className="grid grid-cols-2 gap-x-4 pt-3 mt-3"
-                          style={{ borderTop: `1px solid ${tokens.color.border}` }}
-                        >
-                          <div>
-                            <p
-                              className="text-[10px] uppercase tracking-wide font-medium mb-0.5"
-                              style={{ color: tokens.color.textSubtle }}
-                            >
-                              Nettorendite
-                            </p>
-                            <p className="text-sm font-medium" style={{ color: tokens.color.text }}>
-                              {formatPercent(p.net_yield)}
-                            </p>
-                          </div>
-                          {p.ltv > 0 && (
-                            <div>
-                              <p
-                                className="text-[10px] uppercase tracking-wide font-medium mb-0.5"
-                                style={{ color: tokens.color.textSubtle }}
-                              >
-                                LTV
-                              </p>
-                              <p className="text-sm font-medium" style={{ color: tokens.color.text }}>
-                                {formatPercent(p.ltv, 0)}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                        {tenantsByProperty[p.id] && (
-                          <div className="flex items-center gap-1.5 mt-2" style={{ color: "#666" }}>
-                            <UsersFour size={12} color="#666" />
-                            <span className="text-[11px]">
-                              {tenantsByProperty[p.id].count} Mieter · {formatCurrency(tenantsByProperty[p.id].totalRent)}/Mo
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </HoverCard>
-              </motion.div>
-            );
-          })}
-        </div>
+        ))}
       </div>
     </div>
-  );
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function PortfolioView({ properties, financings, payments, expenses }: PortfolioViewProps) {
+  const router = useRouter()
+  const prefersReduced = useReducedMotion()
+  const [viewMode, setViewMode] = useState<ViewMode>("overview")
+  const [chartMetric, setChartMetric] = useState<ChartMetric>("wert")
+  const [timeRange, setTimeRange] = useState<TimeRange>("Alle")
+  const [valueDisplay, setValueDisplay] = useState<"eur" | "pct">("eur")
+  const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
+  const [scenarios, setScenarios] = useState({ mietausfall: 0, zinssteigerung: 0, wertrueckgang: 0 })
+
+  const summary = useMemo(
+    () => calculatePortfolioSummary(properties, financings, payments, expenses),
+    [properties, financings, payments, expenses]
+  )
+
+  const propertyMetrics = useMemo(
+    () => properties.map(p => calculatePropertyMetrics(p, financings, payments, expenses)),
+    [properties, financings, payments, expenses]
+  )
+
+  const avgDSCR = propertyMetrics.length > 0
+    ? propertyMetrics.reduce((s, m) => s + m.dscr, 0) / propertyMetrics.length : 0
+  const avgLTV = propertyMetrics.length > 0
+    ? propertyMetrics.reduce((s, m) => s + m.ltv, 0) / propertyMetrics.length : 0
+
+  if (properties.length === 0) return <EmptyState />
+
+  const totalRate = financings.reduce((s, f) => s + (f.rate_monthly ?? 0), 0)
+  const totalHausgeld = properties.reduce((s, p) => s + (p.hausgeld_monthly ?? 0), 0)
+  const totalInstandhaltung = properties.reduce((s, p) => s + (p.sqm ?? 0) * (10 / 12), 0)
+
+  const TAB_VIEWS: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
+    { id: "overview",    label: "Übersicht",  icon: <SquaresFour size={13} /> },
+    { id: "chart",       label: "Chart",      icon: <ChartLine size={13} /> },
+    { id: "properties",  label: "Objekte",    icon: <ListBullets size={13} /> },
+    { id: "analyse",     label: "Analyse",    icon: <Compass size={13} /> },
+  ]
+
+  // ─── Stacked bar widths ──────────────────────────────────────────────────────
+  const mv = summary.total_marktwert
+  const ekPct    = mv > 0 ? Math.max(0, summary.total_eingesetztes_eigenkapital / mv * 100) : 0
+  const wertPct  = mv > 0 ? Math.max(0, summary.total_wertentwicklung_eur / mv * 100) : 0
+  const tilgPct  = mv > 0 ? Math.max(0, summary.total_getilgtes_kapital / mv * 100) : 0
+  const restPct  = mv > 0 ? Math.max(0, summary.total_restschuld / mv * 100) : 0
+
+  // ─── Allokation by type ──────────────────────────────────────────────────────
+  const typeGroups: Record<string, { count: number; marktwert: number }> = {}
+  properties.forEach((p, i) => {
+    const t = p.type ?? "Sonstige"
+    if (!typeGroups[t]) typeGroups[t] = { count: 0, marktwert: 0 }
+    typeGroups[t].count += 1
+    typeGroups[t].marktwert += propertyMetrics[i].marktwert
+  })
+
+  // ─── Scenario impact ─────────────────────────────────────────────────────────
+  const scenMieteinnahmen = summary.total_mieteinnahmen_monthly * (1 - scenarios.mietausfall / 100)
+  const scenZinsenExtra = financings.reduce((s, f) => s + (f.loan_amount ?? 0) * (scenarios.zinssteigerung / 100 / 12), 0)
+  const scenMarktwert = summary.total_marktwert * (1 - scenarios.wertrueckgang / 100)
+  const scenCashflow = scenMieteinnahmen - totalRate - scenZinsenExtra - totalHausgeld - totalInstandhaltung
+  const scenROE = summary.total_eingesetztes_eigenkapital > 0
+    ? (scenCashflow * 12) / summary.total_eingesetztes_eigenkapital : 0
+
+  return (
+    <div className="min-h-screen bg-[#080808]">
+
+      {/* ── Header ──────────────────────────────────────────────────────────── */}
+      <div className="sticky top-0 z-10 bg-[rgba(8,8,8,0.9)] backdrop-blur-md border-b border-[rgba(255,255,255,0.06)] px-6 py-4">
+        <div className="flex items-center justify-between max-w-[1400px] mx-auto">
+          <div>
+            <p className="text-[20px] font-semibold text-white">Portfolio</p>
+            <p className="text-xs text-[#555] mt-0.5">
+              {summary.anzahl_objekte} Objekte · {summary.gesamt_flaeche.toFixed(0)} m²
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1 gap-0.5">
+              {TAB_VIEWS.map(v => (
+                <button
+                  key={v.id}
+                  onClick={() => setViewMode(v.id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-medium cursor-pointer transition-all"
+                  style={viewMode === v.id
+                    ? { background: "#1A1A1A", color: "#fff" }
+                    : { color: "#555" }}
+                >
+                  {v.icon}
+                  <span className="hidden sm:inline">{v.label}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => router.push("/portfolio/neu")}
+              className="flex items-center gap-1.5 bg-[#00E0D7] text-[#080808] text-xs font-bold px-4 py-2 rounded-[8px] hover:bg-[#00C7BE] transition-all cursor-pointer"
+            >
+              <Plus size={13} weight="bold" />
+              Objekt
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Hero Metrics Bar ─────────────────────────────────────────────────── */}
+      <div className="bg-[#0C0C0C] border-b border-[rgba(255,255,255,0.06)] px-6 py-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-[1400px] mx-auto">
+
+          {/* 1 – Portfoliowert */}
+          <div>
+            <div className="flex items-center">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">Portfoliowert</span>
+              <Tooltip text="Geschätzter Gesamtmarktwert aller Immobilien. Berechnet aus Ertragswert und Vergleichswert." />
+            </div>
+            <p className="text-[22px] font-semibold tracking-[-0.02em] text-white mt-1.5">{formatCurrency(summary.total_marktwert)}</p>
+            <p className="text-[11px] text-[#444] mt-0.5">Gesamtwert</p>
+          </div>
+
+          {/* 2 – Eigenkapital */}
+          <div>
+            <div className="flex items-center">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">Eigenkapital</span>
+              <Tooltip text="Aktueller Eigenkapitalwert = Marktwert minus Restschulden. Was dir nach Verkauf und Schuldenrückzahlung bliebe." />
+            </div>
+            <p className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5" style={{ color: "#00E0D7" }}>
+              {formatCurrency(summary.total_eigenkapital_aktuell)}
+            </p>
+            <p className="text-[11px] mt-0.5" style={{ color: "#00E0D7" }}>
+              {formatCurrencySigned(summary.total_eigenkapital_gewinn)} Gewinn
+            </p>
+          </div>
+
+          {/* 3 – Wertsteigerung */}
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">Wertsteigerung</span>
+              <Tooltip text="Differenz zwischen aktuellem Marktwert und ursprünglichem Kaufpreis aller Objekte." />
+              <button
+                onClick={() => setValueDisplay(v => v === "eur" ? "pct" : "eur")}
+                className="text-[9px] px-1.5 py-0.5 rounded-full border border-[rgba(255,255,255,0.1)] text-[#555] hover:text-white cursor-pointer transition-colors"
+              >
+                {valueDisplay === "eur" ? "%" : "€"}
+              </button>
+            </div>
+            <p
+              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
+              style={{ color: summary.total_wertentwicklung_eur >= 0 ? "#00E0D7" : "#FF4444" }}
+            >
+              {valueDisplay === "eur"
+                ? formatCurrencySigned(summary.total_wertentwicklung_eur)
+                : formatPercent(summary.total_wertentwicklung_pct)}
+            </p>
+            <p className="text-[11px] text-[#444] mt-0.5">
+              {valueDisplay === "eur"
+                ? formatPercent(summary.total_wertentwicklung_pct)
+                : formatCurrency(summary.total_wertentwicklung_eur)}
+            </p>
+          </div>
+
+          {/* 4 – Cashflow */}
+          <div>
+            <div className="flex items-center">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">Cashflow / Mo.</span>
+              <Tooltip text="Monatlicher Netto-Cashflow nach Abzug aller Kosten (Zinsen, Tilgung, Hausgeld, Instandhaltung)." />
+            </div>
+            <p
+              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
+              style={{ color: summary.total_cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}
+            >
+              {formatCurrencySigned(summary.total_cashflow_monthly)}
+            </p>
+            <p className="text-[11px] text-[#444] mt-0.5">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
+          </div>
+
+          {/* 5 – ROE */}
+          <div>
+            <div className="flex items-center">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">EK-Rendite</span>
+              <Tooltip text="ROE: Jährlicher Cashflow geteilt durch eingesetztes Eigenkapital. Zeigt wie effizient dein Kapital arbeitet." />
+            </div>
+            <p
+              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
+              style={{ color: colorByValue(summary.portfolio_roe, 0.03, 0.06) }}
+            >
+              {formatPercent(summary.portfolio_roe)}
+            </p>
+            <p className="text-[11px] text-[#444] mt-0.5">ROE p.a.</p>
+          </div>
+
+          {/* 6 – Gesamtrendite */}
+          <div>
+            <div className="flex items-center">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">Gesamtrendite</span>
+              <Tooltip text="Cashflow + Wertsteigerung geteilt durch eingesetztes Eigenkapital. Die wahre Rendite deines Investments." />
+            </div>
+            <p
+              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
+              style={{ color: colorByValue(summary.portfolio_gesamtrendite, 0.05, 0.10) }}
+            >
+              {formatPercent(summary.portfolio_gesamtrendite)}
+            </p>
+            <p className="text-[11px] text-[#444] mt-0.5">inkl. Wertsteigerung</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── View Content ──────────────────────────────────────────────────────── */}
+      <div className="max-w-[1400px] mx-auto">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={viewMode}
+            initial={prefersReduced ? {} : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={prefersReduced ? {} : { opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+
+            {/* ════════════════ ÜBERSICHT ════════════════ */}
+            {viewMode === "overview" && (
+              <div className="px-6 py-6 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
+
+                {/* LEFT */}
+                <div>
+                  {/* Kapitalstruktur */}
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-5">
+                    <div className="flex justify-between items-center mb-5">
+                      <div className="flex items-center">
+                        <span className="text-sm font-semibold text-white">Kapitalstruktur</span>
+                        <Tooltip text="Zeigt wie sich dein Gesamtkapital zusammensetzt: Eigenkapital vs. Fremdkapital." />
+                      </div>
+                    </div>
+
+                    {/* Stacked bar */}
+                    <div className="bg-[#1A1A1A] rounded-full h-8 overflow-hidden flex mb-4">
+                      {[
+                        { pct: ekPct,   color: "#00E0D7",               label: "EK" },
+                        { pct: wertPct, color: "rgba(0,224,215,0.4)",   label: "" },
+                        { pct: tilgPct, color: "#FFB800",               label: "" },
+                        { pct: restPct, color: "rgba(255,255,255,0.08)", label: "" },
+                      ].map((seg, i) => (
+                        <motion.div
+                          key={i}
+                          className="h-full flex items-center justify-center overflow-hidden"
+                          style={{ background: seg.color }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${seg.pct}%` }}
+                          transition={{ delay: i * 0.1, duration: 0.6, ease: "easeOut" }}
+                        >
+                          {seg.label && seg.pct > 8 && (
+                            <span className="text-[10px] text-[#080808] font-bold">{seg.label}</span>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Legend */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        {
+                          color: "#00E0D7", label: "Eingesetztes Eigenkapital",
+                          value: formatCurrency(summary.total_eingesetztes_eigenkapital),
+                          tip: "Dein eigenes Kapital das du investiert hast (Kaufpreis + Nebenkosten - Darlehen)",
+                        },
+                        {
+                          color: "rgba(0,224,215,0.5)", label: "Wertsteigerung",
+                          value: formatCurrency(Math.max(0, summary.total_wertentwicklung_eur)),
+                          tip: "Zuwachs des Immobilienwerts seit Kauf",
+                        },
+                        {
+                          color: "#FFB800", label: "Getilgtes Fremdkapital",
+                          value: formatCurrency(summary.total_getilgtes_kapital),
+                          tip: "Bereits zurückgezahlte Darlehensbeträge. Erhöhen dein Eigenkapital monatlich.",
+                        },
+                        {
+                          color: "rgba(255,255,255,0.15)", label: "Restschuld",
+                          value: formatCurrency(summary.total_restschuld),
+                          tip: "Noch ausstehende Darlehensschulden",
+                        },
+                      ].map(item => (
+                        <div key={item.label} className="flex items-center gap-2.5">
+                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                          <div className="flex items-center min-w-0">
+                            <span className="text-xs text-[#555] truncate">{item.label}</span>
+                            <Tooltip text={item.tip} />
+                          </div>
+                          <span className="text-xs font-semibold text-white ml-auto whitespace-nowrap">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Cashflow Waterfall */}
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                    <div className="flex items-center mb-5">
+                      <span className="text-sm font-semibold text-white">Cashflow-Analyse / Monat</span>
+                      <Tooltip text="Zeigt wohin deine Mieteinnahmen fließen und was als Netto-Cashflow verbleibt." />
+                    </div>
+
+                    {(() => {
+                      const maxV = summary.total_mieteinnahmen_monthly || 1
+                      const rows = [
+                        { label: "Mieteinnahmen",            value: summary.total_mieteinnahmen_monthly, color: "#00E0D7",               sign: "" },
+                        { label: "− Zinsen & Tilgung",       value: -totalRate,                         color: "#FF4444",               sign: "−" },
+                        { label: "− Hausgeld",               value: -totalHausgeld,                     color: "rgba(255,68,68,0.6)",   sign: "−" },
+                        { label: "− Instandhaltung",         value: -totalInstandhaltung,               color: "rgba(255,184,0,0.6)",   sign: "−" },
+                      ]
+                      return (
+                        <div>
+                          {rows.map(row => (
+                            <div key={row.label} className="flex items-center gap-3 py-2.5 border-b border-[rgba(255,255,255,0.04)]">
+                              <span className="text-xs text-[#555] w-[160px] flex-shrink-0">{row.label}</span>
+                              <div className="flex-1 bg-[#1A1A1A] rounded-full h-1.5 overflow-hidden">
+                                <motion.div
+                                  className="h-full rounded-full"
+                                  style={{ background: row.color }}
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${(Math.abs(row.value) / maxV) * 100}%` }}
+                                  transition={{ duration: 0.6, ease: "easeOut" }}
+                                />
+                              </div>
+                              <span className="text-xs font-semibold w-[90px] text-right" style={{ color: row.color }}>
+                                {row.sign}{formatCurrency(Math.abs(row.value))}
+                              </span>
+                            </div>
+                          ))}
+                          <div className="flex items-center gap-3 pt-3">
+                            <span className="text-sm font-semibold text-white w-[160px] flex-shrink-0">= Netto-Cashflow</span>
+                            <div className="flex-1 bg-[#1A1A1A] rounded-full h-1.5 overflow-hidden">
+                              <motion.div
+                                className="h-full rounded-full"
+                                style={{ background: summary.total_cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(Math.abs(summary.total_cashflow_monthly) / maxV) * 100}%` }}
+                                transition={{ duration: 0.6, delay: 0.3 }}
+                              />
+                            </div>
+                            <span
+                              className="text-lg font-semibold w-[90px] text-right"
+                              style={{ color: summary.total_cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}
+                            >
+                              {formatCurrencySigned(summary.total_cashflow_monthly)}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    })()}
+                  </div>
+                </div>
+
+                {/* RIGHT */}
+                <div>
+                  {/* Kennzahlen */}
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-4">
+                    <p className="text-sm font-semibold text-white mb-4">Kennzahlen</p>
+                    {[
+                      {
+                        label: "Investiertes Kapital",
+                        tip: "Gesamtes eingesetztes Kapital (Eigenkapital + Fremdkapital)",
+                        value: formatCurrency(summary.total_gesamtinvestition),
+                        color: "#fff",
+                      },
+                      {
+                        label: "Davon Eigenkapital",
+                        tip: "Dein eigener Anteil am Gesamtinvestment",
+                        value: formatCurrency(summary.total_eingesetztes_eigenkapital),
+                        sub: formatPercent(summary.total_eingesetztes_eigenkapital / (summary.total_gesamtinvestition || 1)),
+                        color: "#fff",
+                      },
+                      {
+                        label: "Fremdkapitalquote (LTV)",
+                        tip: "Loan-to-Value: Restschuld im Verhältnis zum Marktwert. Banken bevorzugen unter 80%.",
+                        value: formatPercent(summary.total_fremdkapital_quote),
+                        color: colorByValue(1 - summary.total_fremdkapital_quote, 0.2, 0.4),
+                      },
+                      {
+                        label: "Bruttorendite Ø",
+                        tip: "Jahreskaltmiete / Kaufpreis. Orientierungswert vor Kosten.",
+                        value: formatPercent(summary.portfolio_brutto_rendite),
+                        color: "#fff",
+                      },
+                      {
+                        label: "Nettorendite Ø",
+                        tip: "Cashflow nach allen Kosten / Gesamtinvestition. Reale Rendite.",
+                        value: formatPercent(summary.portfolio_netto_rendite),
+                        color: colorByValue(summary.portfolio_netto_rendite, 0.02, 0.04),
+                      },
+                      {
+                        label: "Ø DSCR",
+                        tip: "Debt Service Coverage Ratio: NOI / Jahresschuldendienst. Banken erwarten mindestens 1,2.",
+                        value: avgDSCR > 0 ? avgDSCR.toFixed(2) : "—",
+                        color: avgDSCR === 0 ? "#555" : colorByValue(avgDSCR, 1.2, 1.5),
+                      },
+                      {
+                        label: "Ø LTV je Objekt",
+                        tip: "Durchschnittlicher Loan-to-Value pro Objekt",
+                        value: formatPercent(avgLTV),
+                        color: "#fff",
+                      },
+                      {
+                        label: "Ø Cashflow/Objekt",
+                        tip: "Durchschnittlicher monatlicher Cashflow pro Objekt",
+                        value: formatCurrencySigned(summary.total_cashflow_monthly / (summary.anzahl_objekte || 1)),
+                        color: summary.total_cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444",
+                      },
+                    ].map(row => (
+                      <div key={row.label} className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                        <div className="flex items-center">
+                          <span className="text-xs text-[#555]">{row.label}</span>
+                          <Tooltip text={row.tip} />
+                        </div>
+                        <div className="text-right">
+                          <span className="text-sm font-semibold" style={{ color: row.color }}>{row.value}</span>
+                          {row.sub && <p className="text-[10px] text-[#555]">{row.sub}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Allokation */}
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                    <p className="text-sm font-semibold text-white mb-4">Allokation nach Objekttyp</p>
+                    {Object.entries(typeGroups).map(([type, group]) => {
+                      const tc = TYPE_COLORS[type] ?? TYPE_COLORS["Sonstige"]
+                      const pct = mv > 0 ? group.marktwert / mv : 0
+                      return (
+                        <div key={type} className="flex items-center gap-3 py-2">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                            style={{ background: tc.bg, color: tc.text }}>
+                            {type}
+                          </span>
+                          <span className="text-xs text-[#555] flex-shrink-0">{group.count}x</span>
+                          <div className="flex-1 bg-[#1A1A1A] rounded-full h-1 overflow-hidden">
+                            <motion.div
+                              className="h-full rounded-full"
+                              style={{ background: tc.text }}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct * 100}%` }}
+                              transition={{ duration: 0.5 }}
+                            />
+                          </div>
+                          <span className="text-xs font-semibold text-white">{formatPercent(pct, 0)}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ════════════════ CHART ════════════════ */}
+            {viewMode === "chart" && (
+              <div className="px-6 py-6">
+                {/* Controls */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex gap-6">
+                    {(["wert", "eigenkapital"] as ChartMetric[]).map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setChartMetric(m)}
+                        className="text-sm font-medium pb-2 cursor-pointer transition-all border-b-2"
+                        style={chartMetric === m
+                          ? { color: "#00E0D7", borderColor: "#00E0D7" }
+                          : { color: "#555", borderColor: "transparent" }}
+                      >
+                        {m === "wert" ? "Portfoliowert" : "Eigenkapital"}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-1 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1">
+                    {(["1J", "3J", "5J", "Alle"] as TimeRange[]).map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setTimeRange(r)}
+                        className="text-xs px-3 py-1.5 rounded-[6px] cursor-pointer transition-all"
+                        style={timeRange === r
+                          ? { background: "#1A1A1A", color: "#fff" }
+                          : { color: "#555" }}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Main chart */}
+                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-4">
+                  <LineChart data={summary.wert_verlauf} metric={chartMetric} timeRange={timeRange} />
+                  <div className="flex gap-6 mt-4 text-xs text-[#555]">
+                    <span style={{ color: "#00E0D7" }}>─── {chartMetric === "wert" ? "Portfoliowert" : "Eigenkapital"}</span>
+                    {chartMetric === "wert" && <span style={{ color: "#FFB800" }}>- - - Eigenkapital</span>}
+                  </div>
+                </div>
+
+                {/* Secondary charts */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4">
+                    <p className="text-xs text-[#555] mb-3">Cashflow / Monat (simuliert)</p>
+                    <MiniBarChart data={summary.wert_verlauf.slice(-12).map((_, i, arr) => {
+                      const prog = i / Math.max(arr.length - 1, 1)
+                      return summary.total_cashflow_monthly * (0.8 + prog * 0.2)
+                    })} />
+                    <p className="text-[10px] text-[#444] mt-2 text-center">letzte 12 Datenpunkte</p>
+                  </div>
+
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4">
+                    <p className="text-xs text-[#555] mb-3">Rendite-Breakdown</p>
+                    <div className="space-y-2">
+                      {[
+                        { label: "Brutto", value: summary.portfolio_brutto_rendite, max: 0.1 },
+                        { label: "Netto",  value: summary.portfolio_netto_rendite,  max: 0.1 },
+                        { label: "ROE",    value: summary.portfolio_roe,            max: 0.15 },
+                      ].map(row => (
+                        <div key={row.label} className="flex items-center gap-2">
+                          <span className="text-[10px] text-[#555] w-10">{row.label}</span>
+                          <div className="flex-1 bg-[#1A1A1A] rounded-full h-1.5">
+                            <motion.div
+                              className="h-full rounded-full bg-[#00E0D7]"
+                              initial={{ width: 0 }}
+                              animate={{ width: `${Math.min(row.value / row.max, 1) * 100}%` }}
+                              transition={{ duration: 0.6 }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-white w-12 text-right">{formatPercent(row.value, 1)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 flex flex-col items-center">
+                    <p className="text-xs text-[#555] mb-3 self-start">Kapital-Verteilung</p>
+                    <DonutChart summary={summary} />
+                    <div className="mt-3 space-y-1 w-full">
+                      {[
+                        { color: "#00E0D7",               label: "EK eingesetzt" },
+                        { color: "rgba(0,224,215,0.4)",   label: "Wertsteigerung" },
+                        { color: "#FFB800",               label: "Getilgt" },
+                        { color: "#2A2A2A",               label: "Restschuld" },
+                      ].map(i => (
+                        <div key={i.label} className="flex items-center gap-2 text-[10px] text-[#555]">
+                          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: i.color }} />
+                          {i.label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ════════════════ OBJEKTE ════════════════ */}
+            {viewMode === "properties" && (
+              <div className="px-6 py-6">
+                {/* Table header */}
+                <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 px-4 py-3 border-b border-[rgba(255,255,255,0.06)] text-[10px] text-[#444] uppercase tracking-widest">
+                  <span>Objekt</span>
+                  <span>Marktwert</span>
+                  <span>Wertsteigerung</span>
+                  <span>Cashflow/Mo</span>
+                  <span>Rendite</span>
+                  <span>EK-Rendite</span>
+                  <span />
+                </div>
+
+                {/* Rows */}
+                {properties.map((p, i) => {
+                  const m = propertyMetrics[i]
+                  const isOpen = selectedProperty === p.id
+                  const tc = TYPE_COLORS[p.type ?? "Sonstige"] ?? TYPE_COLORS["Sonstige"]
+                  return (
+                    <div key={p.id}>
+                      <div
+                        onClick={() => setSelectedProperty(isOpen ? null : p.id)}
+                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-[12px] mb-2 px-4 py-3.5 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#141414] transition-all cursor-pointer items-center"
+                        style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-[3px] h-8 rounded-full flex-shrink-0" style={{ background: m.cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }} />
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-white truncate">{p.name}</p>
+                            <p className="text-xs text-[#555] mt-0.5">
+                              <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold mr-1" style={{ background: tc.bg, color: tc.text }}>{p.type}</span>
+                              {p.address?.split(",")[1]?.trim() ?? ""}
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">{formatCurrency(m.marktwert)}</p>
+                          <p className="text-[10px] text-[#444]">vs {formatCurrency(m.kaufpreis)}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold" style={{ color: m.wertentwicklung_eur >= 0 ? "#00E0D7" : "#FF4444" }}>
+                            {formatCurrencySigned(m.wertentwicklung_eur)}
+                          </p>
+                          <p className="text-[10px] text-[#444]">{formatPercent(m.wertentwicklung_pct)}</p>
+                        </div>
+                        <p className="text-sm font-semibold" style={{ color: m.cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}>
+                          {formatCurrencySigned(m.cashflow_monthly)}
+                        </p>
+                        <div>
+                          <p className="text-sm font-semibold text-white">{formatPercent(m.brutto_rendite)}</p>
+                          <p className="text-[10px] text-[#444]">Brutto</p>
+                        </div>
+                        <p className="text-sm font-semibold" style={{ color: colorByValue(m.eigenkapital_rendite, 0.03, 0.06) }}>
+                          {formatPercent(m.eigenkapital_rendite)}
+                        </p>
+                        <button
+                          onClick={e => { e.stopPropagation(); setSelectedProperty(isOpen ? null : p.id) }}
+                          className="flex items-center justify-center cursor-pointer text-[#444] hover:text-white transition-colors"
+                        >
+                          <DotsThree size={18} weight="bold" />
+                        </button>
+                      </div>
+
+                      {/* Expanded detail */}
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            style={{ overflow: "hidden" }}
+                            className="mb-2"
+                          >
+                            <div className="bg-[#0C0C0C] border-x border-b border-[rgba(255,255,255,0.07)] rounded-b-[12px] px-4 py-4">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                {[
+                                  { label: "Gesamtinvestition", tip: "Kaufpreis + Nebenkosten", value: formatCurrency(m.gesamtinvestition), color: "#fff" },
+                                  { label: "Eingesetztes EK",   tip: "Gesamtinvestition minus Darlehen", value: formatCurrency(m.eigenkapital_eingesetzt), color: "#fff" },
+                                  { label: "Restschuld",        tip: "Noch ausstehende Darlehensschulden", value: formatCurrency(m.restschuld), color: "#FF4444" },
+                                  { label: "Getilgtes Kapital", tip: "Bereits zurückgezahlte Darlehensbeträge", value: formatCurrency(m.getilgtes_kapital), color: "#FFB800" },
+                                  { label: "LTV",               tip: "Restschuld / Marktwert", value: formatPercent(m.ltv), color: colorByValue(1 - m.ltv, 0.2, 0.4) },
+                                  { label: "DSCR",              tip: "NOI / Jahresschuldendienst", value: m.dscr > 0 ? m.dscr.toFixed(2) : "—", color: m.dscr === 0 ? "#555" : colorByValue(m.dscr, 1.2, 1.5) },
+                                  { label: "Aktuelles EK",      tip: "Marktwert minus Restschuld", value: formatCurrency(m.eigenkapital_aktuell), color: "#00E0D7" },
+                                  { label: "EK-Gewinn",         tip: "Aktuelles EK minus eingesetztes EK", value: formatCurrencySigned(m.eigenkapital_gewinn), color: m.eigenkapital_gewinn >= 0 ? "#00E0D7" : "#FF4444" },
+                                ].map(row => (
+                                  <div key={row.label} className="bg-[#141414] rounded-[10px] p-3">
+                                    <div className="flex items-center">
+                                      <p className="text-[10px] text-[#555]">{row.label}</p>
+                                      <Tooltip text={row.tip} />
+                                    </div>
+                                    <p className="text-sm font-semibold mt-1" style={{ color: row.color }}>{row.value}</p>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => router.push(`/calculator?property=${p.id}`)}
+                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(255,255,255,0.1)] text-[#888] hover:text-white hover:border-[rgba(255,255,255,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <ArrowUpRight size={12} /> Im Rechner öffnen
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )
+                })}
+
+                {/* Totals row */}
+                <div className="sticky bottom-0 bg-[#0C0C0C] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 items-center mt-2">
+                  <p className="text-xs font-bold text-white">Gesamt</p>
+                  <p className="text-sm font-bold text-white">{formatCurrency(summary.total_marktwert)}</p>
+                  <p className="text-sm font-bold" style={{ color: summary.total_wertentwicklung_eur >= 0 ? "#00E0D7" : "#FF4444" }}>
+                    {formatCurrencySigned(summary.total_wertentwicklung_eur)}
+                  </p>
+                  <p className="text-sm font-bold" style={{ color: summary.total_cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}>
+                    {formatCurrencySigned(summary.total_cashflow_monthly)}
+                  </p>
+                  <p className="text-sm font-bold text-white">{formatPercent(summary.portfolio_brutto_rendite)}</p>
+                  <p className="text-sm font-bold" style={{ color: colorByValue(summary.portfolio_roe, 0.03, 0.06) }}>
+                    {formatPercent(summary.portfolio_roe)}
+                  </p>
+                  <span />
+                </div>
+              </div>
+            )}
+
+            {/* ════════════════ ANALYSE ════════════════ */}
+            {viewMode === "analyse" && (
+              <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* Rendite-Analyse */}
+                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <p className="text-sm font-semibold text-white mb-5">Rendite-Analyse</p>
+                  <div className="space-y-4">
+                    {[
+                      { label: "Bruttorendite Ø",                value: summary.portfolio_brutto_rendite },
+                      { label: "Nettorendite Ø",                 value: summary.portfolio_netto_rendite },
+                      { label: "Eigenkapitalrendite Ø",          value: summary.portfolio_roe },
+                      { label: "Gesamtrendite (inkl. Wertsteig.)", value: summary.portfolio_gesamtrendite },
+                    ].map(row => (
+                      <div key={row.label}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-[#555]">{row.label}</span>
+                          <span className="font-semibold" style={{ color: colorByValue(row.value, 0.03, 0.06) }}>
+                            {formatPercent(row.value)}
+                          </span>
+                        </div>
+                        <div className="relative bg-[#1A1A1A] rounded-full h-2">
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ background: colorByValue(row.value, 0.03, 0.06) }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(row.value / 0.20, 1) * 100}%` }}
+                            transition={{ duration: 0.6 }}
+                          />
+                          {/* Tagesgeld 3% */}
+                          <div className="absolute top-0 bottom-0 w-px bg-[#444]" style={{ left: `${(0.03 / 0.20) * 100}%` }} />
+                          {/* DAX 8% */}
+                          <div className="absolute top-0 bottom-0 w-px bg-[#666]" style={{ left: `${(0.08 / 0.20) * 100}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                    <div className="flex gap-4 text-[10px] text-[#444] pt-1">
+                      <span>│ Tagesgeld ~3%</span>
+                      <span>│ DAX Ø ~8%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Risiko-Analyse */}
+                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <p className="text-sm font-semibold text-white mb-5">Risikoprofil</p>
+                  <div className="space-y-0">
+                    {[
+                      {
+                        label: "Fremdkapitalquote",
+                        tip: "Restschuld / Marktwert. Unter 60% gilt als solide.",
+                        value: formatPercent(summary.total_fremdkapital_quote),
+                        risk: summary.total_fremdkapital_quote < 0.6 ? "low" : summary.total_fremdkapital_quote < 0.8 ? "mid" : "high",
+                      },
+                      {
+                        label: "Ø DSCR",
+                        tip: "Debt Service Coverage Ratio. Über 1,5 gilt als gut.",
+                        value: avgDSCR > 0 ? avgDSCR.toFixed(2) : "—",
+                        risk: avgDSCR === 0 ? "mid" : avgDSCR >= 1.5 ? "low" : avgDSCR >= 1.2 ? "mid" : "high",
+                      },
+                      {
+                        label: "Leerstandsrisiko",
+                        tip: "Aktuelle Leerstandsquote im Portfolio.",
+                        value: formatPercent(summary.leerstandsquote),
+                        risk: "low" as const,
+                      },
+                      {
+                        label: "Zinsbindungs-Risiko",
+                        tip: "Wie viele Finanzierungen laufen innerhalb von 12 Monaten aus.",
+                        value: `${financings.filter(f => {
+                          if (!f.fixed_until) return false
+                          const days = (new Date(f.fixed_until).getTime() - Date.now()) / 86400000
+                          return days < 365
+                        }).length} Objekte`,
+                        risk: "mid" as const,
+                      },
+                    ].map(row => (
+                      <div key={row.label} className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                        <div className="flex items-center">
+                          <span className="text-xs text-[#555]">{row.label}</span>
+                          <Tooltip text={row.tip} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-white">{row.value}</span>
+                          <div className="w-2 h-2 rounded-full" style={{
+                            background: row.risk === "low" ? "#00E0D7" : row.risk === "mid" ? "#FFB800" : "#FF4444"
+                          }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Szenario-Analyse */}
+                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <p className="text-sm font-semibold text-white mb-1">Szenario-Analyse</p>
+                  <p className="text-xs text-[#555] mb-5">Was passiert wenn...</p>
+                  <div className="space-y-5">
+                    {[
+                      { key: "mietausfall" as const, label: "Mietausfall", max: 20, unit: "%" },
+                      { key: "zinssteigerung" as const, label: "Zinssteigerung", max: 3, unit: "%" },
+                      { key: "wertrueckgang" as const, label: "Wertrückgang", max: 20, unit: "%" },
+                    ].map(s => (
+                      <div key={s.key}>
+                        <div className="flex justify-between text-xs mb-2">
+                          <span className="text-[#555]">{s.label}</span>
+                          <span className="text-white font-semibold">+{scenarios[s.key]}{s.unit}</span>
+                        </div>
+                        <input
+                          type="range" min="0" max={s.max} value={scenarios[s.key]}
+                          onChange={e => setScenarios(prev => ({ ...prev, [s.key]: +e.target.value }))}
+                          className="w-full accent-[#00E0D7] cursor-pointer"
+                        />
+                      </div>
+                    ))}
+                    <div className="pt-3 border-t border-[rgba(255,255,255,0.06)] grid grid-cols-3 gap-3">
+                      {[
+                        { label: "Cashflow/Mo", value: formatCurrencySigned(scenCashflow), color: scenCashflow >= 0 ? "#00E0D7" : "#FF4444" },
+                        { label: "ROE p.a.",    value: formatPercent(scenROE),             color: colorByValue(scenROE, 0.03, 0.06) },
+                        { label: "Marktwert",   value: formatCurrency(scenMarktwert),      color: "#fff" },
+                      ].map(row => (
+                        <div key={row.label} className="bg-[#0C0C0C] rounded-[8px] p-3">
+                          <p className="text-[9px] text-[#444] uppercase tracking-wide">{row.label}</p>
+                          <p className="text-sm font-semibold mt-1" style={{ color: row.color }}>{row.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Performance Ranking */}
+                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <p className="text-sm font-semibold text-white mb-1">Performance Ranking</p>
+                  <p className="text-xs text-[#555] mb-5">Objekte nach Eigenkapitalrendite</p>
+                  <div className="space-y-0">
+                    {[...propertyMetrics]
+                      .sort((a, b) => b.eigenkapital_rendite - a.eigenkapital_rendite)
+                      .map((m, rank) => {
+                        const prop = properties.find(p => p.id === m.property_id)!
+                        const maxROE = propertyMetrics.reduce((mx, pm) => Math.max(mx, pm.eigenkapital_rendite), 0.001)
+                        const isTop = rank === 0
+                        const isBot = rank === propertyMetrics.length - 1
+                        return (
+                          <div key={m.property_id} className="flex items-center gap-3 py-3 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                            <span className="text-[10px] font-bold w-4 flex-shrink-0" style={{
+                              color: isTop ? "#00E0D7" : isBot ? "#FF4444" : "#555"
+                            }}>#{rank + 1}</span>
+                            <span className="text-xs text-white flex-1 min-w-0 truncate">{prop.name}</span>
+                            <div className="w-24 bg-[#1A1A1A] rounded-full h-1.5 flex-shrink-0">
+                              <motion.div
+                                className="h-full rounded-full"
+                                style={{ background: isTop ? "#00E0D7" : isBot ? "#FF4444" : "#FFB800" }}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(m.eigenkapital_rendite / maxROE) * 100}%` }}
+                                transition={{ delay: rank * 0.1, duration: 0.5 }}
+                              />
+                            </div>
+                            <span className="text-xs font-semibold w-14 text-right flex-shrink-0"
+                              style={{ color: isTop ? "#00E0D7" : isBot ? "#FF4444" : "#fff" }}>
+                              {formatPercent(m.eigenkapital_rendite)}
+                            </span>
+                          </div>
+                        )
+                      })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  )
 }
