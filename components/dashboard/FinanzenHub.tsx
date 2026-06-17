@@ -1008,7 +1008,7 @@ export default function FinanzenHub({
         <DarkInput
           label="Aktuelle Restschuld (€)"
           type="number"
-          hint="Optional – fur genaues Tracking"
+          hint="Optional – für genaues Tracking"
           value={financingForm.current_debt}
           onChange={(e) => setFinancingForm((f) => ({ ...f, current_debt: e.target.value }))}
         />

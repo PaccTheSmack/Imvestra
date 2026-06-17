@@ -11,17 +11,10 @@ import {
   TrendUp,
   PlayCircle,
   CheckCircle,
-  ChartLine,
   Gift,
 } from "@phosphor-icons/react";
 import FadeIn from "@/components/ui/FadeIn";
 
-const GRADIENT_TEXT: React.CSSProperties = {
-  background: "linear-gradient(135deg, #00E0D7 0%, #007A74 100%)",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-};
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -62,9 +55,9 @@ function CountUp({
 }
 
 const METRIC_PILLS = [
-  { label: "BRUTTORENDITE", to: 5.51, formatter: (v: number) => `${v.toFixed(2).replace(".", ",")} %`, color: "#00E0D7" },
-  { label: "CASHFLOW/MO.", to: 148, formatter: (v: number) => `+${Math.round(v)} €`, color: "#00E0D7" },
-  { label: "NETTOMIETRENDIT.", to: 4.12, formatter: (v: number) => `${v.toFixed(2).replace(".", ",")} %`, color: "#00E0D7" },
+  { label: "BRUTTORENDITE", to: 5.51, formatter: (v: number) => `${v.toFixed(2).replace(".", ",")} %`, color: "#22C55E" },
+  { label: "CASHFLOW/MO.", to: 148, formatter: (v: number) => `+${Math.round(v)} €`, color: "#22C55E" },
+  { label: "NETTOMIETRENDIT.", to: 4.12, formatter: (v: number) => `${v.toFixed(2).replace(".", ",")} %`, color: "#22C55E" },
   { label: "LTV", to: 72, formatter: (v: number) => `${Math.round(v)} %`, color: "#FFFFFF" },
 ];
 
@@ -72,7 +65,7 @@ const DETAIL_ROWS = [
   { label: "Gesamtinvestition", value: "203.500 €", color: "#888", bold: false },
   { label: "Eff. Jahresmiete", value: "9.720 €", color: "#888", bold: false },
   { label: "NOI", value: "7.596 €", color: "#888", bold: false },
-  { label: "Cashflow / Jahr", value: "+1.776 €", color: "#00E0D7", bold: true },
+  { label: "Cashflow / Jahr", value: "+1.776 €", color: "#22C55E", bold: true },
 ];
 
 export default function HeroSection() {
@@ -100,10 +93,10 @@ export default function HeroSection() {
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <h1 className="text-[52px] lg:text-[62px] font-semibold tracking-[-0.04em] leading-[1.05] text-white mb-6">
+            <h1 className="text-[52px] lg:text-[62px] font-semibold tracking-[-0.03em] leading-[1.05] text-white mb-6">
               Vom ersten<br />
               Maklertelefonat<br />
-              <span style={GRADIENT_TEXT}>bis zum Exit.</span>
+              <span style={{ color: "#00E0D7" }}>bis zum Exit.</span>
             </h1>
           </FadeIn>
 
@@ -156,12 +149,12 @@ export default function HeroSection() {
           <FadeIn delay={0.5}>
             <div className="mt-10 pt-8 border-t border-[rgba(255,255,255,0.06)] flex items-center gap-10 flex-wrap">
               {[
-                { value: "12+", label: "Features im Tool" },
-                { value: "< 2 Min.", label: "Bis zur ersten Analyse" },
-                { value: "0€", label: "Zum Starten" },
+                { value: "5,51 %", label: "Ø Bruttorendite im Beispiel" },
+                { value: "+148 €", label: "Cashflow pro Monat" },
+                { value: "0 €", label: "Zum Starten" },
               ].map(({ value, label }) => (
                 <div key={label}>
-                  <p className="text-[28px] font-semibold text-white tracking-[-0.02em]">{value}</p>
+                  <p className="text-[28px] font-semibold text-white tracking-[-0.02em] tabular-nums">{value}</p>
                   <p className="text-xs text-[#666] mt-0.5">{label}</p>
                 </div>
               ))}
@@ -224,33 +217,6 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Floating badge 1 */}
-          <motion.div
-            animate={prefersReduced ? {} : { y: [0, -8, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-5 -right-5 z-10 bg-[#111] border border-[rgba(255,255,255,0.1)] rounded-[12px] px-4 py-3 flex items-center gap-2.5"
-            style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.7)" }}
-          >
-            <ChartLine size={15} color="#00E0D7" weight="fill" />
-            <div>
-              <p className="text-[10px] text-[#777]">Rendite berechnet</p>
-              <p className="text-sm font-semibold text-white mt-0.5">5,51 %</p>
-            </div>
-          </motion.div>
-
-          {/* Floating badge 2 */}
-          <motion.div
-            animate={prefersReduced ? {} : { y: [0, 8, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute -bottom-5 -left-5 z-10 bg-[#00E0D7] rounded-[12px] px-4 py-3 flex items-center gap-2.5"
-            style={{ boxShadow: "0 8px 32px rgba(0,224,215,0.3)" }}
-          >
-            <CheckCircle size={15} color="#080808" weight="fill" />
-            <div>
-              <p className="text-[10px] text-[#080808] opacity-70">PDF erstellt</p>
-              <p className="text-sm font-semibold text-[#080808] mt-0.5">Bankpräsentation</p>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </section>

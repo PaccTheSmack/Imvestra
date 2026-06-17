@@ -554,9 +554,10 @@ export default function CalculatorPage() {
 
   // ─── render ───────────────────────────────────────────────────
   return (
-    <div className="h-full flex flex-col" style={{ background: tokens.color.bg }}>
+    <div className="min-h-screen" style={{ background: tokens.color.bg }}>
+      <div className="p-6 w-full">
       {/* Header */}
-      <div className="sticky top-0 z-20 flex-shrink-0 px-6 py-5 flex items-center justify-between bg-[#0C0C0C] border-b border-[rgba(255,255,255,0.06)]">
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.12)] rounded-[10px] flex items-center justify-center flex-shrink-0">
             <Calculator size={18} color="#00E0D7" />
@@ -646,12 +647,14 @@ export default function CalculatorPage() {
         </div>
       </div>
 
-      {/* Two-column body */}
-      <div className="flex flex-1 min-h-0">
+      {/* Two-column grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Left: Inputs */}
-        <div className="w-[420px] flex-shrink-0 overflow-y-auto bg-[#0C0C0C] border-r border-[rgba(255,255,255,0.06)]">
-          <div className="px-6 py-6 flex flex-col gap-6">
+        <div
+          className="rounded-[14px] p-6 flex flex-col gap-6"
+          style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+        >
 
             {/* Section 1 – Objekt */}
             <div>
@@ -850,11 +853,10 @@ export default function CalculatorPage() {
               </AnimatePresence>
             </div>
 
-          </div>
         </div>
 
         {/* Right: Results */}
-        <div className="flex-1 overflow-y-auto" style={{ background: tokens.color.bg }}>
+        <div>
           <AnimatePresence mode="wait">
             {!hasData ? (
               <motion.div
@@ -1585,6 +1587,7 @@ export default function CalculatorPage() {
             )}
           </AnimatePresence>
         </div>
+      </div>
       </div>
     </div>
   );

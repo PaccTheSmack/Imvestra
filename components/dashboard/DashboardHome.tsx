@@ -12,8 +12,6 @@ import {
   ArrowRight,
   TrendUp,
   TrendDown,
-  CurrencyEur,
-  ChartLine,
   Warning,
   Bank,
   Sparkle,
@@ -111,36 +109,6 @@ export default function DashboardHome({
     });
   }, [userId]);
 
-  const statCards = [
-    {
-      label: "Objekte",
-      value: String(count),
-      sub: "Im Portfolio",
-      Icon: Buildings,
-      signed: null as number | null,
-    },
-    {
-      label: "Cashflow / Monat",
-      value: totalCashflow != null ? fmtSigned(totalCashflow) : "-",
-      sub: "Netto gesamt",
-      Icon: ChartLine,
-      signed: totalCashflow,
-    },
-    {
-      label: "Ø Nettomietrendite",
-      value: avgNetYield != null ? fmtPercent(avgNetYield) : "-",
-      sub: "Durchschnitt",
-      Icon: TrendUp,
-      signed: null,
-    },
-    {
-      label: "Gesamtinvestition",
-      value: totalInvestment != null ? fmtCurrency(totalInvestment) : "-",
-      sub: "Alle Objekte",
-      Icon: CurrencyEur,
-      signed: null,
-    },
-  ];
 
   return (
     <div className="px-6 py-6 w-full">
@@ -158,56 +126,165 @@ export default function DashboardHome({
             })()}
           </h1>
           <p className="text-sm mt-0.5" style={{ color: tokens.color.textMuted }}>
-            Hier ist deine Übersicht.
+            {financingAlertCount > 0
+              ? `${financingAlertCount} Zinsbindung${financingAlertCount > 1 ? "en laufen" : " läuft"} bald aus.`
+              : overdueTasks > 0
+              ? `${overdueTasks} überfällige Aufgabe${overdueTasks > 1 ? "n" : ""} offen.`
+              : count === 0
+              ? "Noch kein Objekt analysiert."
+              : `${count} Objekt${count > 1 ? "e" : ""}${totalCashflow != null ? ` · ${fmtSigned(totalCashflow)}/Monat` : ""}`}
           </p>
         </div>
       </FadeIn>
 
-      {/* Stat cards */}
+      {/* KPI Row – mixed density */}
       <FadeIn delay={0.05}>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statCards.map(({ label, value, sub, Icon, signed }) => (
-            <HoverCard key={label} intensity={3} className="h-full">
-              <div
-                className="rounded-[12px] px-5 py-4 h-full"
-                style={{
-                  background: tokens.color.surface,
-                  border: `1px solid ${tokens.color.border}`,
-                }}
-              >
-                <div className="flex items-center justify-between mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+          {/* Primary metric */}
+          <div
+            className="lg:col-span-2 rounded-[14px] px-6 py-5"
+            style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+          >
+            <p className="text-[10px] font-medium uppercase tracking-wider mb-3" style={{ color: tokens.color.textSubtle }}>
+              Gesamtinvestition
+            </p>
+            <p className="text-[34px] font-semibold tracking-[-0.03em] leading-none" style={{ color: tokens.color.text }}>
+              {totalInvestment != null ? fmtCurrency(totalInvestment) : "–"}
+            </p>
+            <div
+              className="flex items-center gap-8 mt-5 pt-4"
+              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+            >
+              {[
+                {
+                  label: "Cashflow / Mo.",
+                  value: totalCashflow != null ? fmtSigned(totalCashflow) : "–",
+                  color: totalCashflow != null
+                    ? totalCashflow >= 0 ? tokens.color.positive : tokens.color.danger
+                    : tokens.color.textMuted,
+                },
+                {
+                  label: "Ø Nettomietrendite",
+                  value: avgNetYield != null ? fmtPercent(avgNetYield) : "–",
+                  color: tokens.color.text,
+                },
+                {
+                  label: "Objekte",
+                  value: String(count),
+                  color: tokens.color.text,
+                },
+              ].map(({ label, value, color }) => (
+                <div key={label}>
+                  <p className="text-[10px] mb-0.5" style={{ color: tokens.color.textSubtle }}>{label}</p>
                   <p
-                    className="text-[10px] font-medium uppercase tracking-wider"
-                    style={{ color: tokens.color.textSubtle }}
+                    className="text-sm font-semibold tabular-nums"
+                    style={{ color }}
                   >
-                    {label}
+                    {value}
                   </p>
-                  <div
-                    className="w-7 h-7 rounded-[7px] flex items-center justify-center"
-                    style={{ background: tokens.color.surfaceHover }}
-                  >
-                    <Icon size={13} color={tokens.color.textSubtle} />
-                  </div>
                 </div>
-                <p
-                  className="text-2xl font-semibold tracking-tight"
-                  style={{
-                    color:
-                      signed != null
-                        ? signed >= 0
-                          ? tokens.color.positive
-                          : tokens.color.danger
-                        : tokens.color.text,
-                  }}
-                >
-                  {value}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: tokens.color.textSubtle }}>
-                  {sub}
-                </p>
+              ))}
+            </div>
+          </div>
+
+          {/* Status / action card */}
+          {financingAlertCount > 0 ? (
+            <div
+              className="rounded-[14px] px-5 py-5 flex flex-col gap-3"
+              style={{ background: "rgba(255,184,0,0.05)", border: "1px solid rgba(255,184,0,0.15)" }}
+            >
+              <div
+                className="w-8 h-8 rounded-[8px] flex items-center justify-center"
+                style={{ background: "rgba(255,184,0,0.1)" }}
+              >
+                <Bank size={15} color="#FFB800" />
               </div>
-            </HoverCard>
-          ))}
+              <div className="flex-1">
+                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
+                  {financingAlertCount} Zinsbindung{financingAlertCount > 1 ? "en laufen" : " läuft"} bald aus
+                </p>
+                <p className="text-xs mt-1" style={{ color: "#666" }}>Jetzt Anschlussfinanzierung prüfen.</p>
+              </div>
+              <button
+                onClick={() => router.push("/finanzen")}
+                className="w-full text-xs font-semibold py-2 rounded-[8px] transition-colors"
+                style={{ background: "rgba(255,184,0,0.12)", color: "#FFB800" }}
+              >
+                Ansehen →
+              </button>
+            </div>
+          ) : overdueTasks > 0 ? (
+            <div
+              className="rounded-[14px] px-5 py-5 flex flex-col gap-3"
+              style={{ background: "rgba(255,68,68,0.05)", border: "1px solid rgba(255,68,68,0.12)" }}
+            >
+              <div
+                className="w-8 h-8 rounded-[8px] flex items-center justify-center"
+                style={{ background: "rgba(255,68,68,0.1)" }}
+              >
+                <Warning size={15} color="#FF4444" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
+                  {overdueTasks} überfällige Aufgabe{overdueTasks > 1 ? "n" : ""}
+                </p>
+                <p className="text-xs mt-1" style={{ color: "#666" }}>Jetzt prüfen und abhaken.</p>
+              </div>
+              <Link
+                href="/aufgaben"
+                className="w-full text-xs font-semibold py-2 rounded-[8px] transition-colors text-center block"
+                style={{ background: "rgba(255,68,68,0.1)", color: "#FF4444" }}
+              >
+                Aufgaben öffnen →
+              </Link>
+            </div>
+          ) : count === 0 ? (
+            <div
+              className="rounded-[14px] px-5 py-5 flex flex-col gap-3"
+              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+            >
+              <div
+                className="w-8 h-8 rounded-[8px] flex items-center justify-center"
+                style={{ background: tokens.color.accentSubtle }}
+              >
+                <Calculator size={15} color={tokens.color.accent} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>Erste Analyse starten</p>
+                <p className="text-xs mt-1" style={{ color: "#666" }}>Rendite & Cashflow für dein nächstes Objekt berechnen.</p>
+              </div>
+              <Link
+                href="/calculator"
+                className="w-full text-xs font-semibold py-2 rounded-[8px] transition-colors text-center block"
+                style={{ background: tokens.color.accentSubtle, border: `1px solid ${tokens.color.accentBorder}`, color: tokens.color.accent }}
+              >
+                Zum Rechner →
+              </Link>
+            </div>
+          ) : (
+            <div
+              className="rounded-[14px] px-5 py-5 flex flex-col gap-3"
+              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+            >
+              <div
+                className="w-8 h-8 rounded-[8px] flex items-center justify-center"
+                style={{ background: tokens.color.positiveBg }}
+              >
+                <TrendUp size={15} color={tokens.color.positive} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>Alles im Plan</p>
+                <p className="text-xs mt-1" style={{ color: "#666" }}>Keine offenen Alarme.</p>
+              </div>
+              <Link
+                href="/portfolio"
+                className="w-full text-xs font-semibold py-2 rounded-[8px] transition-colors text-center block"
+                style={{ background: tokens.color.surfaceHover, border: `1px solid ${tokens.color.border}`, color: tokens.color.textMuted }}
+              >
+                Portfolio anzeigen →
+              </Link>
+            </div>
+          )}
         </div>
       </FadeIn>
 
@@ -421,70 +498,7 @@ export default function DashboardHome({
         )}
       </AnimatePresence>
 
-      {/* Task alert widget */}
-      {(overdueTasks > 0 || highPriorityTasks > 0) && (
-        <FadeIn delay={0.09}>
-          <div
-            className="rounded-[12px] px-5 py-3.5 mb-4 flex items-center justify-between"
-            style={{ background: "rgba(255,68,68,0.06)", border: "1px solid rgba(255,68,68,0.1)" }}
-          >
-            <div className="flex items-center gap-3">
-              <Warning size={16} color="#FF4444" />
-              <div>
-                <p className="text-sm font-medium" style={{ color: tokens.color.text }}>
-                  {overdueTasks > 0
-                    ? `${overdueTasks} überfällige Aufgabe${overdueTasks > 1 ? "n" : ""}`
-                    : `${highPriorityTasks} Aufgabe${highPriorityTasks > 1 ? "n" : ""} mit hoher Priorität`
-                  }
-                </p>
-                {overdueTasks > 0 && highPriorityTasks > 0 && (
-                  <p className="text-xs mt-0.5" style={{ color: "#777" }}>
-                    und {highPriorityTasks} mit hoher Priorität
-                  </p>
-                )}
-              </div>
-            </div>
-            <Link href="/aufgaben" className="text-xs font-medium" style={{ color: "#FF4444" }}>
-              Anzeigen →
-            </Link>
-          </div>
-        </FadeIn>
-      )}
 
-      {/* Financing alert banner */}
-      {financingAlertCount > 0 && (
-        <FadeIn delay={0.08}>
-          <div
-            className="rounded-[14px] px-5 py-4 mb-6 flex items-center justify-between gap-4"
-            style={{ background: "rgba(255,184,0,0.06)", border: "1px solid rgba(255,184,0,0.15)" }}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(255,184,0,0.1)" }}
-              >
-                <Bank size={15} color="#FFB800" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                  {financingAlertCount} Zinsbindung{financingAlertCount > 1 ? "en laufen" : " lauft"} bald aus
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: "#666" }}>
-                  Jetzt Anschlussfinanzierung prufen.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => router.push("/finanzen")}
-              className="text-xs font-semibold px-3 py-1.5 rounded-[8px] flex-shrink-0 flex items-center gap-1.5 transition-colors"
-              style={{ background: "rgba(255,184,0,0.12)", color: "#FFB800" }}
-            >
-              <Warning size={12} />
-              Ansehen
-            </button>
-          </div>
-        </FadeIn>
-      )}
 
       {/* Feature tiles */}
       <FadeIn delay={0.1}>

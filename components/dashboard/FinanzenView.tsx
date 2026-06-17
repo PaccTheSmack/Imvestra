@@ -397,7 +397,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                     onChange={(e) => setForm((f) => ({ ...f, fixed_until: e.target.value }))} />
                 </div>
                 <DarkInput label="Aktuelle Restschuld (€)" type="number" value={form.current_debt}
-                  hint="Optional – fur genaues Tracking"
+                  hint="Optional – für genaues Tracking"
                   onChange={(e) => setForm((f) => ({ ...f, current_debt: e.target.value }))} />
               </div>
 
