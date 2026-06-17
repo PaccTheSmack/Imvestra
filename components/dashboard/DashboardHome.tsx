@@ -62,7 +62,6 @@ interface DashboardHomeProps {
   monthlyRentSoll?: number;
   monthlyRentIst?: number;
   overdueTasks?: number;
-  highPriorityTasks?: number;
   userId?: string;
   portfolioSummary?: PortfolioSummary;
 }
@@ -90,7 +89,6 @@ export default function DashboardHome({
   monthlyRentSoll = 0,
   monthlyRentIst = 0,
   overdueTasks = 0,
-  highPriorityTasks = 0,
   userId,
   portfolioSummary,
 }: DashboardHomeProps) {

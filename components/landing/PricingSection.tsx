@@ -85,7 +85,11 @@ export default function PricingSection() {
                   className="relative rounded-[20px] p-6 h-full flex flex-col"
                   style={
                     highlighted
-                      ? { background: "#080808", border: "2px solid #00E0D7", boxShadow: "0 0 60px rgba(0,224,215,0.08)" }
+                      ? {
+                          background: "linear-gradient(160deg, rgba(0,224,215,0.07) 0%, rgba(0,224,215,0.02) 60%, #080808 100%)",
+                          border: "1px solid rgba(0,224,215,0.28)",
+                          boxShadow: "0 0 80px rgba(0,224,215,0.07), inset 0 1px 0 rgba(0,224,215,0.12)",
+                        }
                       : { background: "#111", border: "1px solid rgba(255,255,255,0.08)" }
                   }
                 >

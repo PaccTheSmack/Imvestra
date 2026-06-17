@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 
 interface Props {
@@ -19,6 +19,9 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
   const [month, setMonth] = useState(today.getMonth() + 1)
   const [year, setYear] = useState(today.getFullYear())
 
+  const onChangeRef = useRef(onChange)
+  useEffect(() => { onChangeRef.current = onChange }, [onChange])
+
   // Initialize from value
   useEffect(() => {
     if (value) {
@@ -29,14 +32,14 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
         setYear(d.getFullYear())
       }
     }
-  }, [])
+  }, [value])
 
   // Emit change whenever day/month/year changes
   useEffect(() => {
     const maxDay = new Date(year, month, 0).getDate()
     const safeDay = Math.min(day, maxDay)
     const dateStr = `${year}-${month.toString().padStart(2, "0")}-${safeDay.toString().padStart(2, "0")}`
-    onChange(dateStr)
+    onChangeRef.current(dateStr)
   }, [day, month, year])
 
   const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
