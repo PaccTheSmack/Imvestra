@@ -1,13 +1,13 @@
 import * as React from "react";
 
 interface DarkInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
+  label?: React.ReactNode;
   error?: string;
   hint?: string;
 }
 
 export default function DarkInput({ label, error, hint, className = "", id, ...props }: DarkInputProps) {
-  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+  const inputId = id ?? (typeof label === "string" ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
   return (
     <div className="flex flex-col gap-1.5">

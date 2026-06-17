@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ArrowLeft, ChartLine } from "@phosphor-icons/react";
@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import DarkInput from "@/components/ui/DarkInput";
 import DarkSelect from "@/components/ui/DarkSelect";
 import DarkButton from "@/components/ui/DarkButton";
+import MonthYearPicker from "@/components/ui/MonthYearPicker";
 import { getStadtData } from "@/lib/standort-data";
 import { calculateWertermittlung } from "@/lib/wertermittlung";
 import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
@@ -65,9 +66,40 @@ export default function NeuesObjektPage() {
   const [step, setStep] = useState<Step>(1);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const formRef = useRef<HTMLDivElement>(null);
 
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm(f => ({ ...f, [key]: value }));
+    if (errors[key as string]) setErrors(e => { const n = { ...e }; delete n[key as string]; return n; });
+  }
+
+  function validateStep(s: Step): boolean {
+    const e: Record<string, string> = {};
+    if (s === 1) {
+      if (!form.name.trim())             e.name      = "Pflichtfeld";
+      if (!form.type)                    e.type      = "Bitte wählen";
+      if (!form.kaufpreis)               e.kaufpreis = "Pflichtfeld";
+      if (!form.sqm)                     e.sqm       = "Pflichtfeld";
+      if (!form.address.trim())          e.address   = "Pflichtfeld";
+      if (!form.plz || form.plz.length !== 5) e.plz = "5-stellige PLZ erforderlich";
+    }
+    if (s === 3) {
+      if (!form.rent_monthly || parseFloat(form.rent_monthly) <= 0) e.rent_monthly = "Pflichtfeld";
+    }
+    setErrors(e);
+    if (Object.keys(e).length > 0) {
+      if (!prefersReduced) {
+        formRef.current?.classList.remove("shake");
+        void formRef.current?.offsetWidth;
+        formRef.current?.classList.add("shake");
+      }
+      setTimeout(() => {
+        formRef.current?.querySelector<HTMLElement>(".error-field")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+      return false;
+    }
+    return true;
   }
 
   useEffect(() => {
@@ -94,8 +126,6 @@ export default function NeuesObjektPage() {
     ? calculateWertermittlung(kaufpreis, rentMonthly, sqm, form.plz, form.kaufdatum || undefined)
     : null;
 
-  const canProceedStep1 = form.name.trim().length > 0 && form.type !== "";
-  const canProceedStep3 = rentMonthly > 0;
 
   async function saveProperty() {
     setSaving(true);
@@ -190,6 +220,7 @@ export default function NeuesObjektPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 max-w-[1000px]">
         {/* LEFT – Form card */}
         <div
+          ref={formRef}
           className="rounded-[16px] overflow-hidden flex flex-col"
           style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
         >
@@ -209,12 +240,17 @@ export default function NeuesObjektPage() {
 
                   {/* Objekttyp */}
                   <div className="mb-5">
-                    <label className="block text-[11px] text-[#666] uppercase tracking-wider mb-2">Objekttyp</label>
-                    <div className="flex flex-wrap gap-2">
+                    <label className="block text-[11px] text-[#666] uppercase tracking-wider mb-2">
+                      Objekttyp <span className="text-[#FF4444] ml-0.5">*</span>
+                    </label>
+                    <div
+                      className="flex flex-wrap gap-2 p-1 rounded-[10px] -m-1"
+                      style={errors.type ? { outline: "1px solid rgba(255,68,68,0.35)", outlineOffset: "2px" } : {}}
+                    >
                       {PROPERTY_TYPES.map(t => (
                         <button
                           key={t}
-                          onClick={() => setField("type", t)}
+                          onClick={() => { setField("type", t); }}
                           className="px-4 py-2 rounded-[8px] text-sm cursor-pointer transition-all"
                           style={form.type === t
                             ? { background: "#00E0D7", color: "#080808", fontWeight: 600 }
@@ -227,31 +263,41 @@ export default function NeuesObjektPage() {
                         </button>
                       ))}
                     </div>
+                    {errors.type && <p className="text-xs text-[#FF4444] mt-1">{errors.type}</p>}
                   </div>
+
+                  <p className="text-[10px] text-[#555] mb-4">
+                    <span className="text-[#FF4444]">*</span> Pflichtfelder · Alle anderen Felder sind optional
+                  </p>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <DarkInput
-                        label="Bezeichnung"
+                        label={<>Bezeichnung <span className="text-[#FF4444] ml-0.5">*</span></>}
                         placeholder="z.B. Altbauwohnung Goslar"
-                        required
                         value={form.name}
+                        error={errors.name}
+                        className={errors.name ? "error-field" : ""}
                         onChange={e => setField("name", e.target.value)}
                       />
                     </div>
                     <div className="col-span-2">
                       <DarkInput
-                        label="Straße & Hausnummer"
+                        label={<>Straße & Hausnummer <span className="text-[#FF4444] ml-0.5">*</span></>}
                         placeholder="Rosentorstraße 12"
                         value={form.address}
+                        error={errors.address}
+                        className={errors.address ? "error-field" : ""}
                         onChange={e => setField("address", e.target.value)}
                       />
                     </div>
                     <DarkInput
-                      label="PLZ"
+                      label={<>PLZ <span className="text-[#FF4444] ml-0.5">*</span></>}
                       placeholder="38640"
                       maxLength={5}
                       value={form.plz}
+                      error={errors.plz}
+                      className={errors.plz ? "error-field" : ""}
                       onChange={e => setField("plz", e.target.value)}
                     />
                     <DarkInput
@@ -269,10 +315,12 @@ export default function NeuesObjektPage() {
                       onChange={e => setField("build_year", e.target.value)}
                     />
                     <DarkInput
-                      label="Wohnfläche (m²)"
+                      label={<>Wohnfläche (m²) <span className="text-[#FF4444] ml-0.5">*</span></>}
                       placeholder="68"
                       type="number"
                       value={form.sqm}
+                      error={errors.sqm}
+                      className={errors.sqm ? "error-field" : ""}
                       onChange={e => setField("sqm", e.target.value)}
                     />
                     <DarkInput
@@ -283,17 +331,18 @@ export default function NeuesObjektPage() {
                       onChange={e => setField("units", e.target.value)}
                     />
                     <DarkInput
-                      label="Kaufpreis (€)"
+                      label={<>Kaufpreis (€) <span className="text-[#FF4444] ml-0.5">*</span></>}
                       placeholder="185000"
                       type="number"
                       value={form.kaufpreis}
+                      error={errors.kaufpreis}
+                      className={errors.kaufpreis ? "error-field" : ""}
                       onChange={e => setField("kaufpreis", e.target.value)}
                     />
-                    <DarkInput
+                    <MonthYearPicker
                       label="Kaufdatum"
-                      type="date"
                       value={form.kaufdatum}
-                      onChange={e => setField("kaufdatum", e.target.value)}
+                      onChange={v => setField("kaufdatum", v)}
                     />
                     <DarkInput
                       label="Nebenkosten (%)"
@@ -407,13 +456,18 @@ export default function NeuesObjektPage() {
                 <>
                   <p className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-5">Mieteinnahmen & Finanzierung</p>
 
+                  <p className="text-[10px] text-[#555] mb-4">
+                    <span className="text-[#FF4444]">*</span> Pflichtfelder · Alle anderen Felder sind optional
+                  </p>
+
                   <div className="grid grid-cols-2 gap-4">
                     <DarkInput
-                      label="Kaltmiete / Monat (€)"
+                      label={<>Kaltmiete / Monat (€) <span className="text-[#FF4444] ml-0.5">*</span></>}
                       placeholder="850"
                       type="number"
-                      required
                       value={form.rent_monthly}
+                      error={errors.rent_monthly}
+                      className={errors.rent_monthly ? "error-field" : ""}
                       onChange={e => setField("rent_monthly", e.target.value)}
                     />
                     <DarkInput
@@ -499,11 +553,12 @@ export default function NeuesObjektPage() {
                             onChange={e => setField("monthly_rate", e.target.value)}
                           />
                           <div className="col-span-2">
-                            <DarkInput
+                            <MonthYearPicker
                               label="Zinsbindung bis"
-                              type="date"
                               value={form.fixed_until}
-                              onChange={e => setField("fixed_until", e.target.value)}
+                              onChange={v => setField("fixed_until", v)}
+                              minYear={new Date().getFullYear()}
+                              maxYear={new Date().getFullYear() + 30}
                             />
                           </div>
                         </div>
@@ -530,8 +585,7 @@ export default function NeuesObjektPage() {
               {step < 3 ? (
                 <DarkButton
                   variant="primary"
-                  disabled={step === 1 ? !canProceedStep1 : false}
-                  onClick={() => setStep((step + 1) as Step)}
+                  onClick={() => { if (step === 1 && !validateStep(1)) return; setStep((step + 1) as Step); }}
                 >
                   Weiter →
                 </DarkButton>
@@ -539,8 +593,7 @@ export default function NeuesObjektPage() {
                 <DarkButton
                   variant="primary"
                   loading={saving}
-                  disabled={!canProceedStep3}
-                  onClick={saveProperty}
+                  onClick={() => { if (!validateStep(3)) return; saveProperty(); }}
                 >
                   Objekt speichern
                 </DarkButton>
