@@ -601,7 +601,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         { pct: ekPct,   color: "#00E0D7",               label: "EK" },
                         { pct: wertPct, color: "rgba(0,224,215,0.4)",   label: "" },
                         { pct: tilgPct, color: "#FFB800",               label: "" },
-                        { pct: restPct, color: "rgba(255,255,255,0.08)", label: "" },
+                        { pct: restPct, color: "rgba(255,68,68,0.4)", label: "" },
                       ].map((seg, i) => (
                         <motion.div
                           key={i}
@@ -637,7 +637,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                           tip: "Bereits zurückgezahlte Darlehensbeträge. Erhöhen dein Eigenkapital monatlich.",
                         },
                         {
-                          color: "rgba(255,255,255,0.15)", label: "Restschuld",
+                          color: "rgba(255,68,68,0.5)", label: "Restschuld",
                           value: formatCurrency(summary.total_restschuld),
                           tip: "Noch ausstehende Darlehensschulden",
                         },
@@ -735,7 +735,9 @@ export default function PortfolioView({ properties, financings, payments, expens
                         label: "Fremdkapitalquote (LTV)",
                         tip: "Loan-to-Value: Restschuld im Verhältnis zum Marktwert. Banken bevorzugen unter 80%.",
                         value: formatPercent(summary.total_fremdkapital_quote),
-                        color: colorByValue(1 - summary.total_fremdkapital_quote, 0.2, 0.4),
+                        color: summary.total_fremdkapital_quote > 0.8 ? "#FF4444"
+                          : summary.total_fremdkapital_quote > 0.6 ? "#FFB800"
+                          : "#00E0D7",
                       },
                       {
                         label: "Bruttorendite Ø",
@@ -759,7 +761,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         label: "Ø LTV je Objekt",
                         tip: "Durchschnittlicher Loan-to-Value pro Objekt",
                         value: formatPercent(avgLTV),
-                        color: "#fff",
+                        color: avgLTV > 0.8 ? "#FF4444" : avgLTV > 0.6 ? "#FFB800" : "#00E0D7",
                       },
                       {
                         label: "Ø Cashflow/Objekt",
@@ -899,7 +901,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         { color: "#00E0D7",               label: "EK eingesetzt" },
                         { color: "rgba(0,224,215,0.4)",   label: "Wertsteigerung" },
                         { color: "#FFB800",               label: "Getilgt" },
-                        { color: "#2A2A2A",               label: "Restschuld" },
+                        { color: "rgba(255,68,68,0.5)",   label: "Restschuld" },
                       ].map(i => (
                         <div key={i.label} className="flex items-center gap-2 text-[10px] text-[#555]">
                           <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: i.color }} />
