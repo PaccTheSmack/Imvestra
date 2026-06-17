@@ -21,9 +21,20 @@ export interface Property {
   purchase_price: number;
   ancillary_costs_pct: number;
   market_value: number;
+  market_value_estimated?: number;
+  market_value_updated_at?: string;
   rent_monthly: number;
   monthly_rate: number;
   units: number;
+  kaufdatum?: string;
+  heizungsart?: string;
+  energieklasse?: string;
+  denkmalschutz?: boolean;
+  aufzug?: boolean;
+  keller?: boolean;
+  parkplaetze?: number;
+  hausgeld_monthly?: number;
+  notes?: string;
 }
 
 export interface CalculationResult {

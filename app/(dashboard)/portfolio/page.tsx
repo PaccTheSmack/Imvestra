@@ -66,12 +66,15 @@ export default async function PortfolioPage() {
     cashflow_monthly: results[i].cashflow_monthly,
     ltv: results[i].ltv,
     total_investment: results[i].total_investment,
+    market_value_estimated: p.market_value_estimated ?? undefined,
+    kaufdatum: p.kaufdatum ?? undefined,
   }));
 
   const totalCashflow = results.reduce((s, r) => s + r.cashflow_monthly, 0);
   const totalInvestment = results.reduce((s, r) => s + r.total_investment, 0);
   const avgGrossYield =
     props.length > 0 ? results.reduce((s, r) => s + r.gross_yield, 0) / props.length : 0;
+  const totalMarketValue = props.reduce((s, p) => s + (p.market_value_estimated ?? 0), 0);
 
   return (
     <PortfolioView
@@ -79,6 +82,7 @@ export default async function PortfolioPage() {
       totalCashflow={totalCashflow}
       totalInvestment={totalInvestment}
       avgGrossYield={avgGrossYield}
+      totalMarketValue={totalMarketValue}
       plan={plan}
       tenantsByProperty={tenantsByProperty}
       financingAlertsByProperty={financingAlertsByProperty}

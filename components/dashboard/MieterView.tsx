@@ -97,11 +97,28 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
   const propertyName = (id: string) => properties.find((p) => p.id === id)?.name ?? "-";
 
   async function saveTenant() {
-    if (!tenantForm.name || !tenantForm.move_in_date || !tenantForm.property_id) return;
+    if (!tenantForm.property_id) {
+      alert("Bitte ein Objekt auswählen");
+      return;
+    }
+    if (!tenantForm.name.trim()) {
+      alert("Bitte einen Namen eingeben");
+      return;
+    }
+    if (!tenantForm.move_in_date) {
+      alert("Bitte ein Einzugsdatum eingeben");
+      return;
+    }
+
     setSaving(true);
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setSaving(false); return; }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error("Auth error:", authError);
+      setSaving(false);
+      return;
+    }
 
     const rent = parseFloat(tenantForm.rent_monthly) || 0;
 
@@ -119,8 +136,14 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
       is_active: true,
     }).select().single();
 
-    if (!error && newTenant) {
-      // Auto-generate current month payment
+    if (error) {
+      console.error("Tenant save error:", error);
+      alert("Fehler beim Speichern: " + error.message);
+      setSaving(false);
+      return;
+    }
+
+    if (newTenant) {
       await supabase.from("rent_payments").insert({
         tenant_id: newTenant.id,
         property_id: tenantForm.property_id,

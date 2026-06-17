@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import {
   Buildings,
@@ -11,6 +12,7 @@ import {
   FilePdf,
   MapPin,
   TrendUp,
+  TrendDown,
   ShieldCheck,
   UsersFour,
 } from "@phosphor-icons/react";
@@ -40,6 +42,8 @@ export interface PortfolioCard {
   cashflow_monthly: number;
   ltv: number;
   total_investment: number;
+  market_value_estimated?: number;
+  kaufdatum?: string;
 }
 
 interface PortfolioViewProps {
@@ -47,6 +51,7 @@ interface PortfolioViewProps {
   totalCashflow: number;
   totalInvestment: number;
   avgGrossYield: number;
+  totalMarketValue: number;
   plan: Plan;
   tenantsByProperty?: Record<string, { count: number; totalRent: number }>;
   financingAlertsByProperty?: Record<string, "critical" | "warning">;
@@ -90,11 +95,13 @@ export default function PortfolioView({
   totalCashflow,
   totalInvestment,
   avgGrossYield,
+  totalMarketValue,
   plan,
   tenantsByProperty = {},
   financingAlertsByProperty = {},
 }: PortfolioViewProps) {
   const prefersReduced = useReducedMotion();
+  const router = useRouter();
   const count = properties.length;
 
   if (count === 0) {
@@ -330,25 +337,24 @@ export default function PortfolioView({
               {count} Objekt{count !== 1 ? "e" : ""}
             </p>
           </div>
-          <Link
-            href="/calculator"
+          <motion.button
+            onClick={() => router.push("/portfolio/neu")}
+            whileTap={prefersReduced ? {} : { scale: 0.97 }}
             className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] transition-colors"
-            style={{
-              background: tokens.color.accent,
-              color: tokens.color.bg,
-            }}
+            style={{ background: tokens.color.accent, color: tokens.color.bg }}
           >
             <Calculator size={14} />
             Objekt hinzufugen
-          </Link>
+          </motion.button>
         </div>
 
         {/* Summary strip */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Investiert",    value: formatCurrency(totalInvestment),              color: tokens.color.text },
-            { label: "Cashflow / Mo.", value: formatCurrencySigned(totalCashflow),          color: totalCashflow >= 0 ? tokens.color.positive : tokens.color.danger },
-            { label: "Ø Bruttorendite", value: formatPercent(avgGrossYield),               color: tokens.color.accent },
+            { label: "Investiert",      value: formatCurrency(totalInvestment),             color: tokens.color.text },
+            { label: "Cashflow / Mo.",  value: formatCurrencySigned(totalCashflow),         color: totalCashflow >= 0 ? tokens.color.positive : tokens.color.danger },
+            { label: "Ø Bruttorendite", value: formatPercent(avgGrossYield),                color: tokens.color.accent },
+            { label: "Gesamtvermögen",  value: totalMarketValue > 0 ? formatCurrency(totalMarketValue) : "–", color: tokens.color.text },
           ].map(({ label, value, color }) => (
             <div
               key={label}
@@ -441,6 +447,31 @@ export default function PortfolioView({
                       <h3 className="text-sm font-semibold leading-snug" style={{ color: tokens.color.text }}>
                         {p.name}
                       </h3>
+                      {p.market_value_estimated && p.market_value_estimated > 0 && (
+                        <div className="mt-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px]" style={{ color: tokens.color.textSubtle }}>
+                              Geschätzter Wert:
+                            </span>
+                            <span className="text-xs font-semibold" style={{ color: tokens.color.text }}>
+                              {formatCurrency(p.market_value_estimated)}
+                            </span>
+                          </div>
+                          {p.purchase_price > 0 && (() => {
+                            const gain = p.market_value_estimated - p.purchase_price;
+                            const pct = gain / p.purchase_price;
+                            const positive = gain >= 0;
+                            return (
+                              <div className="flex items-center gap-1 mt-0.5" style={{ color: positive ? "#00E0D7" : "#FF4444" }}>
+                                {positive ? <TrendUp size={11} /> : <TrendDown size={11} />}
+                                <span className="text-[10px]">
+                                  {formatCurrencySigned(gain)} ({formatPercent(pct)})
+                                </span>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
                       {p.address ? (
                         <p
                           className="flex items-center gap-1 text-xs mt-1 mb-3"
