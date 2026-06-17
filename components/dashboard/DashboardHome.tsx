@@ -138,7 +138,7 @@ export default function DashboardHome({
   ];
 
   return (
-    <div className="px-10 py-10 max-w-[1200px]">
+    <div className="px-6 py-6 w-full">
       {/* Header */}
       <FadeIn delay={0}>
         <div className="mb-8">

@@ -160,7 +160,7 @@ export default function SteuernView({ properties, payments, expenses, financings
 
   return (
     <div className="min-h-screen" style={{ background: tokens.color.bg }}>
-      <div className="p-6 max-w-[1100px] mx-auto">
+      <div className="p-6 w-full">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

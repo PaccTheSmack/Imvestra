@@ -91,7 +91,7 @@ function StandortContent() {
   const hasObjectData = kaufpreisParam && mieteParam && sqmParam
 
   return (
-    <div className="p-6 max-w-[1100px] mx-auto" style={{ background: "#080808", minHeight: "100vh" }}>
+    <div className="p-6 w-full" style={{ background: "#080808", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <div

@@ -388,7 +388,7 @@ export default function FinanzenHub({
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-6 max-w-[1100px] mx-auto" style={{ minHeight: "100vh" }}>
+    <div className="p-6 w-full" style={{ minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-6">

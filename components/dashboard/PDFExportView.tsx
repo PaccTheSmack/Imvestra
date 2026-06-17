@@ -250,7 +250,7 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
   }
 
   return (
-    <div className="p-8 max-w-[900px] mx-auto">
+    <div className="p-8 w-full">
       <FadeIn>
         <div className="mb-8">
           <h1

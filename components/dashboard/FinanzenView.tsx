@@ -139,7 +139,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
   }
 
   return (
-    <div className="p-6 max-w-[1100px] mx-auto">
+    <div className="p-6 w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

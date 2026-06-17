@@ -194,7 +194,7 @@ export default function NeuesObjektPage() {
   return (
     <div className="min-h-screen bg-[#080808] p-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8 max-w-[1000px]">
+      <div className="flex items-center gap-4 mb-8 w-full">
         <button
           onClick={() => step > 1 ? setStep((step - 1) as Step) : router.push("/portfolio")}
           className="w-9 h-9 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[8px] flex items-center justify-center hover:bg-[#1A1A1A] transition-all cursor-pointer flex-shrink-0"
@@ -208,7 +208,7 @@ export default function NeuesObjektPage() {
       </div>
 
       {/* Progress bar */}
-      <div className="bg-[rgba(255,255,255,0.06)] h-1 rounded-full mb-8 max-w-[1000px]">
+      <div className="bg-[rgba(255,255,255,0.06)] h-1 rounded-full mb-8 w-full">
         <motion.div
           className="h-full rounded-full bg-[#00E0D7]"
           animate={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
@@ -217,7 +217,7 @@ export default function NeuesObjektPage() {
       </div>
 
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 max-w-[1000px]">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 w-full">
         {/* LEFT – Form card */}
         <div
           ref={formRef}

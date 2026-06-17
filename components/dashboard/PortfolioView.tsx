@@ -411,7 +411,7 @@ export default function PortfolioView({ properties, financings, payments, expens
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-10 bg-[rgba(8,8,8,0.9)] backdrop-blur-md border-b border-[rgba(255,255,255,0.06)] px-6 py-4">
-        <div className="flex items-center justify-between max-w-[1400px] mx-auto">
+        <div className="flex items-center justify-between">
           <div>
             <p className="text-[20px] font-semibold text-white">Portfolio</p>
             <p className="text-xs text-[#555] mt-0.5">
@@ -447,7 +447,7 @@ export default function PortfolioView({ properties, financings, payments, expens
 
       {/* ── Hero Metrics Bar ─────────────────────────────────────────────────── */}
       <div className="bg-[#0C0C0C] border-b border-[rgba(255,255,255,0.06)] px-6 py-5">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
 
           {/* 1 – Portfoliowert */}
           <div>
@@ -548,7 +548,7 @@ export default function PortfolioView({ properties, financings, payments, expens
       </div>
 
       {/* ── View Content ──────────────────────────────────────────────────────── */}
-      <div className="max-w-[1400px] mx-auto">
+      <div className="w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={viewMode}

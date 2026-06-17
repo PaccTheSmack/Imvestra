@@ -106,7 +106,7 @@ export default function VerhandlungView({ properties }: VerhandlungViewProps) {
 
   return (
     <div className="min-h-screen" style={{ background: tokens.color.bg }}>
-      <div className="p-6 max-w-[900px] mx-auto">
+      <div className="p-6 w-full">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
