@@ -11,12 +11,15 @@ import {
   ArrowUpRight,
   ArrowRight,
   TrendUp,
+  TrendDown,
   CurrencyEur,
   ChartLine,
   Warning,
   Bank,
   Sparkle,
+  Question,
 } from "@phosphor-icons/react";
+import type { PortfolioSummary } from "@/lib/portfolio-calculations";
 import FadeIn from "@/components/ui/FadeIn";
 import HoverCard from "@/components/ui/HoverCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
@@ -63,6 +66,7 @@ interface DashboardHomeProps {
   overdueTasks?: number;
   highPriorityTasks?: number;
   userId?: string;
+  portfolioSummary?: PortfolioSummary;
 }
 
 function fmtCurrency(n: number) {
@@ -90,6 +94,7 @@ export default function DashboardHome({
   overdueTasks = 0,
   highPriorityTasks = 0,
   userId,
+  portfolioSummary,
 }: DashboardHomeProps) {
   const router = useRouter();
   const [smartNotifCount, setSmartNotifCount] = useState(0);
@@ -205,6 +210,159 @@ export default function DashboardHome({
           ))}
         </div>
       </FadeIn>
+
+      {/* Portfolio Snapshot */}
+      {portfolioSummary && portfolioSummary.anzahl_objekte > 0 && (
+        <FadeIn delay={0.08}>
+          <p className="text-[10px] text-[#555] uppercase tracking-widest font-semibold mt-6 mb-3">
+            Portfolio Snapshot
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+            {/* CARD 1 – Portfoliowert */}
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 hover:border-[rgba(0,224,215,0.15)] transition-all">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1 mb-2">
+                    <p className="text-[10px] text-[#555] uppercase tracking-widest">Portfoliowert</p>
+                    <Question size={11} color="#444" />
+                  </div>
+                  <p className="text-[26px] font-semibold text-white tracking-[-0.02em]">
+                    {fmtCurrency(portfolioSummary.total_marktwert)}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    {portfolioSummary.total_wertentwicklung_eur >= 0 ? (
+                      <>
+                        <TrendUp size={13} color="#00E0D7" />
+                        <span className="text-xs text-[#00E0D7]">{fmtSigned(portfolioSummary.total_wertentwicklung_eur)}</span>
+                        <span className="text-[10px] text-[#555]">({fmtPercent(portfolioSummary.total_wertentwicklung_pct)})</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendDown size={13} color="#FF4444" />
+                        <span className="text-xs text-[#FF4444]">{fmtSigned(portfolioSummary.total_wertentwicklung_eur)}</span>
+                        <span className="text-[10px] text-[#555]">({fmtPercent(portfolioSummary.total_wertentwicklung_pct)})</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {/* Sparkline */}
+                {portfolioSummary.wert_verlauf.length > 1 && (() => {
+                  const raw = portfolioSummary.wert_verlauf;
+                  const step = Math.max(1, Math.floor(raw.length / 6));
+                  const data = raw.filter((_, i) => i % step === 0).slice(0, 6);
+                  if (data.length < 2) return null;
+                  const vals = data.map(d => d.wert);
+                  const min = Math.min(...vals);
+                  const max = Math.max(...vals);
+                  const range = max - min || 1;
+                  const pts = vals.map((v, i) => {
+                    const x = (i / (vals.length - 1)) * 60;
+                    const y = 32 - ((v - min) / range) * 28;
+                    return `${x.toFixed(1)},${y.toFixed(1)}`;
+                  });
+                  const linePath = `M ${pts.join(" L ")}`;
+                  const areaPath = `${linePath} L 60,32 L 0,32 Z`;
+                  return (
+                    <svg width="60" height="32" viewBox="0 0 60 32" fill="none" className="flex-shrink-0 ml-2">
+                      <path d={areaPath} fill="rgba(0,224,215,0.08)" />
+                      <path d={linePath} stroke="#00E0D7" strokeWidth="1.5" fill="none" />
+                    </svg>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* CARD 2 – Eigenkapital & Schulden */}
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 hover:border-[rgba(0,224,215,0.15)] transition-all">
+              <div className="flex items-center gap-1 mb-2">
+                <p className="text-[10px] text-[#555] uppercase tracking-widest">Eigenkapital</p>
+              </div>
+              <p className="text-[26px] font-semibold tracking-[-0.02em] text-[#00E0D7]">
+                {fmtCurrency(portfolioSummary.total_eigenkapital_aktuell)}
+              </p>
+              <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.05)] flex justify-between">
+                <div>
+                  <p className="text-[10px] text-[#555]">Restschuld</p>
+                  <p className="text-sm font-semibold text-[#FF4444]">{fmtCurrency(portfolioSummary.total_restschuld)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-[#555]">Getilgt</p>
+                  <p className="text-sm font-semibold text-[#00E0D7]">{fmtCurrency(portfolioSummary.total_getilgtes_kapital)}</p>
+                </div>
+              </div>
+              {/* LTV bar */}
+              <div className="mt-3">
+                <p className="text-[10px] text-[#555] mb-1.5">
+                  LTV: {fmtPercent(portfolioSummary.total_fremdkapital_quote)}
+                </p>
+                <div className="bg-[#1A1A1A] rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${Math.min(portfolioSummary.total_fremdkapital_quote * 100, 100)}%`,
+                      background: portfolioSummary.total_fremdkapital_quote > 0.8
+                        ? "#FF4444"
+                        : portfolioSummary.total_fremdkapital_quote > 0.6
+                        ? "#FFB800"
+                        : "#00E0D7",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 3 – Cashflow & Rendite */}
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 hover:border-[rgba(0,224,215,0.15)] transition-all flex flex-col">
+              <div className="flex items-center gap-1 mb-2">
+                <p className="text-[10px] text-[#555] uppercase tracking-widest">Cashflow / Monat</p>
+              </div>
+              <p
+                className="text-[26px] font-semibold tracking-[-0.02em]"
+                style={{ color: portfolioSummary.total_cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}
+              >
+                {fmtSigned(portfolioSummary.total_cashflow_monthly)}
+              </p>
+              <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.05)] grid grid-cols-2 gap-2">
+                {[
+                  {
+                    label: "ROE",
+                    value: fmtPercent(portfolioSummary.portfolio_roe),
+                    color: portfolioSummary.portfolio_roe > 0.06 ? "#00E0D7" : portfolioSummary.portfolio_roe > 0.03 ? "#FFB800" : "#FF4444",
+                  },
+                  {
+                    label: "Brutto",
+                    value: fmtPercent(portfolioSummary.portfolio_brutto_rendite),
+                    color: "#fff",
+                  },
+                  {
+                    label: "Objekte",
+                    value: String(portfolioSummary.anzahl_objekte),
+                    color: "#fff",
+                  },
+                  {
+                    label: "Einheiten",
+                    value: String(portfolioSummary.anzahl_einheiten),
+                    color: "#fff",
+                  },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="bg-[#0C0C0C] rounded-[8px] px-3 py-2">
+                    <p className="text-[9px] text-[#444] uppercase tracking-wide">{label}</p>
+                    <p className="text-sm font-semibold mt-0.5" style={{ color }}>{value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center justify-end">
+                <button
+                  onClick={() => router.push("/portfolio")}
+                  className="text-xs text-[#00E0D7] flex items-center gap-1 hover:gap-2 transition-all duration-150"
+                >
+                  Portfolio öffnen →
+                </button>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      )}
 
       {/* Mini cashflow widget */}
       {monthlyRentSoll > 0 && (

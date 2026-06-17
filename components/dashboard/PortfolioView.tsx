@@ -543,6 +543,29 @@ export default function PortfolioView({ properties, financings, payments, expens
             </p>
             <p className="text-[11px] text-[#444] mt-0.5">inkl. Wertsteigerung</p>
           </div>
+
+          {/* 7 – Restschuld */}
+          <div>
+            <div className="flex items-center">
+              <span className="text-[10px] text-[#555] uppercase tracking-widest">Restschuld</span>
+              <Tooltip text="Gesamte noch ausstehende Darlehensschulden über alle Objekte. Wird monatlich durch Tilgung reduziert." />
+            </div>
+            <p className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5 text-[#FF4444]">
+              {formatCurrency(summary.total_restschuld)}
+            </p>
+            <p
+              className="text-[11px] mt-0.5"
+              style={{
+                color: summary.total_fremdkapital_quote > 0.8
+                  ? "#FF4444"
+                  : summary.total_fremdkapital_quote > 0.6
+                  ? "#FFB800"
+                  : "#555",
+              }}
+            >
+              {formatPercent(summary.total_fremdkapital_quote)} des Portfoliowerts
+            </p>
+          </div>
         </div>
       </div>
 

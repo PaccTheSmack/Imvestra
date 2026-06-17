@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { calculateProperty } from "@/lib/calculations";
+import { calculatePortfolioSummary } from "@/lib/portfolio-calculations";
 import DashboardHome from "@/components/dashboard/DashboardHome";
 import UpgradeSuccess from "@/components/dashboard/UpgradeSuccess";
-import type { Property } from "@/types";
+import type { Property, Financing } from "@/types";
 
 function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -23,14 +24,14 @@ export default async function DashboardPage() {
   const [
     { data: profile },
     { data: properties },
-    { data: financings },
+    { data: portfolioFinancings },
     { data: tenants },
     { data: thisMonthPaidPayments },
     { data: openTasks },
   ] = await Promise.all([
     supabase.from("profiles").select("plan, name, onboarding_completed").eq("id", user!.id).single(),
     supabase.from("properties").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-    supabase.from("financings").select("fixed_until").eq("user_id", user!.id),
+    supabase.from("financings").select("*, properties!inner(user_id)").eq("properties.user_id", user!.id),
     supabase.from("tenants").select("rent_monthly, is_active").eq("user_id", user!.id),
     supabase.from("rent_payments").select("amount").eq("user_id", user!.id).eq("status", "paid")
       .gte("due_date", firstDay).lte("due_date", lastDay),
@@ -62,11 +63,15 @@ export default async function DashboardPage() {
     cashflow_monthly: results[i].cashflow_monthly,
   }));
 
-  const financingAlertCount = (financings ?? []).filter((f) => {
+  const financingAlertCount = (portfolioFinancings ?? []).filter((f) => {
     if (!f.fixed_until) return false;
     const days = daysUntil(f.fixed_until);
     return days < 365;
   }).length;
+
+  const portfolioSummary = props.length > 0
+    ? calculatePortfolioSummary(props, (portfolioFinancings ?? []) as unknown as Financing[], [], [])
+    : undefined;
 
   const monthlyRentSoll = (tenants ?? [])
     .filter((t) => t.is_active)
@@ -94,6 +99,7 @@ export default async function DashboardPage() {
         overdueTasks={overdueTasks}
         highPriorityTasks={highPriorityTasks}
         userId={user!.id}
+        portfolioSummary={portfolioSummary}
       />
       <Suspense fallback={null}>
         <UpgradeSuccess />
