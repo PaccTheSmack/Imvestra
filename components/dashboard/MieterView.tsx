@@ -283,25 +283,57 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
         <>
           {tenants.length === 0 ? (
             // Empty state
-            <div className="mt-16 flex flex-col items-center text-center">
+            <div className="mt-10 flex flex-col items-center text-center px-6">
               <motion.div
-                animate={prefersReduced ? {} : { y: [0, -6, 0] }}
+                animate={prefersReduced ? {} : { y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
+                className="w-20 h-20 rounded-[20px] flex items-center justify-center mx-auto"
                 style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
               >
-                <UsersFour size={24} color="#666" />
+                <UsersFour size={36} color="#333" />
               </motion.div>
-              <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>
+
+              <h2 className="text-[24px] font-semibold tracking-[-0.02em] mt-8" style={{ color: tokens.color.text }}>
                 Noch keine Mieter
+              </h2>
+              <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: "#555" }}>
+                Erfasse Mieter, verfolge Zahlungen und behalte jeden Vertrag im Blick.
               </p>
-              <p className="text-sm mt-2" style={{ color: "#777" }}>
-                Fuege deinen ersten Mieter hinzu.
-              </p>
-              <div className="mt-5">
+
+              <div className="mt-6">
                 <DarkButton variant="primary" onClick={() => setShowAddTenant(true)}>
-                  Mieter hinzufugen
+                  Ersten Mieter hinzufügen
                 </DarkButton>
+              </div>
+
+              {/* Ghost preview rows */}
+              <div className="mt-10 w-full max-w-[500px] flex flex-col gap-2 select-none pointer-events-none">
+                {[
+                  { name: "Maria Mustermann", unit: "EG links",  rent: "850 €/Mo" },
+                  { name: "Thomas Beispiel",  unit: "OG rechts", rent: "920 €/Mo" },
+                ].map((t, i) => (
+                  <div
+                    key={t.name}
+                    className="rounded-[14px] px-5 py-4 flex items-center justify-between"
+                    style={{
+                      background: "#111",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      opacity: i === 0 ? 0.35 : 0.2,
+                      filter: "blur(1.5px)",
+                    }}
+                  >
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-white">{t.name}</p>
+                      <p className="text-xs mt-0.5" style={{ color: "#555" }}>{t.unit}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <p className="text-sm font-semibold text-white">{t.rent}</p>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(0,224,215,0.1)", color: "#00E0D7" }}>
+                        Aktiv
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ) : (

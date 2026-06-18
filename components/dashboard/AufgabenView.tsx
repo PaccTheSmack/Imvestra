@@ -298,35 +298,78 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
 
       {/* ── Empty state ─────────────────────────────────────────────────── */}
       {filtered.length === 0 && (
-        <div className="mt-16 flex flex-col items-center text-center">
-          <motion.div
-            animate={prefersReduced ? {} : { y: [0, -6, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
-            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
-          >
-            <CheckSquare size={24} color="#666" />
-          </motion.div>
-          <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>
-            {filter === "done" && completedTasks === 0
-              ? "Noch nichts erledigt"
-              : filter === "open" && openTasks === 0
-              ? "Alles erledigt!"
-              : "Keine Aufgaben"}
-          </p>
-          <p className="text-sm mt-2 max-w-[260px]" style={{ color: "#777" }}>
-            {filter === "done" && completedTasks === 0
-              ? "Erledigte Aufgaben erscheinen hier."
-              : filter === "open" && openTasks === 0
-              ? "Keine offenen Aufgaben."
-              : "Erstelle deine erste Aufgabe."}
-          </p>
-          {localTasks.length === 0 && (
-            <div className="mt-5">
-              <DarkButton variant="primary" onClick={() => setShowAddTask(true)}>
-                Erste Aufgabe erstellen
-              </DarkButton>
-            </div>
+        <div className="mt-10 flex flex-col items-center text-center px-6">
+          {localTasks.length === 0 ? (
+            // True empty: no tasks at all
+            <>
+              <motion.div
+                animate={prefersReduced ? {} : { y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="w-20 h-20 rounded-[20px] flex items-center justify-center mx-auto"
+                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                <CheckSquare size={36} color="#333" />
+              </motion.div>
+
+              <h2 className="text-[24px] font-semibold tracking-[-0.02em] mt-8" style={{ color: tokens.color.text }}>
+                Keine Aufgaben offen
+              </h2>
+              <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: "#555" }}>
+                Organisiere Wartungsarbeiten, Fristen und alles rund um dein Portfolio — an einem Ort.
+              </p>
+
+              <div className="mt-6">
+                <DarkButton variant="primary" onClick={() => setShowAddTask(true)}>
+                  Erste Aufgabe erstellen
+                </DarkButton>
+              </div>
+
+              {/* Ghost task previews */}
+              <div className="mt-10 w-full max-w-[500px] flex flex-col gap-2 select-none pointer-events-none">
+                {[
+                  { title: "Heizung warten lassen",        priLabel: "Hoch",    priColor: "#FF4444", priBg: "rgba(255,68,68,0.1)" },
+                  { title: "Nebenkostenabrechnung prüfen", priLabel: "Mittel",  priColor: "#FFB800", priBg: "rgba(255,184,0,0.1)" },
+                  { title: "Mietvertrag verlängern",        priLabel: "Niedrig", priColor: "#00E0D7", priBg: "rgba(0,224,215,0.1)" },
+                ].map((t, i) => (
+                  <div
+                    key={t.title}
+                    className="rounded-[12px] px-4 py-3.5 flex items-center gap-4"
+                    style={{
+                      background: "#111",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      opacity: i === 0 ? 0.4 : i === 1 ? 0.25 : 0.15,
+                      filter: "blur(1.5px)",
+                    }}
+                  >
+                    <div className="w-5 h-5 rounded-[5px] flex-shrink-0" style={{ border: "2px solid rgba(255,255,255,0.15)" }} />
+                    <p className="flex-1 text-sm font-medium text-white text-left">{t.title}</p>
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: t.priBg, color: t.priColor }}>
+                      {t.priLabel}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : filter === "done" ? (
+            // Filter: done, nothing done yet
+            <>
+              <div className="w-16 h-16 rounded-[18px] flex items-center justify-center mx-auto"
+                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <CheckCircle size={28} color="#333" />
+              </div>
+              <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>Noch nichts erledigt</p>
+              <p className="text-sm mt-2" style={{ color: "#666" }}>Erledigte Aufgaben erscheinen hier.</p>
+            </>
+          ) : (
+            // Filter: open, all done
+            <>
+              <div className="w-16 h-16 rounded-[18px] flex items-center justify-center mx-auto"
+                style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)" }}>
+                <CheckCircle size={28} color="#22C55E" weight="fill" />
+              </div>
+              <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>Alles erledigt</p>
+              <p className="text-sm mt-2" style={{ color: "#666" }}>Keine offenen Aufgaben.</p>
+            </>
           )}
         </div>
       )}
