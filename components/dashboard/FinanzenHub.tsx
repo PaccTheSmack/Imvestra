@@ -13,20 +13,21 @@ import {
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 import SzenarioRechner from "@/components/dashboard/SzenarioRechner";
+import BankAccountTab from "@/components/dashboard/BankAccountTab";
 import DarkButton from "@/components/ui/DarkButton";
 import DarkInput from "@/components/ui/DarkInput";
 import DarkSelect from "@/components/ui/DarkSelect";
 import FadeIn from "@/components/ui/FadeIn";
 import { tokens } from "@/lib/tokens";
 import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
-import type { Property, Tenant, RentPayment, Expense } from "@/types";
+import type { Property, Tenant, RentPayment, Expense, BankAccount, BankTransaction } from "@/types";
 import { EXPENSE_CATEGORIES } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type TabId = "cashflow" | "ausgaben" | "zinsbindung" | "darlehen" | "szenario";
+type TabId = "cashflow" | "ausgaben" | "zinsbindung" | "darlehen" | "szenario" | "bankkonto";
 type UrgencyKind = "expired" | "critical" | "warning" | "ok";
 
 interface RawFinancing {
@@ -58,18 +59,21 @@ interface FinanzenHubProps {
   payments: RentPayment[];
   expenses: Expense[];
   financings: RawFinancing[];
+  bankAccounts?: BankAccount[];
+  bankTransactions?: BankTransaction[];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const TABS: { id: TabId; label: string }[] = [
+const TABS: { id: TabId; label: string; badge?: string }[] = [
   { id: "cashflow",    label: "Cashflow"    },
   { id: "ausgaben",    label: "Ausgaben"    },
   { id: "zinsbindung", label: "Zinsbindung" },
   { id: "darlehen",    label: "Darlehen"    },
   { id: "szenario",   label: "Szenarien"   },
+  { id: "bankkonto",   label: "Bankkonto",  badge: "NEU" },
 ];
 
 const MONTHS_DE  = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
@@ -225,6 +229,8 @@ export default function FinanzenHub({
   payments,
   expenses,
   financings,
+  bankAccounts = [],
+  bankTransactions = [],
 }: FinanzenHubProps) {
   const router = useRouter();
   const prefersReduced = useReducedMotion();
@@ -434,7 +440,7 @@ export default function FinanzenHub({
               <p className="text-[10px] font-medium uppercase tracking-wider mb-2" style={{ color: tokens.color.textSubtle }}>
                 {label}
               </p>
-              <p className="text-xl font-semibold tracking-tight" style={{ color }}>
+              <p className="text-xl font-semibold tracking-tight tabular-nums" style={{ color }}>
                 {value}
               </p>
             </div>
@@ -443,22 +449,30 @@ export default function FinanzenHub({
       </FadeIn>
 
       {/* ── Tab bar ────────────────────────────────────────────────────── */}
-      <div className="flex gap-0 mb-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        {TABS.map(({ id, label }) => (
+      <div className="flex gap-0 mb-6 overflow-x-auto" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        {TABS.map(({ id, label, badge }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className="px-1 mr-6 pb-3 text-sm font-medium cursor-pointer transition-colors relative"
-            style={{ color: activeTab === id ? "#00E0D7" : "#666" }}
-            onMouseEnter={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#666"; }}
-            onMouseLeave={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#666"; }}
+            className="px-1 mr-6 pb-3 text-sm font-medium cursor-pointer transition-colors relative flex items-center gap-2 flex-shrink-0"
+            style={{ color: activeTab === id ? tokens.color.accent : tokens.color.textSubtle }}
+            onMouseEnter={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#aaa"; }}
+            onMouseLeave={(e) => { if (activeTab !== id) e.currentTarget.style.color = tokens.color.textSubtle; }}
           >
             {label}
+            {badge && (
+              <span
+                className="text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide"
+                style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
+              >
+                {badge}
+              </span>
+            )}
             {activeTab === id && (
               <motion.div
                 layoutId="tab-indicator"
                 className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full"
-                style={{ background: "#00E0D7" }}
+                style={{ background: tokens.color.accent }}
                 transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               />
             )}
@@ -969,6 +983,14 @@ export default function FinanzenHub({
                 propertyName: f.propertyName,
                 propertyType: f.propertyType,
               }))}
+            />
+          )}
+
+          {/* ──────────────────── TAB 6: BANKKONTO ──────────────────────── */}
+          {activeTab === "bankkonto" && (
+            <BankAccountTab
+              bankAccounts={bankAccounts}
+              transactions={bankTransactions}
             />
           )}
 

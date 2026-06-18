@@ -163,6 +163,57 @@ export interface Task {
   created_at: string;
 }
 
+// ─── Banking ─────────────────────────────────────────────────────────────────
+
+export type BankProvider = "gocardless" | "manual";
+export type BankAccountStatus = "pending" | "active" | "error" | "expired";
+export type BankTransactionMatchStatus =
+  | "unmatched"
+  | "matched_rent"
+  | "matched_expense"
+  | "ignored";
+
+export interface BankAccount {
+  id: string;
+  user_id: string;
+  provider: BankProvider;
+  requisition_id?: string;
+  external_id?: string;
+  institution_id?: string;
+  institution_name?: string;
+  iban?: string;
+  currency: string;
+  account_name?: string;
+  status: BankAccountStatus;
+  last_synced_at?: string;
+  error_message?: string;
+  property_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankTransaction {
+  id: string;
+  user_id: string;
+  bank_account_id: string;
+  external_id?: string;
+  booking_date?: string;
+  value_date?: string;
+  amount: number;
+  currency: string;
+  description?: string;
+  creditor_name?: string;
+  debtor_name?: string;
+  remittance_info?: string;
+  matched_payment_id?: string;
+  matched_expense_id?: string;
+  match_status: BankTransactionMatchStatus;
+  match_confidence?: number;
+  category?: string;
+  notes?: string;
+  created_at: string;
+}
+
 export type FinanzierungUrgency = "critical" | "warning" | "ok" | "expired";
 
 export interface FinanzierungWithProperty extends Financing {
