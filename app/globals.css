@@ -5,7 +5,6 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --font-geist: 'Geist', system-ui, sans-serif;
     --accent: #00E0D7;
   }
 
@@ -18,11 +17,19 @@
   }
 
   body {
-    font-family: var(--font-geist);
+    font-family: var(--font-sans), system-ui, sans-serif;
     background: #080808;
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* JetBrains Mono on all financial numbers — zero-change to individual components */
+  .tabular-nums {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-feature-settings: "tnum" 1, "zero" 1;
+    font-variant-numeric: tabular-nums;
   }
 
   ::selection {

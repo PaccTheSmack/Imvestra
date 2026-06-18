@@ -172,7 +172,7 @@ export default function CommandPalette() {
                 />
                 <kbd
                   className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
-                  style={{ background: "#1A1A1A", color: "#444", fontFamily: "monospace" }}
+                  style={{ background: "#1A1A1A", color: "#444", fontFamily: "var(--font-mono)" }}
                 >
                   esc
                 </kbd>
@@ -230,9 +230,9 @@ export default function CommandPalette() {
                 className="px-4 py-2 flex items-center gap-5 text-[10px]"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "#3a3a3a" }}
               >
-                <span><span style={{ fontFamily: "monospace" }}>↑↓</span> navigieren</span>
-                <span><span style={{ fontFamily: "monospace" }}>↵</span> öffnen</span>
-                <span><span style={{ fontFamily: "monospace" }}>esc</span> schließen</span>
+                <span><span style={{ fontFamily: "var(--font-mono)" }}>↑↓</span> navigieren</span>
+                <span><span style={{ fontFamily: "var(--font-mono)" }}>↵</span> öffnen</span>
+                <span><span style={{ fontFamily: "var(--font-mono)" }}>esc</span> schließen</span>
               </div>
             </div>
           </motion.div>

@@ -202,7 +202,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.12 }}
                 className="text-[10px] px-1 py-0.5 rounded flex-shrink-0"
-                style={{ background: "#1A1A1A", color: "#444", fontFamily: "monospace" }}
+                style={{ background: "#1A1A1A", color: "#444", fontFamily: "var(--font-mono)" }}
               >
                 ⌘K
               </motion.span>

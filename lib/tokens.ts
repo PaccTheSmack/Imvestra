@@ -1,4 +1,8 @@
 export const tokens = {
+  font: {
+    sans: "var(--font-sans), system-ui, sans-serif",
+    mono: "var(--font-mono), ui-monospace, monospace",
+  },
   color: {
     bg:              "#080808",
     bgSubtle:        "#0F0F0F",
