@@ -18,6 +18,8 @@ import {
   CheckCircle,
 } from "@phosphor-icons/react";
 import type { PortfolioSummary } from "@/lib/portfolio-calculations";
+import { calculatePortfolioHealth } from "@/lib/portfolio-insights";
+import PortfolioInsights from "@/components/dashboard/PortfolioInsights";
 import FadeIn from "@/components/ui/FadeIn";
 import HoverCard from "@/components/ui/HoverCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
@@ -975,6 +977,18 @@ export default function DashboardHome({
           </div>
         </FadeIn>
       )}
+
+      {/* ── Portfolio Intelligence ── */}
+      {hasPortfolio && portfolioSummary && (() => {
+        const { score, insights } = calculatePortfolioHealth(portfolioSummary, financingAlertCount);
+        return (
+          <FadeIn delay={0.22}>
+            <div className="mb-8">
+              <PortfolioInsights score={score} insights={insights} />
+            </div>
+          </FadeIn>
+        );
+      })()}
 
       {/* ── Upgrade Banner ── */}
       {isFreePlan && (
