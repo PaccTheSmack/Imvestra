@@ -119,7 +119,8 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
                       style={{
                         borderTop: `1px solid ${tokens.color.border}`,
                         background: isSelected ? tokens.color.accentSubtle : "transparent",
-                        borderLeft: isSelected ? `2px solid ${tokens.color.accent}` : "2px solid transparent",
+                        outline: isSelected ? `1px solid ${tokens.color.borderAccent}` : "none",
+                        outlineOffset: "-1px",
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = tokens.color.surfaceHover;
