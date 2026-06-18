@@ -64,13 +64,42 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
             </p>
 
             {properties.length === 0 ? (
-              <div className="px-5 pb-8 flex flex-col items-center text-center pt-4">
-                <FilePdf size={24} color={tokens.color.textSubtle} />
-                <p className="text-sm mt-3" style={{ color: tokens.color.textMuted }}>Noch kein Objekt im Portfolio.</p>
-                <p className="text-xs mt-1" style={{ color: tokens.color.textSubtle }}>Berechne zuerst ein Objekt im Rechner.</p>
+              <div className="px-5 pb-8 flex flex-col items-center text-center pt-6">
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-16 h-16 rounded-[16px] flex items-center justify-center mb-4"
+                  style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+                >
+                  <FilePdf size={28} color="#00E0D7" />
+                </motion.div>
+                <p className="text-base font-semibold tracking-[-0.02em] mb-1.5" style={{ color: tokens.color.text }}>Noch kein Objekt</p>
+                <p className="text-xs leading-relaxed mb-5 max-w-[180px]" style={{ color: tokens.color.textMuted }}>
+                  Berechne zuerst ein Objekt im Rechner, um PDFs zu exportieren.
+                </p>
+                {/* Ghost property rows */}
+                <div className="w-full flex flex-col gap-1 select-none pointer-events-none">
+                  {[["Musterstraße 12", "ETW", "0.8%"], ["Hafenweg 3", "MFH", "1.2%"]].map(([name, type, yield_], i) => (
+                    <div
+                      key={name}
+                      className="px-3 py-2.5 flex items-center justify-between rounded-[8px]"
+                      style={{
+                        background: tokens.color.surfaceHover,
+                        filter: "blur(1.5px)",
+                        opacity: i === 0 ? 0.35 : 0.2,
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,224,215,0.1)", color: "#00E0D7" }}>{type}</span>
+                        <span className="text-xs" style={{ color: tokens.color.text }}>{name}</span>
+                      </div>
+                      <span className="text-xs tabular-nums" style={{ color: tokens.color.textMuted }}>{yield_}</span>
+                    </div>
+                  ))}
+                </div>
                 <Link
                   href="/calculator"
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-[8px] transition-all"
+                  className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-[8px] transition-all"
                   style={{ background: tokens.color.surfaceHover, border: `1px solid ${tokens.color.border}`, color: tokens.color.accent }}
                 >
                   Zum Rechner

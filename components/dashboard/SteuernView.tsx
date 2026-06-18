@@ -226,7 +226,58 @@ export default function SteuernView({ properties, payments, expenses, financings
           </div>
         </div>
 
-        {/* Summary cards */}
+        {/* Empty state */}
+        {properties.length === 0 && (
+          <div className="flex flex-col items-center py-16 px-4">
+            <motion.div
+              animate={prefersReduced ? {} : { y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="w-20 h-20 rounded-[20px] flex items-center justify-center mb-6"
+              style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+            >
+              <Receipt size={36} color="#00E0D7" />
+            </motion.div>
+            <p className="text-[24px] font-semibold tracking-[-0.02em] mb-2" style={{ color: tokens.color.text }}>
+              Noch keine Steuerdaten
+            </p>
+            <p className="text-sm text-center max-w-[340px] leading-relaxed mb-10" style={{ color: tokens.color.textMuted }}>
+              Erfasse Objekte im Portfolio, um Mieteinnahmen, Werbungskosten und AfA automatisch auszuwerten.
+            </p>
+            {/* Ghost Anlage V rows */}
+            <div
+              className="w-full max-w-[480px] rounded-[14px] overflow-hidden select-none pointer-events-none"
+              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+            >
+              <div className="px-5 py-3" style={{ background: "#0C0C0C", borderBottom: `1px solid ${tokens.color.border}` }}>
+                <div className="h-2.5 w-40 rounded-full" style={{ background: "rgba(255,255,255,0.08)", filter: "blur(1.5px)", opacity: 0.4 }} />
+              </div>
+              <div className="px-5 py-4 flex flex-col gap-3" style={{ filter: "blur(1.5px)", opacity: 0.35 }}>
+                {[["Mieteinnahmen (Zeile 9)", "8.400 €"], ["Schuldzinsen (Zeile 35)", "3.120 €"], ["AfA (Zeile 33)", "2.760 €"], ["Überschuss / Verlust (Zeile 53)", "2.520 €"]].map(([label, val]) => (
+                  <div key={label} className="flex justify-between items-center py-1.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span className="text-xs" style={{ color: "#777" }}>{label}</span>
+                    <span className="text-xs font-medium tabular-nums" style={{ color: tokens.color.text }}>{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div
+              className="w-full max-w-[480px] rounded-[14px] mt-3 select-none pointer-events-none"
+              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}`, filter: "blur(1.5px)", opacity: 0.2 }}
+            >
+              <div className="px-5 py-4 flex flex-col gap-3">
+                {[["AfA / Jahr", "2.760 €"], ["Steuerersparnis (42 %)", "1.159 €"]].map(([label, val]) => (
+                  <div key={label} className="flex justify-between items-center py-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span className="text-xs" style={{ color: "#777" }}>{label}</span>
+                    <span className="text-xs font-medium tabular-nums" style={{ color: tokens.color.text }}>{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Summary cards + Tab card */}
+        {properties.length > 0 && (<>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { label: "MIETEINNAHMEN",      value: formatCurrency(mieteinnahmen),           color: "#00E0D7" },
@@ -254,6 +305,7 @@ export default function SteuernView({ properties, payments, expenses, financings
         </div>
 
         {/* Tab card */}
+
         <div
           className="rounded-[14px] overflow-hidden"
           style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
@@ -629,6 +681,7 @@ export default function SteuernView({ properties, payments, expenses, financings
             </motion.div>
           </AnimatePresence>
         </div>
+        </>)}
       </div>
     </div>
   );
