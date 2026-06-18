@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Toaster from "@/components/ui/Toaster";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -39,7 +40,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="theme-color" content="#080808" />
       </head>
-      <body className="bg-[#080808] antialiased">{children}</body>
+      <body className="bg-[#080808] antialiased">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

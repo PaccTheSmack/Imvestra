@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { tokens } from "@/lib/tokens";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
@@ -28,7 +29,7 @@ interface DarkButtonProps {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-[#00E0D7] text-[#080808] font-semibold shadow-[0_0_0_1px_rgba(0,224,215,0.3),0_4px_16px_rgba(0,224,215,0.15)] hover:brightness-110",
+    "bg-[#00E0D7] text-[#080808] font-semibold shadow-[0_0_0_1px_rgba(0,224,215,0.3),0_4px_16px_rgba(0,224,215,0.12)] hover:brightness-105",
   secondary:
     "bg-[#1A1A1A] text-white border border-[rgba(255,255,255,0.07)] hover:bg-[#222222] hover:border-[rgba(255,255,255,0.12)]",
   ghost:
@@ -55,10 +56,16 @@ export default function DarkButton({
 }: DarkButtonProps) {
   const prefersReduced = useReducedMotion();
 
+  const hoverAnim = prefersReduced
+    ? {}
+    : variant === "primary"
+    ? { y: -1 }
+    : {};
+
   return (
     <motion.button
       disabled={disabled || loading}
-      whileHover={prefersReduced ? {} : { scale: 1.01 }}
+      whileHover={hoverAnim}
       whileTap={prefersReduced ? {} : { scale: 0.97 }}
       transition={{ type: "spring", stiffness: 500, damping: 30 }}
       className={[
