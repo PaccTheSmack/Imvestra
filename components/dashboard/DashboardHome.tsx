@@ -14,14 +14,12 @@ import {
   Bank,
   Sparkle,
   Tag,
-  FilePdf,
   CheckCircle,
 } from "@phosphor-icons/react";
 import type { PortfolioSummary } from "@/lib/portfolio-calculations";
 import { calculatePortfolioHealth } from "@/lib/portfolio-insights";
 import PortfolioInsights from "@/components/dashboard/PortfolioInsights";
 import FadeIn from "@/components/ui/FadeIn";
-import HoverCard from "@/components/ui/HoverCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import CountUp from "@/components/ui/CountUp";
 import { generateSmartTasks } from "@/lib/smart-tasks";
@@ -168,7 +166,7 @@ export default function DashboardHome({
         <div className="flex items-start justify-between mb-10">
           <div>
             <h1
-              className="text-[26px] font-semibold tracking-[-0.03em] leading-tight"
+              className="text-[30px] font-semibold tracking-[-0.035em] leading-tight"
               style={{ color: tokens.color.text }}
             >
               {getGreeting(firstName)}
@@ -363,6 +361,7 @@ export default function DashboardHome({
                 borderColor: tokens.color.borderAccent,
                 boxShadow: tokens.shadow.accent,
               }}
+              whileTap={prefersReduced ? {} : { scale: 0.98 }}
               transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
               onClick={() => router.push("/portfolio")}
             >
@@ -412,6 +411,7 @@ export default function DashboardHome({
               }}
               transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
             >
+
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textSubtle }}>
                 Eigenkapital
               </p>
@@ -474,6 +474,7 @@ export default function DashboardHome({
                 borderColor: tokens.color.borderAccent,
                 boxShadow: tokens.shadow.accent,
               }}
+              whileTap={prefersReduced ? {} : { scale: 0.98 }}
               transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
               onClick={() => router.push("/finanzen")}
             >
@@ -652,165 +653,144 @@ export default function DashboardHome({
       {/* ── Quick Actions ── */}
       <FadeIn delay={0.13}>
         <p
-          className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-4"
+          className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-3"
           style={{ color: tokens.color.textSubtle }}
         >
           {count === 0 ? "Womit möchtest du starten?" : "Schnellzugriff"}
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
 
           {/* Renditerechner */}
-          <HoverCard intensity={5} className="h-full">
-            <motion.div
-              className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-              whileHover={prefersReduced ? {} : {
-                borderColor: tokens.color.borderAccent,
-              }}
-              transition={{ duration: 0.15 }}
-              onClick={() => router.push("/calculator")}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div
-                  className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-                  style={{ background: tokens.color.accentMuted }}
-                >
-                  <Calculator size={18} color={tokens.color.accent} />
-                </div>
-                <motion.div
-                  className="opacity-0 group-hover:opacity-100"
-                  transition={{ duration: 0.15 }}
-                >
-                  <ArrowRight size={16} color={tokens.color.accent} />
-                </motion.div>
-              </div>
-              <p className="text-sm font-semibold mb-2" style={{ color: tokens.color.text }}>
-                Renditerechner
-              </p>
-              <p className="text-sm leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-                Kaufpreis, Miete und Fläche eingeben — sofort Cashflow und Rendite sehen.
-              </p>
+          <motion.div
+            className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
+            style={{
+              background: tokens.color.surface,
+              border: `1px solid ${tokens.color.border}`,
+            }}
+            whileHover={prefersReduced ? {} : {
+              y: -3,
+              borderColor: tokens.color.borderAccent,
+              boxShadow: tokens.shadow.accent,
+            }}
+            whileTap={prefersReduced ? {} : { scale: 0.98 }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+            onClick={() => router.push("/calculator")}
+          >
+            <div className="flex items-center justify-between mb-5">
               <div
-                className="mt-5 pt-4 flex flex-wrap gap-1.5"
-                style={{ borderTop: `1px solid ${tokens.color.border}` }}
+                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
+                style={{ background: tokens.color.accentMuted }}
               >
-                {["Bruttorendite", "Cashflow", "Maximalpreis"].map(tag => (
-                  <span
-                    key={tag}
-                    className="text-[10px] px-2 py-0.5 rounded-full"
-                    style={{ background: tokens.color.surfaceHover, color: tokens.color.textSubtle }}
-                  >
-                    {tag}
-                  </span>
-                ))}
+                <Calculator size={16} color={tokens.color.accent} />
               </div>
-            </motion.div>
-          </HoverCard>
+              <ArrowRight
+                size={15}
+                color={tokens.color.accent}
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:translate-x-0.5"
+              />
+            </div>
+            <p className="text-[14px] font-semibold mb-1.5 leading-tight" style={{ color: tokens.color.text }}>
+              Renditerechner
+            </p>
+            <p className="text-[13px] leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
+              Kaufpreis, Miete und Fläche eingeben — sofort Cashflow und Rendite sehen.
+            </p>
+            <div
+              className="mt-4 pt-3.5 flex items-center gap-1"
+              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+            >
+              <span className="text-[11px] font-medium" style={{ color: tokens.color.accent }}>Jetzt berechnen</span>
+              <ArrowRight size={11} color={tokens.color.accent} className="group-hover:translate-x-0.5 transition-transform duration-150" />
+            </div>
+          </motion.div>
 
           {/* Portfolio */}
-          <HoverCard intensity={5} className="h-full">
-            <motion.div
-              className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-              whileHover={prefersReduced ? {} : {
-                borderColor: tokens.color.borderAccent,
-              }}
-              transition={{ duration: 0.15 }}
-              onClick={() => router.push("/portfolio")}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div
-                  className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-                  style={{ background: tokens.color.accentMuted }}
-                >
-                  <Buildings size={18} color={tokens.color.accent} />
-                </div>
-                <motion.div
-                  className="opacity-0 group-hover:opacity-100"
-                  transition={{ duration: 0.15 }}
-                >
-                  <ArrowRight size={16} color={tokens.color.accent} />
-                </motion.div>
-              </div>
-              <p className="text-sm font-semibold mb-2" style={{ color: tokens.color.text }}>
-                Portfolio
-              </p>
-              <p className="text-sm leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-                Alle gespeicherten Objekte im Überblick mit Gesamtperformance.
-              </p>
+          <motion.div
+            className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
+            style={{
+              background: tokens.color.surface,
+              border: `1px solid ${tokens.color.border}`,
+            }}
+            whileHover={prefersReduced ? {} : {
+              y: -3,
+              borderColor: tokens.color.borderAccent,
+              boxShadow: tokens.shadow.accent,
+            }}
+            whileTap={prefersReduced ? {} : { scale: 0.98 }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+            onClick={() => router.push("/portfolio")}
+          >
+            <div className="flex items-center justify-between mb-5">
               <div
-                className="mt-5 pt-4 flex flex-wrap gap-1.5"
-                style={{ borderTop: `1px solid ${tokens.color.border}` }}
+                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
+                style={{ background: tokens.color.accentMuted }}
               >
-                {["Cashflow", "Rendite", "Gesamtinvestition"].map(tag => (
-                  <span
-                    key={tag}
-                    className="text-[10px] px-2 py-0.5 rounded-full"
-                    style={{ background: tokens.color.surfaceHover, color: tokens.color.textSubtle }}
-                  >
-                    {tag}
-                  </span>
-                ))}
+                <Buildings size={16} color={tokens.color.accent} />
               </div>
-            </motion.div>
-          </HoverCard>
+              <ArrowRight
+                size={15}
+                color={tokens.color.accent}
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+              />
+            </div>
+            <p className="text-[14px] font-semibold mb-1.5 leading-tight" style={{ color: tokens.color.text }}>
+              Portfolio
+            </p>
+            <p className="text-[13px] leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
+              Alle gespeicherten Objekte im Überblick mit Gesamtperformance.
+            </p>
+            <div
+              className="mt-4 pt-3.5 flex items-center gap-1"
+              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+            >
+              <span className="text-[11px] font-medium" style={{ color: tokens.color.accent }}>Portfolio öffnen</span>
+              <ArrowRight size={11} color={tokens.color.accent} className="group-hover:translate-x-0.5 transition-transform duration-150" />
+            </div>
+          </motion.div>
 
           {/* Verhandlung */}
-          <HoverCard intensity={3} className="h-full">
-            <motion.div
-              className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-              whileHover={prefersReduced ? {} : {
-                borderColor: tokens.color.borderAccent,
-              }}
-              transition={{ duration: 0.15 }}
-              onClick={() => router.push("/verhandlung")}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div
-                  className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-                  style={{ background: "rgba(139,92,246,0.1)" }}
-                >
-                  <Tag size={18} color="#A78BFA" />
-                </div>
-                <motion.div
-                  className="opacity-0 group-hover:opacity-100"
-                  transition={{ duration: 0.15 }}
-                >
-                  <ArrowRight size={16} color="#A78BFA" />
-                </motion.div>
-              </div>
-              <p className="text-sm font-semibold mb-2" style={{ color: tokens.color.text }}>
-                Verhandlungsrechner
-              </p>
-              <p className="text-sm leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-                Optimalen Kaufpreis ermitteln — basierend auf Rendite und Finanzierungszielen.
-              </p>
+          <motion.div
+            className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
+            style={{
+              background: tokens.color.surface,
+              border: `1px solid ${tokens.color.border}`,
+            }}
+            whileHover={prefersReduced ? {} : {
+              y: -3,
+              borderColor: "rgba(139,92,246,0.3)",
+              boxShadow: "0 0 0 1px rgba(139,92,246,0.2), 0 4px 24px rgba(139,92,246,0.08)",
+            }}
+            whileTap={prefersReduced ? {} : { scale: 0.98 }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+            onClick={() => router.push("/verhandlung")}
+          >
+            <div className="flex items-center justify-between mb-5">
               <div
-                className="mt-5 pt-4 flex flex-wrap gap-1.5"
-                style={{ borderTop: `1px solid ${tokens.color.border}` }}
+                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
+                style={{ background: "rgba(139,92,246,0.1)" }}
               >
-                {["Maximalpreis", "Verhandlungsziel"].map(tag => (
-                  <span
-                    key={tag}
-                    className="text-[10px] px-2 py-0.5 rounded-full"
-                    style={{ background: tokens.color.surfaceHover, color: tokens.color.textSubtle }}
-                  >
-                    {tag}
-                  </span>
-                ))}
+                <Tag size={16} color="#A78BFA" />
               </div>
-            </motion.div>
-          </HoverCard>
+              <ArrowRight
+                size={15}
+                color="#A78BFA"
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+              />
+            </div>
+            <p className="text-[14px] font-semibold mb-1.5 leading-tight" style={{ color: tokens.color.text }}>
+              Verhandlungsrechner
+            </p>
+            <p className="text-[13px] leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
+              Optimalen Kaufpreis ermitteln — basierend auf Rendite und Finanzierungszielen.
+            </p>
+            <div
+              className="mt-4 pt-3.5 flex items-center gap-1"
+              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+            >
+              <span className="text-[11px] font-medium" style={{ color: "#A78BFA" }}>Preis ermitteln</span>
+              <ArrowRight size={11} color="#A78BFA" className="group-hover:translate-x-0.5 transition-transform duration-150" />
+            </div>
+          </motion.div>
         </div>
       </FadeIn>
 
@@ -902,7 +882,7 @@ export default function DashboardHome({
             <div className="flex items-center justify-between mb-4">
               <p
                 className="text-[11px] font-semibold uppercase tracking-[0.1em]"
-                style={{ color: tokens.color.textSubtle }}
+                style={{ color: "#444" }}
               >
                 Zuletzt hinzugefügt
               </p>
@@ -921,7 +901,7 @@ export default function DashboardHome({
                 return (
                   <motion.div
                     key={p.id}
-                    className="rounded-[12px] px-5 py-4 flex items-center justify-between cursor-pointer"
+                    className="group rounded-[12px] px-5 py-4 flex items-center justify-between cursor-pointer"
                     style={{
                       background: tokens.color.surface,
                       border: `1px solid ${tokens.color.border}`,
@@ -933,6 +913,7 @@ export default function DashboardHome({
                       borderColor: tokens.color.borderAccent,
                       x: 2,
                     }}
+                    whileTap={prefersReduced ? {} : { scale: 0.99 }}
                     onClick={() => router.push("/portfolio")}
                   >
                     <div className="flex items-center gap-4">
@@ -949,26 +930,26 @@ export default function DashboardHome({
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-8 text-right">
+                    <div className="flex items-center gap-6 text-right">
                       <div>
                         <p className="text-[11px]" style={{ color: tokens.color.textSubtle }}>Bruttorendite</p>
-                        <p className="text-sm font-semibold tabular-nums" style={{ color: tokens.color.accent }}>
+                        <p className="text-[13px] font-semibold tabular-nums" style={{ color: tokens.color.accent }}>
                           {fmtPercent(p.gross_yield)}
                         </p>
                       </div>
                       <div>
                         <p className="text-[11px]" style={{ color: tokens.color.textSubtle }}>Cashflow / Mo.</p>
-                        <p className="text-sm font-semibold tabular-nums" style={{ color: positive ? tokens.color.positive : tokens.color.danger }}>
+                        <p className="text-[13px] font-semibold tabular-nums" style={{ color: positive ? tokens.color.positive : tokens.color.danger }}>
                           {fmtSigned(p.cashflow_monthly)}
                         </p>
                       </div>
                       <div className="hidden sm:block">
                         <p className="text-[11px]" style={{ color: tokens.color.textSubtle }}>Kaufpreis</p>
-                        <p className="text-sm font-semibold tabular-nums" style={{ color: tokens.color.text }}>
+                        <p className="text-[13px] font-semibold tabular-nums" style={{ color: tokens.color.text }}>
                           {fmtCurrency(p.purchase_price)}
                         </p>
                       </div>
-                      <FilePdf size={14} color={tokens.color.textSubtle} className="hidden md:block flex-shrink-0" />
+                      <ArrowRight size={14} color={tokens.color.textSubtle} className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
                     </div>
                   </motion.div>
                 );
