@@ -91,17 +91,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
     localStorage.setItem("sidebar-collapsed", String(collapsed));
   }, [collapsed]);
 
-  // Cmd+K global shortcut
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        document.getElementById("sidebar-search-btn")?.click();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
+  const openPalette = () => document.dispatchEvent(new CustomEvent("imvestra:palette:open"))
 
   useEffect(() => {
     const supabase = createClient();
@@ -168,7 +158,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
       {/* Cmd+K search trigger */}
       <div className="px-3 pb-3 flex-shrink-0">
         <button
-          id="sidebar-search-btn"
+          onClick={openPalette}
           className="w-full flex items-center gap-2 rounded-[8px] transition-colors duration-150"
           style={{
             padding: collapsed ? "7px 0" : "7px 10px",
