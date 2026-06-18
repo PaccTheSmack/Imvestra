@@ -345,22 +345,18 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                   initial={prefersReduced ? {} : { opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: prefersReduced ? 0 : i * 0.05, duration: 0.3 }}
-                  className="rounded-[14px] overflow-hidden transition-all duration-150"
+                  className="rounded-[14px]"
                   style={{
                     background: "#111",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: `1px solid ${tenant.is_active ? "rgba(0,224,215,0.12)" : "rgba(255,255,255,0.07)"}`,
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.12)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)"; }}
+                  whileHover={prefersReduced ? {} : {
+                    y: -1,
+                    borderColor: tenant.is_active ? "rgba(0,224,215,0.22)" : "rgba(255,255,255,0.12)",
+                  }}
+                  whileTap={prefersReduced ? {} : { scale: 0.99 }}
                 >
-                  <div className="flex">
-                    {/* Accent bar */}
-                    <div
-                      className="w-[3px] flex-shrink-0"
-                      style={{ background: tenant.is_active ? "#00E0D7" : "#555" }}
-                    />
-                    {/* Content */}
-                    <div className="flex-1 pl-5 pr-5 py-4 flex items-center justify-between gap-4">
+                  <div className="flex-1 px-5 py-4 flex items-center justify-between gap-4">
                       {/* Left */}
                       <div className="min-w-0">
                         <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
@@ -423,7 +419,6 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                         </button>
                       </div>
                     </div>
-                  </div>
                 </motion.div>
               ))}
             </div>
