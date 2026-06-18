@@ -863,19 +863,55 @@ export default function FinanzenHub({
               )}
 
               {financings.length === 0 ? (
-                <div className="mt-16 flex flex-col items-center text-center">
+                <div className="mt-10 flex flex-col items-center text-center px-6">
                   <motion.div
-                    animate={prefersReduced ? {} : { y: [0, -6, 0] }}
+                    animate={prefersReduced ? {} : { y: [0, -8, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
+                    className="w-20 h-20 rounded-[20px] flex items-center justify-center mx-auto"
                     style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
                   >
-                    <Bank size={24} color="#666" />
+                    <Bank size={36} color="#333" />
                   </motion.div>
-                  <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>Keine Darlehen</p>
-                  <p className="text-sm mt-2 max-w-[280px]" style={{ color: "#777" }}>Fuege deine Finanzierungen hinzu.</p>
-                  <div className="mt-5">
-                    <DarkButton variant="primary" onClick={() => setShowAddFinancing(true)}>Darlehen hinzufugen</DarkButton>
+
+                  <h2 className="text-[24px] font-semibold tracking-[-0.02em] mt-8" style={{ color: tokens.color.text }}>
+                    Keine Darlehen erfasst
+                  </h2>
+                  <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: "#555" }}>
+                    Hinterlege deine Finanzierungen und behalte Zinsbindungen, Tilgung und Restschuld im Blick.
+                  </p>
+
+                  <div className="mt-6">
+                    <DarkButton variant="primary" onClick={() => setShowAddFinancing(true)}>
+                      Erstes Darlehen hinzufügen
+                    </DarkButton>
+                  </div>
+
+                  {/* Ghost financing rows */}
+                  <div className="mt-10 w-full max-w-[500px] flex flex-col gap-2 select-none pointer-events-none">
+                    {[
+                      { name: "Altbauwohnung Goslar", bank: "Sparkasse Goslar", rate: "1.850 €/Mo", debt: "189.400 €" },
+                      { name: "MFH Braunschweig",    bank: "Deutsche Bank",    rate: "3.120 €/Mo", debt: "312.000 €" },
+                    ].map((f, i) => (
+                      <div
+                        key={f.name}
+                        className="rounded-[14px] px-5 py-4 flex items-center justify-between"
+                        style={{
+                          background: "#111",
+                          border: "1px solid rgba(255,255,255,0.07)",
+                          opacity: i === 0 ? 0.35 : 0.2,
+                          filter: "blur(1.5px)",
+                        }}
+                      >
+                        <div className="text-left">
+                          <p className="text-sm font-semibold text-white">{f.name}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "#555" }}>{f.bank}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-white">{f.rate}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "#555" }}>Restschuld {f.debt}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : (
