@@ -81,7 +81,6 @@ export default async function DashboardPage() {
     .reduce((s, p) => s + (p.amount ?? 0), 0);
 
   const overdueTasks      = (openTasks ?? []).filter((t) => t.due_date && t.due_date < todayStr).length;
-  const highPriorityTasks = (openTasks ?? []).filter((t) => t.priority === "high").length;
 
   return (
     <>
@@ -97,7 +96,6 @@ export default async function DashboardPage() {
         monthlyRentSoll={monthlyRentSoll}
         monthlyRentIst={monthlyRentIst}
         overdueTasks={overdueTasks}
-        highPriorityTasks={highPriorityTasks}
         userId={user!.id}
         portfolioSummary={portfolioSummary}
       />
