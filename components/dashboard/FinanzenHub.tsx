@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   Bank,
+  CalendarBlank,
+  CheckCircle,
+  ArrowDown,
+  TrendUp,
+  TrendDown,
   CaretLeft,
   CaretRight,
   Warning,
@@ -385,10 +390,10 @@ export default function FinanzenHub({
 
   // ── Stat cards (summary bar) ───────────────────────────────────────────────
   const summaryCards = [
-    { label: "SOLL / MONAT",   value: formatCurrency(sollEinnahmen),             color: tokens.color.text },
-    { label: "IST-EINNAHMEN",  value: formatCurrency(istEinnahmen),              color: istEinnahmen >= sollEinnahmen ? "#00E0D7" : "#FFB800" },
-    { label: "AUSGABEN",       value: formatCurrency(ausgabenMonth),             color: "#FF4444" },
-    { label: "NET CASHFLOW",   value: formatCurrencySigned(netCashflow),         color: netCashflow >= 0 ? "#00E0D7" : "#FF4444" },
+    { label: "SOLL / MONAT",  value: formatCurrency(sollEinnahmen),            color: tokens.color.text,                                   icon: CalendarBlank },
+    { label: "IST-EINNAHMEN", value: formatCurrency(istEinnahmen),             color: istEinnahmen >= sollEinnahmen ? "#00E0D7" : "#FFB800", icon: CheckCircle  },
+    { label: "AUSGABEN",      value: formatCurrency(ausgabenMonth),            color: "#FF4444",                                            icon: ArrowDown    },
+    { label: "NET CASHFLOW",  value: formatCurrencySigned(netCashflow),        color: netCashflow >= 0 ? "#00E0D7" : "#FF4444",             icon: netCashflow >= 0 ? TrendUp : TrendDown },
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -431,15 +436,18 @@ export default function FinanzenHub({
       {/* ── Summary bar ────────────────────────────────────────────────── */}
       <FadeIn delay={0}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          {summaryCards.map(({ label, value, color }) => (
+          {summaryCards.map(({ label, value, color, icon: Icon }) => (
             <div
               key={label}
               className="rounded-[12px] px-4 py-3.5"
               style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
             >
-              <p className="text-[10px] font-medium uppercase tracking-wider mb-2" style={{ color: tokens.color.textSubtle }}>
-                {label}
-              </p>
+              <div className="flex items-center gap-1.5 mb-2">
+                <Icon size={12} color={tokens.color.textMuted} />
+                <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: tokens.color.textMuted }}>
+                  {label}
+                </p>
+              </div>
               <p className="text-xl font-semibold tracking-tight tabular-nums" style={{ color }}>
                 {value}
               </p>
@@ -498,13 +506,13 @@ export default function FinanzenHub({
               {/* Soll vs Ist card */}
               <div
                 className="rounded-[14px] p-5 mb-4"
-                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
               >
                 <div className="flex justify-between mb-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#777" }}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textMuted }}>
                     Mieteinnahmen
                   </p>
-                  <p className="text-xs" style={{ color: "#666" }}>
+                  <p className="text-xs" style={{ color: tokens.color.textSubtle }}>
                     {MONTHS_FULL[selMonth - 1]} {selYear}
                   </p>
                 </div>
@@ -527,11 +535,11 @@ export default function FinanzenHub({
 
                 {/* Payment list */}
                 <div className="mt-5">
-                  <p className="text-[10px] uppercase tracking-widest mb-3" style={{ color: "#666" }}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-3" style={{ color: tokens.color.textMuted }}>
                     Zahlungen dieses Monats
                   </p>
                   {thisMonthPayments.length === 0 ? (
-                    <p className="text-sm text-center py-4" style={{ color: "#666" }}>
+                    <p className="text-sm text-center py-4" style={{ color: tokens.color.textSubtle }}>
                       Noch keine Zahlungen in diesem Monat.
                     </p>
                   ) : (
@@ -543,8 +551,10 @@ export default function FinanzenHub({
                         return (
                           <div
                             key={p.id}
-                            className="flex items-center justify-between py-3"
+                            className="flex items-center justify-between py-3 px-2 rounded-[8px] -mx-2 transition-colors"
                             style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = tokens.color.surfaceHover)}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                           >
                             <div>
                               <p className="text-sm font-medium" style={{ color: tokens.color.text }}>
@@ -573,9 +583,9 @@ export default function FinanzenHub({
               {/* 6-month chart */}
               <div
                 className="rounded-[14px] p-5"
-                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
               >
-                <p className="text-xs uppercase tracking-widest mb-5" style={{ color: "#777" }}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-5" style={{ color: tokens.color.textMuted }}>
                   Letzte 6 Monate
                 </p>
                 <div className="flex items-end gap-2" style={{ height: 100 }}>
@@ -623,9 +633,9 @@ export default function FinanzenHub({
               {/* Category breakdown */}
               <div
                 className="rounded-[14px] p-5 mb-4"
-                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
               >
-                <p className="text-xs uppercase tracking-widest mb-4" style={{ color: "#777" }}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textMuted }}>
                   Ausgaben nach Kategorie
                 </p>
                 {Object.keys(categoryTotals).length === 0 ? (
@@ -664,13 +674,13 @@ export default function FinanzenHub({
               {/* Expense list */}
               <div
                 className="rounded-[14px] overflow-hidden"
-                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
               >
                 <div
                   className="px-5 py-3 flex justify-between items-center"
-                  style={{ background: "#0C0C0C", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                  style={{ background: tokens.color.bg, borderBottom: `1px solid ${tokens.color.border}` }}
                 >
-                  <p className="text-xs uppercase tracking-widest" style={{ color: "#777" }}>Ausgaben</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textMuted }}>Ausgaben</p>
                   <p className="text-xs font-semibold" style={{ color: tokens.color.text }}>
                     {formatCurrency(ausgabenMonth)}
                   </p>
@@ -700,7 +710,7 @@ export default function FinanzenHub({
                           <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: info.color }} />
                           <div>
                             <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{e.title}</p>
-                            <p className="text-[11px] mt-0.5" style={{ color: "#666" }}>
+                            <p className="text-[11px] mt-0.5" style={{ color: tokens.color.textSubtle }}>
                               {fmtDateLocale(e.date)}{prop ? " · " + prop.name : ""}
                             </p>
                           </div>
@@ -809,7 +819,7 @@ export default function FinanzenHub({
                               },
                             ].map(({ label, value, sub }) => (
                               <div key={label}>
-                                <p className="text-[10px] uppercase tracking-wide" style={{ color: "#666" }}>{label}</p>
+                                <p className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: tokens.color.textSubtle }}>{label}</p>
                                 <p className="text-sm font-semibold mt-1" style={{ color: tokens.color.text }}>{value}</p>
                                 {sub && <p className="text-[10px] mt-0.5" style={{ color: sub.color }}>{sub.text}</p>}
                               </div>
@@ -831,7 +841,7 @@ export default function FinanzenHub({
                             className="px-6 py-3 flex items-center justify-between"
                             style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
                           >
-                            <span className="text-xs" style={{ color: "#666" }}>
+                            <span className="text-xs" style={{ color: tokens.color.textSubtle }}>
                               {f.fixed_until && f.urgency !== "expired" ? "Zinsbindungsende: " + fmtDateLong(f.fixed_until) : ""}
                             </span>
                             <DarkButton
@@ -950,7 +960,7 @@ export default function FinanzenHub({
                             { label: "RESTSCHULD", value: formatCurrency(f.current_debt ?? f.loan_amount) },
                           ].map(({ label, value }) => (
                             <div key={label}>
-                              <p className="text-[10px] uppercase tracking-wide" style={{ color: "#666" }}>{label}</p>
+                              <p className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: tokens.color.textSubtle }}>{label}</p>
                               <p className="text-sm font-semibold mt-0.5" style={{ color: tokens.color.text }}>{value}</p>
                             </div>
                           ))}
