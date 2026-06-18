@@ -352,6 +352,8 @@ export default function PortfolioView({ properties, financings, payments, expens
   const [valueDisplay, setValueDisplay] = useState<"eur" | "pct">("eur")
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
   const [scenarios, setScenarios] = useState({ mietausfall: 0, zinssteigerung: 0, wertrueckgang: 0 })
+  const [sortCol, setSortCol] = useState<"marktwert" | "cashflow" | "rendite" | "roe" | "ltv">("roe")
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc")
 
   const summary = useMemo(
     () => calculatePortfolioSummary(properties, financings, payments, expenses),
@@ -367,6 +369,28 @@ export default function PortfolioView({ properties, financings, payments, expens
     ? propertyMetrics.reduce((s, m) => s + m.dscr, 0) / propertyMetrics.length : 0
   const avgLTV = propertyMetrics.length > 0
     ? propertyMetrics.reduce((s, m) => s + m.ltv, 0) / propertyMetrics.length : 0
+
+  // ─── Sorted properties for table ─────────────────────────────────────────────
+  const sortedPropertyIndices = useMemo(() => {
+    return properties
+      .map((_, i) => i)
+      .sort((a, b) => {
+        const ma = propertyMetrics[a]
+        const mb = propertyMetrics[b]
+        let va = 0, vb = 0
+        if (sortCol === "marktwert")  { va = ma.marktwert; vb = mb.marktwert }
+        if (sortCol === "cashflow")   { va = ma.cashflow_monthly; vb = mb.cashflow_monthly }
+        if (sortCol === "rendite")    { va = ma.brutto_rendite; vb = mb.brutto_rendite }
+        if (sortCol === "roe")        { va = ma.eigenkapital_rendite; vb = mb.eigenkapital_rendite }
+        if (sortCol === "ltv")        { va = ma.ltv; vb = mb.ltv }
+        return sortDir === "desc" ? vb - va : va - vb
+      })
+  }, [properties, propertyMetrics, sortCol, sortDir])
+
+  function toggleSort(col: typeof sortCol) {
+    if (sortCol === col) setSortDir(d => d === "desc" ? "asc" : "desc")
+    else { setSortCol(col); setSortDir("desc") }
+  }
 
   if (properties.length === 0) return <EmptyState />
 
@@ -917,19 +941,34 @@ export default function PortfolioView({ properties, financings, payments, expens
             {/* ════════════════ OBJEKTE ════════════════ */}
             {viewMode === "properties" && (
               <div className="px-6 py-6">
-                {/* Table header */}
-                <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 px-4 py-3 border-b border-[rgba(255,255,255,0.06)] text-[10px] text-[#444] uppercase tracking-widest">
-                  <span>Objekt</span>
-                  <span>Marktwert</span>
-                  <span>Wertsteigerung</span>
-                  <span>Cashflow/Mo</span>
-                  <span>Rendite</span>
-                  <span>EK-Rendite</span>
+                {/* Table header — sortable */}
+                <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 px-4 py-3 border-b border-[rgba(255,255,255,0.06)]">
+                  <span className="text-[10px] text-[#444] uppercase tracking-widest">Objekt</span>
+                  {([
+                    ["marktwert", "Marktwert"],
+                    ["ltv",       "Wertsteigerung"],
+                    ["cashflow",  "Cashflow/Mo"],
+                    ["rendite",   "Rendite"],
+                    ["roe",       "EK-Rendite"],
+                  ] as [typeof sortCol, string][]).map(([col, label]) => (
+                    <button
+                      key={label}
+                      onClick={() => toggleSort(col)}
+                      className="flex items-center gap-1 text-[10px] uppercase tracking-widest transition-colors"
+                      style={{ color: sortCol === col ? "#00E0D7" : "#444" }}
+                    >
+                      {label}
+                      {sortCol === col && (
+                        <span style={{ fontSize: 8 }}>{sortDir === "desc" ? "▼" : "▲"}</span>
+                      )}
+                    </button>
+                  ))}
                   <span />
                 </div>
 
                 {/* Rows */}
-                {properties.map((p, i) => {
+                {sortedPropertyIndices.map((i) => {
+                  const p = properties[i]
                   const m = propertyMetrics[i]
                   const isOpen = selectedProperty === p.id
                   const tc = TYPE_COLORS[p.type ?? "Sonstige"] ?? TYPE_COLORS["Sonstige"]
@@ -941,7 +980,12 @@ export default function PortfolioView({ properties, financings, payments, expens
                         style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-[3px] h-8 rounded-full flex-shrink-0" style={{ background: m.cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }} />
+                          <div
+                            className="w-8 h-8 rounded-[8px] flex-shrink-0 flex items-center justify-center"
+                            style={{ background: tc.bg }}
+                          >
+                            <span className="text-[9px] font-bold" style={{ color: tc.text }}>{p.type?.slice(0,3) ?? "—"}</span>
+                          </div>
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-white truncate">{p.name}</p>
                             <p className="text-xs text-[#555] mt-0.5">
@@ -1173,6 +1217,98 @@ export default function PortfolioView({ properties, financings, payments, expens
                       ))}
                     </div>
                   </div>
+                </div>
+
+                {/* Portfolio Matrix — LTV vs ROE scatter */}
+                <div className="md:col-span-2 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <div className="flex items-start justify-between mb-1">
+                    <p className="text-sm font-semibold text-white">Portfolio Matrix</p>
+                    <div className="flex items-center gap-3 text-[10px] text-[#444]">
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "#22C55E" }} />positiver CF</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "#FF4444" }} />negativer CF</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#555] mb-5">Verschuldung vs. Eigenkapitalrendite — Kreisgröße = Marktwert</p>
+                  {(() => {
+                    const W = 560
+                    const H = 240
+                    const pad = { l: 48, r: 20, t: 12, b: 36 }
+                    const plotW = W - pad.l - pad.r
+                    const plotH = H - pad.t - pad.b
+                    const maxLTV = 1.0
+                    const maxROE = Math.max(0.15, ...propertyMetrics.map(m => m.eigenkapital_rendite * 1.2))
+                    const maxMW  = Math.max(...propertyMetrics.map(m => m.marktwert))
+                    const xTicks = [0, 0.25, 0.5, 0.75, 1.0]
+                    const yTicks = [0, 0.05, 0.10, 0.15]
+                    const cx = (ltv: number) => pad.l + (ltv / maxLTV) * plotW
+                    const cy = (roe: number) => pad.t + plotH - (roe / maxROE) * plotH
+                    const cr = (mw: number) => Math.max(6, Math.min(22, (mw / maxMW) * 22))
+                    return (
+                      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="Portfolio Matrix" role="img">
+                        {/* Grid lines */}
+                        {yTicks.map(y => (
+                          <line key={y} x1={pad.l} y1={cy(y)} x2={W - pad.r} y2={cy(y)}
+                            stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                        ))}
+                        {xTicks.map(x => (
+                          <line key={x} x1={cx(x)} y1={pad.t} x2={cx(x)} y2={H - pad.b}
+                            stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                        ))}
+                        {/* "Sweet spot" zone: LTV < 65%, ROE > 6% */}
+                        <rect
+                          x={pad.l} y={cy(0.06)}
+                          width={(0.65 / maxLTV) * plotW}
+                          height={cy(0) - cy(0.06)}
+                          fill="rgba(34,197,94,0.04)"
+                          rx="4"
+                        />
+                        {/* Axis labels */}
+                        {yTicks.map(y => (
+                          <text key={y} x={pad.l - 6} y={cy(y) + 4}
+                            textAnchor="end" fontSize="9" fill="#555">
+                            {(y * 100).toFixed(0)}%
+                          </text>
+                        ))}
+                        {xTicks.map(x => (
+                          <text key={x} x={cx(x)} y={H - pad.b + 14}
+                            textAnchor="middle" fontSize="9" fill="#555">
+                            {(x * 100).toFixed(0)}%
+                          </text>
+                        ))}
+                        {/* Axis labels */}
+                        <text x={pad.l - 4} y={pad.t + plotH / 2} textAnchor="middle" fontSize="9" fill="#555"
+                          transform={`rotate(-90, ${pad.l - 28}, ${pad.t + plotH / 2})`}>
+                          ROE
+                        </text>
+                        <text x={pad.l + plotW / 2} y={H - 2} textAnchor="middle" fontSize="9" fill="#555">
+                          LTV
+                        </text>
+                        {/* Data points */}
+                        {propertyMetrics.map((m, idx) => {
+                          const p = properties[idx]
+                          const positive = m.cashflow_monthly >= 0
+                          const x = cx(m.ltv)
+                          const y = cy(m.eigenkapital_rendite)
+                          const r = cr(m.marktwert)
+                          return (
+                            <g key={p.id}>
+                              <circle cx={x} cy={y} r={r}
+                                fill={positive ? "rgba(34,197,94,0.15)" : "rgba(255,68,68,0.15)"}
+                                stroke={positive ? "#22C55E" : "#FF4444"}
+                                strokeWidth="1.5"
+                              />
+                              {r > 12 && (
+                                <text x={x} y={y + 3.5} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.7)"
+                                  style={{ fontFamily: "var(--font-sans)" }}>
+                                  {p.name.slice(0, 6)}
+                                </text>
+                              )}
+                            </g>
+                          )
+                        })}
+                      </svg>
+                    )
+                  })()}
                 </div>
 
                 {/* Performance Ranking */}
