@@ -408,19 +408,18 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                       style={{
                         background: "#111",
                         border: isAutoGen
-                          ? "1px solid rgba(0,224,215,0.15)"
+                          ? "1px solid rgba(0,224,215,0.18)"
                           : "1px solid rgba(255,255,255,0.07)",
-                        borderLeft: isAutoGen ? "2px solid rgba(0,224,215,0.4)" : undefined,
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.12)";
-                        if (isAutoGen) (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(0,224,215,0.6)";
+                        (e.currentTarget as HTMLDivElement).style.borderColor = isAutoGen
+                          ? "rgba(0,224,215,0.32)"
+                          : "rgba(255,255,255,0.12)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLDivElement).style.borderColor = isAutoGen
-                          ? "rgba(0,224,215,0.15)"
+                          ? "rgba(0,224,215,0.18)"
                           : "rgba(255,255,255,0.07)";
-                        if (isAutoGen) (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(0,224,215,0.4)";
                       }}
                     >
                       {/* Checkbox */}
