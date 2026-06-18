@@ -351,7 +351,6 @@ export default function PortfolioView({ properties, financings, payments, expens
   const [timeRange, setTimeRange] = useState<TimeRange>("Alle")
   const [valueDisplay, setValueDisplay] = useState<"eur" | "pct">("eur")
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
-  const [scenarios, setScenarios] = useState({ mietausfall: 0, zinssteigerung: 0, wertrueckgang: 0 })
   const [sortCol, setSortCol] = useState<"marktwert" | "cashflow" | "rendite" | "roe" | "ltv">("roe")
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc")
 
@@ -422,12 +421,6 @@ export default function PortfolioView({ properties, financings, payments, expens
   })
 
   // ─── Scenario impact ─────────────────────────────────────────────────────────
-  const scenMieteinnahmen = summary.total_mieteinnahmen_monthly * (1 - scenarios.mietausfall / 100)
-  const scenZinsenExtra = financings.reduce((s, f) => s + (f.loan_amount ?? 0) * (scenarios.zinssteigerung / 100 / 12), 0)
-  const scenMarktwert = summary.total_marktwert * (1 - scenarios.wertrueckgang / 100)
-  const scenCashflow = scenMieteinnahmen - totalRate - scenZinsenExtra - totalHausgeld - totalInstandhaltung
-  const scenROE = summary.total_eingesetztes_eigenkapital > 0
-    ? (scenCashflow * 12) / summary.total_eingesetztes_eigenkapital : 0
 
   return (
     <div className="min-h-screen bg-[#080808]">
@@ -1093,6 +1086,51 @@ export default function PortfolioView({ properties, financings, payments, expens
             {viewMode === "analyse" && (
               <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
+                {/* Portfolio Matrix — LTV vs ROE scatter */}
+                <div className="md:col-span-2 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <div className="flex items-start justify-between mb-1">
+                    <p className="text-sm font-semibold text-white">Portfolio Matrix</p>
+                    <div className="flex items-center gap-3 text-[10px] text-[#444]">
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "#22C55E" }} />positiver CF</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "#FF4444" }} />negativer CF</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#555] mb-5">Verschuldung (LTV) vs. Eigenkapitalrendite — Kreisgröße = Marktwert</p>
+                  {(() => {
+                    const W = 560; const H = 240
+                    const pad = { l: 48, r: 20, t: 12, b: 36 }
+                    const plotW = W - pad.l - pad.r; const plotH = H - pad.t - pad.b
+                    const maxROE = Math.max(0.15, ...propertyMetrics.map(m => m.eigenkapital_rendite * 1.2))
+                    const maxMW  = Math.max(...propertyMetrics.map(m => m.marktwert))
+                    const xTicks = [0, 0.25, 0.5, 0.75, 1.0]
+                    const yTicks = [0, 0.05, 0.10, 0.15]
+                    const cx = (ltv: number) => pad.l + (ltv / 1.0) * plotW
+                    const cy = (roe: number) => pad.t + plotH - (roe / maxROE) * plotH
+                    const cr = (mw: number) => Math.max(6, Math.min(22, (mw / maxMW) * 22))
+                    return (
+                      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="Portfolio Matrix: LTV vs ROE" role="img">
+                        {yTicks.map(y => <line key={y} x1={pad.l} y1={cy(y)} x2={W - pad.r} y2={cy(y)} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />)}
+                        {xTicks.map(x => <line key={x} x1={cx(x)} y1={pad.t} x2={cx(x)} y2={H - pad.b} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />)}
+                        <rect x={pad.l} y={cy(0.06)} width={(0.65 / 1.0) * plotW} height={cy(0) - cy(0.06)} fill="rgba(34,197,94,0.04)" rx="4" />
+                        {yTicks.map(y => <text key={y} x={pad.l - 6} y={cy(y) + 4} textAnchor="end" fontSize="9" fill="#555">{(y * 100).toFixed(0)}%</text>)}
+                        {xTicks.map(x => <text key={x} x={cx(x)} y={H - pad.b + 14} textAnchor="middle" fontSize="9" fill="#555">{(x * 100).toFixed(0)}%</text>)}
+                        <text x={pad.l - 4} y={pad.t + plotH / 2} textAnchor="middle" fontSize="9" fill="#555" transform={`rotate(-90, ${pad.l - 28}, ${pad.t + plotH / 2})`}>ROE</text>
+                        <text x={pad.l + plotW / 2} y={H - 2} textAnchor="middle" fontSize="9" fill="#555">LTV</text>
+                        {propertyMetrics.map((m, idx) => {
+                          const p = properties[idx]; const positive = m.cashflow_monthly >= 0
+                          const x = cx(m.ltv); const y = cy(m.eigenkapital_rendite); const r = cr(m.marktwert)
+                          return (
+                            <g key={p.id}>
+                              <circle cx={x} cy={y} r={r} fill={positive ? "rgba(34,197,94,0.15)" : "rgba(255,68,68,0.15)"} stroke={positive ? "#22C55E" : "#FF4444"} strokeWidth="1.5" />
+                              {r > 12 && <text x={x} y={y + 3.5} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.7)" style={{ fontFamily: "var(--font-sans)" }}>{p.name.slice(0, 6)}</text>}
+                            </g>
+                          )
+                        })}
+                      </svg>
+                    )
+                  })()}
+                </div>
+
                 {/* Rendite-Analyse */}
                 <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
                   <p className="text-sm font-semibold text-white mb-5">Rendite-Analyse</p>
@@ -1180,135 +1218,6 @@ export default function PortfolioView({ properties, financings, payments, expens
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Szenario-Analyse */}
-                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
-                  <p className="text-sm font-semibold text-white mb-1">Szenario-Analyse</p>
-                  <p className="text-xs text-[#555] mb-5">Was passiert wenn...</p>
-                  <div className="space-y-5">
-                    {[
-                      { key: "mietausfall" as const, label: "Mietausfall", max: 20, unit: "%" },
-                      { key: "zinssteigerung" as const, label: "Zinssteigerung", max: 3, unit: "%" },
-                      { key: "wertrueckgang" as const, label: "Wertrückgang", max: 20, unit: "%" },
-                    ].map(s => (
-                      <div key={s.key}>
-                        <div className="flex justify-between text-xs mb-2">
-                          <span className="text-[#555]">{s.label}</span>
-                          <span className="text-white font-semibold">+{scenarios[s.key]}{s.unit}</span>
-                        </div>
-                        <input
-                          type="range" min="0" max={s.max} value={scenarios[s.key]}
-                          onChange={e => setScenarios(prev => ({ ...prev, [s.key]: +e.target.value }))}
-                          className="w-full accent-[#00E0D7] cursor-pointer"
-                        />
-                      </div>
-                    ))}
-                    <div className="pt-3 border-t border-[rgba(255,255,255,0.06)] grid grid-cols-3 gap-3">
-                      {[
-                        { label: "Cashflow/Mo", value: formatCurrencySigned(scenCashflow), color: scenCashflow >= 0 ? "#00E0D7" : "#FF4444" },
-                        { label: "ROE p.a.",    value: formatPercent(scenROE),             color: colorByValue(scenROE, 0.03, 0.06) },
-                        { label: "Marktwert",   value: formatCurrency(scenMarktwert),      color: "#fff" },
-                      ].map(row => (
-                        <div key={row.label} className="bg-[#0C0C0C] rounded-[8px] p-3">
-                          <p className="text-[9px] text-[#444] uppercase tracking-wide">{row.label}</p>
-                          <p className="text-sm font-semibold mt-1" style={{ color: row.color }}>{row.value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Portfolio Matrix — LTV vs ROE scatter */}
-                <div className="md:col-span-2 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
-                  <div className="flex items-start justify-between mb-1">
-                    <p className="text-sm font-semibold text-white">Portfolio Matrix</p>
-                    <div className="flex items-center gap-3 text-[10px] text-[#444]">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "#22C55E" }} />positiver CF</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "#FF4444" }} />negativer CF</span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-[#555] mb-5">Verschuldung vs. Eigenkapitalrendite — Kreisgröße = Marktwert</p>
-                  {(() => {
-                    const W = 560
-                    const H = 240
-                    const pad = { l: 48, r: 20, t: 12, b: 36 }
-                    const plotW = W - pad.l - pad.r
-                    const plotH = H - pad.t - pad.b
-                    const maxLTV = 1.0
-                    const maxROE = Math.max(0.15, ...propertyMetrics.map(m => m.eigenkapital_rendite * 1.2))
-                    const maxMW  = Math.max(...propertyMetrics.map(m => m.marktwert))
-                    const xTicks = [0, 0.25, 0.5, 0.75, 1.0]
-                    const yTicks = [0, 0.05, 0.10, 0.15]
-                    const cx = (ltv: number) => pad.l + (ltv / maxLTV) * plotW
-                    const cy = (roe: number) => pad.t + plotH - (roe / maxROE) * plotH
-                    const cr = (mw: number) => Math.max(6, Math.min(22, (mw / maxMW) * 22))
-                    return (
-                      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="Portfolio Matrix" role="img">
-                        {/* Grid lines */}
-                        {yTicks.map(y => (
-                          <line key={y} x1={pad.l} y1={cy(y)} x2={W - pad.r} y2={cy(y)}
-                            stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                        ))}
-                        {xTicks.map(x => (
-                          <line key={x} x1={cx(x)} y1={pad.t} x2={cx(x)} y2={H - pad.b}
-                            stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                        ))}
-                        {/* "Sweet spot" zone: LTV < 65%, ROE > 6% */}
-                        <rect
-                          x={pad.l} y={cy(0.06)}
-                          width={(0.65 / maxLTV) * plotW}
-                          height={cy(0) - cy(0.06)}
-                          fill="rgba(34,197,94,0.04)"
-                          rx="4"
-                        />
-                        {/* Axis labels */}
-                        {yTicks.map(y => (
-                          <text key={y} x={pad.l - 6} y={cy(y) + 4}
-                            textAnchor="end" fontSize="9" fill="#555">
-                            {(y * 100).toFixed(0)}%
-                          </text>
-                        ))}
-                        {xTicks.map(x => (
-                          <text key={x} x={cx(x)} y={H - pad.b + 14}
-                            textAnchor="middle" fontSize="9" fill="#555">
-                            {(x * 100).toFixed(0)}%
-                          </text>
-                        ))}
-                        {/* Axis labels */}
-                        <text x={pad.l - 4} y={pad.t + plotH / 2} textAnchor="middle" fontSize="9" fill="#555"
-                          transform={`rotate(-90, ${pad.l - 28}, ${pad.t + plotH / 2})`}>
-                          ROE
-                        </text>
-                        <text x={pad.l + plotW / 2} y={H - 2} textAnchor="middle" fontSize="9" fill="#555">
-                          LTV
-                        </text>
-                        {/* Data points */}
-                        {propertyMetrics.map((m, idx) => {
-                          const p = properties[idx]
-                          const positive = m.cashflow_monthly >= 0
-                          const x = cx(m.ltv)
-                          const y = cy(m.eigenkapital_rendite)
-                          const r = cr(m.marktwert)
-                          return (
-                            <g key={p.id}>
-                              <circle cx={x} cy={y} r={r}
-                                fill={positive ? "rgba(34,197,94,0.15)" : "rgba(255,68,68,0.15)"}
-                                stroke={positive ? "#22C55E" : "#FF4444"}
-                                strokeWidth="1.5"
-                              />
-                              {r > 12 && (
-                                <text x={x} y={y + 3.5} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.7)"
-                                  style={{ fontFamily: "var(--font-sans)" }}>
-                                  {p.name.slice(0, 6)}
-                                </text>
-                              )}
-                            </g>
-                          )
-                        })}
-                      </svg>
-                    )
-                  })()}
                 </div>
 
                 {/* Performance Ranking */}
