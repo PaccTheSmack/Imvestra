@@ -33,13 +33,12 @@ export default function PricingSection() {
         {/* Header */}
         <FadeIn>
           <div className="text-center mb-12">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
-              Preise
-            </span>
-            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
-              Transparent. Fair.
+            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white">
+              Kostenlos starten.<br />Wachsen wenn es sich lohnt.
             </h2>
-            <p className="text-[#777] text-lg mt-4">Kein Abo-Fallen. Kein Kleingedrucktes.</p>
+            <p className="text-[#777] text-lg mt-5 max-w-[420px] mx-auto">
+              Kein Abo-Fallen. Kein Kleingedrucktes. Jederzeit kündbar.
+            </p>
           </div>
         </FadeIn>
 

@@ -29,22 +29,23 @@ export default function ProblemSection() {
         {/* LEFT */}
         <div className="lg:sticky lg:top-32">
           <FadeIn direction="left">
-            <div className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full mb-5">
-              Das Problem
-            </div>
             <h2 className="text-[42px] font-semibold tracking-[-0.03em] leading-[1.1] text-white mb-5">
               Immobilien-Investments<br />
               verzeihen<br />
               keine Fehler.
             </h2>
             <p className="text-base text-[#777] leading-relaxed max-w-[380px] mb-8">
-              Die meisten Investoren rechnen mit Excel-Tabellen, Bauchgefühl oder
-              gar nicht. Das kostet bares Geld und verhindert gute Deals.
+              Die meisten Investoren rechnen mit Excel-Tabellen oder Bauchgefühl.
+              Cashflows werden falsch kalkuliert, Fristen vergessen,
+              Zinsbindungen verpasst.
             </p>
-            <div className="border-l-2 border-[#00E0D7] pl-4 text-sm text-[#666] italic leading-relaxed">
-              Der Druck, irgendwas nicht auf dem Schirm zu haben – eine Frist,
-              eine Zinsbindung, eine schlechte Rendite – kostet Investoren
-              jährlich Tausende Euro.
+            <div
+              className="rounded-[12px] px-5 py-4 text-sm text-[#888] italic leading-relaxed"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              Eine verpasste Zinsbindung, eine falsch kalkulierte Rendite oder
+              ein übersehener Leerstand – das kostet Investoren jährlich
+              Tausende Euro.
             </div>
           </FadeIn>
         </div>

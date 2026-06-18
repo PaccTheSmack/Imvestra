@@ -24,15 +24,12 @@ export default function FeatureSection() {
         {/* Header */}
         <FadeIn>
           <div className="text-center mb-16">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
-              Features
-            </span>
-            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
-              Alles was du brauchst.
+            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white">
+              Vom Exposé zur<br />Steuererklärung.
             </h2>
-            <p className="text-[#777] text-lg max-w-[500px] mx-auto mt-4">
-              Vom ersten Exposé bis zur Steuererklärung. Kein Tool-Chaos. Eine
-              Plattform.
+            <p className="text-[#777] text-lg max-w-[480px] mx-auto mt-5">
+              Kein Tool-Chaos mehr. Rendite, Portfolio, Mieter, Finanzierung
+              und Steuern – alles an einem Ort.
             </p>
           </div>
         </FadeIn>

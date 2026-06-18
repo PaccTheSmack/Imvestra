@@ -8,7 +8,6 @@ import {
   useReducedMotion,
 } from "motion/react";
 import {
-  TrendUp,
   PlayCircle,
   CheckCircle,
   Gift,
@@ -85,13 +84,6 @@ export default function HeroSection() {
       <div className="max-w-[1200px] mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
         {/* LEFT */}
         <div>
-          <FadeIn delay={0}>
-            <div className="inline-flex items-center gap-2 bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.15)] text-[#00E0D7] text-xs font-medium px-3 py-1.5 rounded-full mb-5">
-              <TrendUp size={12} />
-              Das Betriebssystem für Immobilieninvestoren
-            </div>
-          </FadeIn>
-
           <FadeIn delay={0.1}>
             <h1 className="text-[52px] lg:text-[62px] font-semibold tracking-[-0.03em] leading-[1.05] text-white mb-6">
               Vom ersten<br />
@@ -102,7 +94,7 @@ export default function HeroSection() {
 
           <FadeIn delay={0.2}>
             <p className="text-lg text-[#777] leading-relaxed max-w-[460px] mb-8">
-              Die Schaltzentrale für Immobilieninvestoren. Analysiere Deals,
+              Das Betriebssystem für Immobilieninvestoren. Analysiere Deals,
               verwalte dein Portfolio und behalte jede Frist, Finanzierung und
               Kennzahl im Blick.
             </p>
@@ -111,7 +103,7 @@ export default function HeroSection() {
           <FadeIn delay={0.3}>
             <div className="flex items-center gap-4 flex-wrap mb-8">
               <motion.button
-                whileHover={prefersReduced ? {} : { scale: 1.03 }}
+                whileHover={prefersReduced ? {} : { y: -1 }}
                 whileTap={prefersReduced ? {} : { scale: 0.97 }}
                 onClick={() => scrollTo("waitlist")}
                 className="bg-[#00E0D7] text-[#080808] font-bold px-7 py-3.5 rounded-[10px] text-sm transition-shadow cursor-pointer"
