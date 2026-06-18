@@ -12,6 +12,7 @@ import {
   DotsThree,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
+import SzenarioRechner from "@/components/dashboard/SzenarioRechner";
 import DarkButton from "@/components/ui/DarkButton";
 import DarkInput from "@/components/ui/DarkInput";
 import DarkSelect from "@/components/ui/DarkSelect";
@@ -25,7 +26,7 @@ import { EXPENSE_CATEGORIES } from "@/types";
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type TabId = "cashflow" | "ausgaben" | "zinsbindung" | "darlehen";
+type TabId = "cashflow" | "ausgaben" | "zinsbindung" | "darlehen" | "szenario";
 type UrgencyKind = "expired" | "critical" | "warning" | "ok";
 
 interface RawFinancing {
@@ -68,6 +69,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "ausgaben",    label: "Ausgaben"    },
   { id: "zinsbindung", label: "Zinsbindung" },
   { id: "darlehen",    label: "Darlehen"    },
+  { id: "szenario",   label: "Szenarien"   },
 ];
 
 const MONTHS_DE  = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
@@ -950,6 +952,24 @@ export default function FinanzenHub({
                 </div>
               )}
             </div>
+          )}
+
+          {/* ──────────────────── TAB 5: SZENARIEN ─────────────────────── */}
+          {activeTab === "szenario" && (
+            <SzenarioRechner
+              financings={enrichedFinancings.map(f => ({
+                id: f.id,
+                bank: f.bank,
+                loan_amount: f.loan_amount,
+                interest_rate: f.interest_rate,
+                repayment_rate: f.repayment_rate,
+                rate_monthly: f.rate_monthly,
+                fixed_until: f.fixed_until,
+                current_debt: f.current_debt,
+                propertyName: f.propertyName,
+                propertyType: f.propertyType,
+              }))}
+            />
           )}
 
         </motion.div>
