@@ -23,13 +23,10 @@
       <stop offset="65%" stop-color="#94908A"/>
       <stop offset="100%" stop-color="#6E6B63"/>
     </linearGradient>
-    <filter id="iconShadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#A07830" flood-opacity="0.15"/>
-    </filter>
   </defs>
 
-  <!-- Icon -->
-  <g transform="translate(248 124) scale(1.13)" filter="url(#iconShadow)">
+  <!-- Icon (no filter — prevents rasterization) -->
+  <g transform="translate(248 124) scale(1.13)">
     <polygon points="0,214 0,117 45,80 45,214" fill="url(#stoneLight)"/>
     <polygon points="45,80 64,96 64,214 45,214" fill="#8C887D" opacity="0.4"/>
     <polygon points="112,214 112,24 162,-18 162,214" fill="url(#goldTall)"/>

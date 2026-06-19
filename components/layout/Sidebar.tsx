@@ -130,7 +130,7 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
       }}
     >
       {/* Logo */}
-      <div className="px-3 pt-6 pb-3 flex-shrink-0">
+      <div className="px-2 pt-6 pb-3 flex-shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/imvestra-logo-horizontal.svg"
