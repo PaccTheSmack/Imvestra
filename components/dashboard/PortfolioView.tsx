@@ -437,17 +437,19 @@ export default function PortfolioView({ properties, financings, payments, expens
           <div className="flex items-center gap-3">
             <div className="flex bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1 gap-0.5">
               {TAB_VIEWS.map(v => (
-                <button
+                <motion.button
                   key={v.id}
                   onClick={() => setViewMode(v.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-medium cursor-pointer transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-medium cursor-pointer transition-colors"
                   style={viewMode === v.id
                     ? { background: "#1A1A1A", color: "#fff" }
-                    : { color: "#555" }}
+                    : { color: "#666" }}
+                  whileTap={prefersReduced ? {} : { scale: 0.93 }}
+                  transition={{ duration: 0.1 }}
                 >
                   {v.icon}
                   <span className="hidden sm:inline">{v.label}</span>
-                </button>
+                </motion.button>
               ))}
             </div>
             <button
@@ -960,17 +962,25 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Rows */}
-                {sortedPropertyIndices.map((i) => {
+                {sortedPropertyIndices.map((i, rowIdx) => {
                   const p = properties[i]
                   const m = propertyMetrics[i]
                   const isOpen = selectedProperty === p.id
                   const tc = TYPE_COLORS[p.type ?? "Sonstige"] ?? TYPE_COLORS["Sonstige"]
                   return (
-                    <div key={p.id}>
-                      <div
+                    <motion.div
+                      key={p.id}
+                      initial={prefersReduced ? {} : { opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: rowIdx * 0.04, duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+                    >
+                      <motion.div
                         onClick={() => setSelectedProperty(isOpen ? null : p.id)}
-                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[12px] mb-2 px-4 py-3.5 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#1A1A1A] transition-all cursor-pointer items-center"
+                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[12px] mb-2 px-4 py-3.5 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#1A1A1A] transition-colors cursor-pointer items-center"
                         style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
+                        whileHover={prefersReduced ? {} : { y: -2 }}
+                        whileTap={prefersReduced ? {} : { scale: 0.995 }}
+                        transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <div
@@ -1013,7 +1023,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         >
                           <DotsThree size={18} weight="bold" />
                         </button>
-                      </div>
+                      </motion.div>
 
                       {/* Expanded detail */}
                       <AnimatePresence>
@@ -1059,7 +1069,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
+                    </motion.div>
                   )
                 })}
 

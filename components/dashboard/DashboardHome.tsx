@@ -882,7 +882,7 @@ export default function DashboardHome({
             <div className="flex items-center justify-between mb-4">
               <p
                 className="text-[11px] font-semibold uppercase tracking-[0.1em]"
-                style={{ color: "#444" }}
+                style={{ color: tokens.color.textSubtle }}
               >
                 Zuletzt hinzugefügt
               </p>
