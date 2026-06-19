@@ -1,6 +1,7 @@
 import Navbar from "@/components/landing/Navbar";
 import BeamsHero from "@/components/landing/BeamsHero";
 import LogoBar from "@/components/landing/LogoBar";
+import DashboardScrollSection from "@/components/landing/DashboardScrollSection";
 import ProblemSection from "@/components/landing/ProblemSection";
 import FeatureSection from "@/components/landing/FeatureSection";
 import FeatureDeepDive from "@/components/landing/FeatureDeepDive";
@@ -32,6 +33,7 @@ export default function Home() {
           }}
         >
           <LogoBar />
+          <DashboardScrollSection />
           <ProblemSection />
           <FeatureSection />
           <FeatureDeepDive />
