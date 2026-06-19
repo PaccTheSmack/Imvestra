@@ -131,16 +131,16 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
       }}
     >
       {/* Logo */}
-      <div className="px-6 pt-7 pb-5 flex items-center gap-2.5 flex-shrink-0">
+      <div className="px-5 pt-6 pb-4 flex-shrink-0">
         <Image
-          src="/logo.svg"
+          src="/imvestra-logo-noclaim.svg"
           alt="Imvestra"
-          width={24}
-          height={24}
+          width={600}
+          height={444}
           priority
-          style={{ filter: "brightness(0) saturate(100%) invert(55%) sepia(60%) saturate(500%) hue-rotate(15deg) brightness(85%)" }}
+          className="w-full h-auto"
+          style={{ maxHeight: 72 }}
         />
-        <span className="text-[18px] font-bold" style={{ color: "#A07830" }}>Imvestra</span>
       </div>
 
       {/* Search */}
