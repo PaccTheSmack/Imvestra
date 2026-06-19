@@ -19,29 +19,33 @@ type NavSection = { section?: string; items: NavItem[] };
 
 const navSections: NavSection[] = [
   {
-    section: "MENÜ",
     items: [
-      { Icon: HouseLine,   label: "Übersicht",   href: "/dashboard" },
-      { Icon: Buildings,   label: "Portfolio",    href: "/portfolio" },
-      { Icon: Calculator,  label: "Rechner",      href: "/calculator" },
-      { Icon: Tag,         label: "Verhandlung",  href: "/verhandlung" },
-      { Icon: MapPin,      label: "Standort",     href: "/standort" },
-      { Icon: FilePdf,     label: "PDF Export",   href: "/pdf-export" },
+      { Icon: HouseLine, label: "Übersicht", href: "/dashboard" },
     ],
   },
   {
     section: "VERWALTUNG",
     items: [
-      { Icon: UsersFour,   label: "Mieter",    href: "/mieter" },
-      { Icon: ChartBar,    label: "Finanzen",  href: "/finanzen" },
-      { Icon: CheckSquare, label: "Aufgaben",  href: "/aufgaben" },
-      { Icon: Receipt,     label: "Steuern",   href: "/steuern" },
+      { Icon: Buildings,   label: "Portfolio",  href: "/portfolio" },
+      { Icon: UsersFour,   label: "Mieter",     href: "/mieter" },
+      { Icon: ChartBar,    label: "Finanzen",   href: "/finanzen" },
+      { Icon: CheckSquare, label: "Aufgaben",   href: "/aufgaben" },
+      { Icon: Receipt,     label: "Steuern",    href: "/steuern" },
+    ],
+  },
+  {
+    section: "ANALYSE",
+    items: [
+      { Icon: Calculator, label: "Renditerechner",   href: "/calculator" },
+      { Icon: Tag,        label: "Verhandlung",       href: "/verhandlung" },
+      { Icon: MapPin,     label: "Standortanalyse",   href: "/standort" },
+      { Icon: FilePdf,    label: "PDF Export",        href: "/pdf-export" },
     ],
   },
   {
     section: "KONTO",
     items: [
-      { Icon: Gear,    label: "Einstellungen", href: "/settings" },
+      { Icon: Gear, label: "Einstellungen", href: "/settings" },
     ],
   },
 ];
@@ -68,15 +72,15 @@ function NavLink({ Icon, label, href, taskCount, active }: NavItem & { taskCount
           />
         )}
         <motion.div
-          className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer transition-all duration-150"
-          style={{
-            background: active ? "#A07830" : "transparent",
-            color: active ? "white" : "#6B7280",
+          className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer"
+          animate={{
+            backgroundColor: active ? "#A07830" : "rgba(0,0,0,0)",
+            color: active ? "#FFFFFF" : "#6B7280",
           }}
-          whileHover={active ? {} : { backgroundColor: "rgba(0,0,0,0.04)", color: "#101418" }}
-          transition={{ duration: 0.1 }}
+          whileHover={active ? { backgroundColor: "#A07830" } : { backgroundColor: "rgba(0,0,0,0.04)", color: "#101418" }}
+          transition={{ duration: 0.12 }}
         >
-          <Icon size={16} weight={active ? "bold" : "regular"} color={active ? "white" : "#9CA3AF"} className="flex-shrink-0" />
+          <Icon size={16} weight={active ? "bold" : "regular"} color={active ? "#FFFFFF" : "#9CA3AF"} className="flex-shrink-0" />
           <span className="text-[14px] flex-1 font-medium leading-none" style={{ fontWeight: active ? 600 : 400 }}>
             {label}
           </span>
