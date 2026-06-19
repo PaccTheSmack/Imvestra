@@ -46,7 +46,8 @@ export default function Navbar() {
       <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src="/logo.svg" alt="Imvestra" width={110} height={28} priority />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/imvestra-logo-horizontal.svg" alt="Imvestra" height={32} style={{ height: 32, width: "auto" }} />
         </Link>
 
         {/* Center nav */}

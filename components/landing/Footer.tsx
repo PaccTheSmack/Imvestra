@@ -38,7 +38,8 @@ export default function Footer() {
       <div className="py-12 max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Brand */}
         <div>
-          <Image src="/logo.svg" alt="Imvestra" width={100} height={26} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/imvestra-logo-horizontal.svg" alt="Imvestra" style={{ height: 28, width: "auto" }} />
           <p className="mt-4 text-sm text-[#6A5A3A] leading-relaxed max-w-[200px]">
             Das Betriebssystem für Immobilieninvestoren.
           </p>
