@@ -56,7 +56,10 @@ export default function Navbar() {
             <button
               key={target}
               onClick={() => scrollTo(target)}
-              className="text-sm text-[#6A5A3A] hover:text-[#101418] transition-colors cursor-pointer"
+              className="text-sm transition-colors cursor-pointer"
+              style={{ color: scrolled ? "#6A5A3A" : "rgba(255,255,255,0.65)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = scrolled ? "#101418" : "rgba(255,255,255,0.95)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = scrolled ? "#6A5A3A" : "rgba(255,255,255,0.65)"; }}
             >
               {label}
             </button>
@@ -67,7 +70,8 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/login"
-            className="text-sm text-[#6A5A3A] hover:text-[#101418] transition-colors"
+            className="text-sm transition-colors"
+            style={{ color: scrolled ? "#6A5A3A" : "rgba(255,255,255,0.65)" }}
           >
             Anmelden
           </Link>

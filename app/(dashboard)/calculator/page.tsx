@@ -62,10 +62,10 @@ const AFA_TYPE_LABELS: Record<AfAResult["afa_type"], string> = {
 };
 
 const INPUT =
-  "w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:border-[rgba(160,120,48,0.3)] transition-all duration-150";
-const LABEL = "block text-xs font-medium text-[#6B7280] mb-1.5";
+  "w-full bg-[#F5F5F5] rounded-[10px] px-3.5 py-2.5 text-sm text-[#101418] placeholder:text-[#9CA3AF] border border-transparent focus:outline-none focus:bg-white focus:border-[rgba(160,120,48,0.3)] focus:ring-1 focus:ring-[rgba(160,120,48,0.1)] transition-all duration-150";
+const LABEL = "block text-[12px] font-medium text-[#6B7280] mb-1.5";
 const SECTION_LABEL =
-  "text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-widest mb-4";
+  "text-[9px] font-bold text-[#9CA3AF] uppercase tracking-[0.14em] mb-4";
 
 type TabId =
   | "Übersicht"
@@ -142,8 +142,8 @@ function Row({
     <div
       className={`flex justify-between items-center py-3 last:border-0 ${highlighted ? "-mx-5 px-5" : ""}`}
       style={{
-        borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}`,
-        background: highlighted ? "#F8F7F4" : "transparent",
+        borderBottom: "1px solid rgba(0,0,0,0.07)",
+        background: highlighted ? "#F5F5F5" : "transparent",
       }}
     >
       <span
@@ -192,7 +192,7 @@ function TilgungsChart({
             <g key={row.year}>
               <motion.rect
                 x={x} y={H - tilgungH} width={BAR_W} height={tilgungH} rx={1}
-                fill={"#A07830"} fillOpacity={0.7}
+                fill="#A07830" fillOpacity={0.7}
                 initial={prefersReduced ? {} : { scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 style={{ transformBox: "fill-box", transformOrigin: "50% 100%" } as React.CSSProperties}
@@ -200,14 +200,14 @@ function TilgungsChart({
               />
               <motion.rect
                 x={x} y={H - tilgungH - zinsenH} width={BAR_W} height={zinsenH} rx={1}
-                fill={"#B91C1C"} fillOpacity={0.6}
+                fill="#B91C1C" fillOpacity={0.6}
                 initial={prefersReduced ? {} : { scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 style={{ transformBox: "fill-box", transformOrigin: "50% 100%" } as React.CSSProperties}
                 transition={{ duration: prefersReduced ? 0 : 0.5, ease: "easeOut", delay: prefersReduced ? 0 : i * 0.02 }}
               />
               {row.year % 5 === 0 && (
-                <text x={x + BAR_W / 2} y={H + 13} textAnchor="middle" fontSize={7} fill={"#9CA3AF"}>
+                <text x={x + BAR_W / 2} y={H + 13} textAnchor="middle" fontSize={7} fill="#9CA3AF">
                   {row.year}J
                 </text>
               )}
@@ -248,7 +248,7 @@ function PriceIndicatorBar({
         />
         <motion.div
           className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2"
-          style={{ backgroundColor: "#101418", borderColor: "#F8F7F4", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+          style={{ backgroundColor: "#101418", borderColor: "#F8F7F4", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
           initial={prefersReduced ? {} : { left: "0%" }}
           animate={{ left: `${pct}%` }}
           transition={{ duration: prefersReduced ? 0 : 0.8, ease: "easeOut" }}
@@ -554,7 +554,7 @@ export default function CalculatorPage() {
   // ─── render ───────────────────────────────────────────────────
   return (
     <div className="min-h-screen" style={{ background: "#F8F7F4" }}>
-      <div className="p-6 w-full">
+      <div className="px-8 py-7 w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
@@ -563,7 +563,7 @@ export default function CalculatorPage() {
           </div>
           <div>
             <p className="text-[20px] font-semibold text-[#101418] tracking-[-0.02em] leading-tight">Renditerechner</p>
-            <p className="text-xs text-[#6B7280] mt-0.5">Objekt analysieren und Rendite berechnen</p>
+            <p className="text-xs text-[#6A5A3A] mt-0.5">Objekt analysieren und Rendite berechnen</p>
           </div>
         </div>
 
@@ -603,8 +603,8 @@ export default function CalculatorPage() {
                     border: `1px solid rgba(45,106,45,0.2)`,
                     color: "#2D6A2D",
                   } : {
-                    background: "#F8F7F4",
-                    border: `1px solid ${"rgba(0,0,0,0.12)"}`,
+                    background: "#F5F5F5",
+                    border: `1px solid rgba(0,0,0,0.1)`,
                     color: "#101418",
                   }}
                 >
@@ -615,7 +615,7 @@ export default function CalculatorPage() {
                 <button
                   onClick={() => router.push("/settings")}
                   className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all"
-                  style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}`, color: "#6B7280", background: "transparent" }}
+                  style={{ border: `1px solid rgba(0,0,0,0.07)`, color: "#6B7280", background: "transparent" }}
                 >
                   <Lock size={14} />Speichern (Pro)
                 </button>
@@ -652,7 +652,7 @@ export default function CalculatorPage() {
         {/* Left: Inputs */}
         <div
           className="rounded-[14px] p-6 flex flex-col gap-6"
-          style={{ background: "#FFFFFF", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+          style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
         >
 
             {/* Section 1 – Objekt */}
@@ -690,7 +690,7 @@ export default function CalculatorPage() {
               </div>
             </div>
 
-            <div style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }} />
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }} />
 
             {/* Section 2 – Finanzen */}
             <div>
@@ -723,14 +723,14 @@ export default function CalculatorPage() {
               </div>
             </div>
 
-            <div style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }} />
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }} />
 
             {/* Section 3 – Finanzierung */}
             <div>
               <button type="button" onClick={() => setShowFinancing(!showFinancing)} className="flex items-center justify-between w-full cursor-pointer py-1">
                 <p className={`${SECTION_LABEL} mb-0`}>Finanzierung (optional)</p>
                 <motion.div animate={prefersReduced ? {} : { rotate: showFinancing ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <CaretDown size={14} color={"#9CA3AF"} />
+                  <CaretDown size={14} color="#9CA3AF" />
                 </motion.div>
               </button>
               <AnimatePresence initial={false}>
@@ -768,14 +768,14 @@ export default function CalculatorPage() {
               </AnimatePresence>
             </div>
 
-            <div style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }} />
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }} />
 
             {/* Section 4 – Steuer & Förderung */}
             <div>
               <button type="button" onClick={() => setShowSteuer(!showSteuer)} className="flex items-center justify-between w-full cursor-pointer py-1">
                 <p className={`${SECTION_LABEL} mb-0`}>Steuer & Förderung (optional)</p>
                 <motion.div animate={prefersReduced ? {} : { rotate: showSteuer ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <CaretDown size={14} color={"#9CA3AF"} />
+                  <CaretDown size={14} color="#9CA3AF" />
                 </motion.div>
               </button>
               <AnimatePresence initial={false}>
@@ -870,11 +870,11 @@ export default function CalculatorPage() {
                   className="w-20 h-20 rounded-[20px] flex items-center justify-center"
                   style={{
                     background: "#FFFFFF",
-                    border: `1px solid ${"rgba(0,0,0,0.07)"}`,
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
+                    border: `1px solid rgba(0,0,0,0.07)`,
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
                   }}
                 >
-                  <Calculator size={32} color={"#9CA3AF"} />
+                  <Calculator size={32} color="#9CA3AF" />
                 </motion.div>
                 <p className="text-base font-semibold mt-5 text-center" style={{ color: "#101418" }}>Ergebnis erscheint sofort</p>
                 <p className="text-sm mt-2 text-center" style={{ color: "#9CA3AF" }}>Kaufpreis und Miete eingeben.</p>
@@ -885,7 +885,7 @@ export default function CalculatorPage() {
                       className="rounded-full px-3 py-1.5 text-xs flex items-center gap-1.5"
                       style={{
                         background: "#FFFFFF",
-                        border: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                        border: `1px solid rgba(0,0,0,0.07)`,
                         color: "#6B7280",
                       }}
                     >
@@ -906,12 +906,12 @@ export default function CalculatorPage() {
                 {/* Tab card */}
                 <div
                   className="rounded-[14px] overflow-hidden mb-4"
-                  style={{ background: "#FFFFFF", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                  style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
                 >
                   {/* Tab bar */}
                   <div
                     className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                    style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                    style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}
                   >
                     {TABS.map((tab) => (
                       <button
@@ -920,7 +920,7 @@ export default function CalculatorPage() {
                         className="flex-shrink-0 py-3 px-4 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
                         style={activeTab === tab ? {
                           color: "#A07830",
-                          borderBottom: `2px solid ${"#A07830"}`,
+                          borderBottom: `2px solid #A07830`,
                           marginBottom: -1,
                         } : {
                           color: "#9CA3AF",
@@ -955,7 +955,7 @@ export default function CalculatorPage() {
                               <div
                                 key={label}
                                 className="rounded-[12px] p-4"
-                                style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}`, background: "#F5F5F5" }}
+                                style={{ border: `1px solid rgba(0,0,0,0.07)`, background: "#F5F5F5" }}
                               >
                                 <div className="flex items-center justify-between mb-2">
                                   <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "#9CA3AF" }}>{label}</p>
@@ -970,12 +970,12 @@ export default function CalculatorPage() {
                           {/* Quality bar */}
                           <div
                             className="rounded-[12px] px-4 py-3 flex items-center gap-3 mb-4"
-                            style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}`, background: "#F5F5F5" }}
+                            style={{ border: `1px solid rgba(0,0,0,0.07)`, background: "#F5F5F5" }}
                           >
                             <p className="text-xs font-semibold whitespace-nowrap" style={{ color: "#6B7280" }}>Objektqualität</p>
                             <div
                               className="flex-1 rounded-full h-1.5 overflow-hidden"
-                              style={{ background: "#F5F5F5" }}
+                              style={{ background: "rgba(0,0,0,0.06)" }}
                             >
                               <motion.div
                                 className="h-full rounded-full"
@@ -992,7 +992,7 @@ export default function CalculatorPage() {
                           {loan > 0 && result!.dscr > 0 && (
                             <div
                               className="flex justify-between items-center py-3"
-                              style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                              style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}
                             >
                               <span
                                 className="text-sm cursor-help underline decoration-dotted"
@@ -1018,7 +1018,7 @@ export default function CalculatorPage() {
                           {/* Kaufpreis-Indikator */}
                           <div
                             className="rounded-[12px] p-4 mt-3"
-                            style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                            style={{ background: "#F5F5F5", border: `1px solid rgba(0,0,0,0.07)` }}
                           >
                             <div className="flex justify-between items-center mb-3">
                               <p className="text-xs font-semibold" style={{ color: "#6B7280" }}>Kaufpreis-Indikator</p>
@@ -1042,7 +1042,7 @@ export default function CalculatorPage() {
                             {/* 150er Regel */}
                             <div
                               className="flex justify-between items-center py-2 mt-2"
-                              style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                              style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}
                             >
                               <span
                                 className="text-sm cursor-help underline decoration-dotted"
@@ -1076,7 +1076,7 @@ export default function CalculatorPage() {
                           <Row label="Gesamtinvestition" value={formatCurrency(result!.total_investment)} highlighted />
                           <Row label="Instandhaltung / Jahr" value={formatCurrency(result!.maintenance_yearly)} />
                           <Row label="Verwaltung / Jahr" value={formatCurrency(result!.management_yearly)} />
-                          <Row label="Leerstandsverlust" value={formatCurrency(result!.vacancy_loss)} color={"#B91C1C"} />
+                          <Row label="Leerstandsverlust" value={formatCurrency(result!.vacancy_loss)} color="#B91C1C" />
                         </div>
                       )}
 
@@ -1084,11 +1084,11 @@ export default function CalculatorPage() {
                       {activeTab === "Erträge" && (
                         <div>
                           <Row label="Kaltmiete / Jahr" value={formatCurrency(rent * 12)} />
-                          <Row label="Leerstandsabzug (3 %)" value={"−" + formatCurrency(result!.vacancy_loss)} color={"#B91C1C"} />
+                          <Row label="Leerstandsabzug (3 %)" value={"−" + formatCurrency(result!.vacancy_loss)} color="#B91C1C" />
                           <Row label="Eff. Jahresmiete" value={formatCurrency(result!.effective_rent_yearly)} />
                           <Row label="NOI" value={formatCurrency(result!.noi)} highlighted />
                           {computedMonthlyRate > 0 && (
-                            <Row label="Darlehensrate / Jahr" value={formatCurrency(computedMonthlyRate * 12)} color={"#B91C1C"} />
+                            <Row label="Darlehensrate / Jahr" value={formatCurrency(computedMonthlyRate * 12)} color="#B91C1C" />
                           )}
                           <Row label="Cashflow / Jahr" value={formatCurrencySigned(result!.cashflow_yearly)} color={result!.cashflow_yearly >= 0 ? "#2D6A2D" : "#B91C1C"} highlighted />
                         </div>
@@ -1127,7 +1127,7 @@ export default function CalculatorPage() {
                                   <div
                                     key={label}
                                     className="rounded-[10px] p-3"
-                                    style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                    style={{ background: "#F5F5F5", border: `1px solid rgba(0,0,0,0.07)` }}
                                   >
                                     <p className="text-[9px] mb-1.5 leading-tight" style={{ color: "#9CA3AF" }}>{label}</p>
                                     <p className="text-xs font-semibold" style={{ color }}>{value}</p>
@@ -1140,7 +1140,7 @@ export default function CalculatorPage() {
                               <div className="max-h-[240px] overflow-y-auto [scrollbar-width:thin]">
                                 <table className="w-full">
                                   <thead>
-                                    <tr style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}>
+                                    <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
                                       {["Jahr", "Restschuld", "Zinsen", "Tilgung", "Rate/Jahr"].map((h) => (
                                         <th key={h} className="text-left text-[9px] uppercase tracking-wide pb-2 font-semibold" style={{ color: "#9CA3AF" }}>{h}</th>
                                       ))}
@@ -1152,7 +1152,7 @@ export default function CalculatorPage() {
                                         key={row.year}
                                         style={{
                                           background: row.year % 5 === 0 ? "#F5F5F5" : "transparent",
-                                          borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                                          borderBottom: "1px solid rgba(0,0,0,0.07)",
                                         }}
                                       >
                                         <td className="text-xs font-medium py-1.5 tabular-nums" style={{ color: "#6B7280" }}>{row.year}</td>
@@ -1199,14 +1199,14 @@ export default function CalculatorPage() {
                                   key={s.id}
                                   className="rounded-[12px] overflow-hidden"
                                   style={{
-                                    border: `1px solid ${isBase ? "rgba(160,120,48,0.3)" : "rgba(0,0,0,0.07)"}`,
+                                    border: `1px solid ${isBase ? "rgba(160,120,48,0.2)" : "rgba(0,0,0,0.07)"}`,
                                   }}
                                 >
                                   <div
                                     className="px-4 py-3 flex items-center justify-between"
                                     style={{
                                       background: "#F5F5F5",
-                                      borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                                      borderBottom: "1px solid rgba(0,0,0,0.07)",
                                     }}
                                   >
                                     <div className="flex items-center gap-2">
@@ -1259,7 +1259,7 @@ export default function CalculatorPage() {
                                           className="rounded-[6px] px-2 py-1.5 text-xs w-full focus:outline-none transition-colors"
                                           style={{
                                             background: "#F8F7F4",
-                                            border: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                                            border: `1px solid rgba(0,0,0,0.07)`,
                                             color: isBase ? "#6B7280" : "#101418",
                                           }}
                                           onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(160,120,48,0.4)")}
@@ -1271,7 +1271,7 @@ export default function CalculatorPage() {
                                   {r && (
                                     <div
                                       className="px-4 py-3 grid grid-cols-4 gap-2"
-                                      style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}`, background: "#FFFFFF" }}
+                                      style={{ borderTop: "1px solid rgba(0,0,0,0.07)", background: "#FFFFFF" }}
                                     >
                                       {[
                                         { label: "BRUTTO", value: formatPercent(r.gross_yield),             color: getYieldColor(r.gross_yield, 0.05, 0.03) },
@@ -1293,18 +1293,18 @@ export default function CalculatorPage() {
                           {szenarien.length > 1 && (
                             <div
                               className="mt-4 rounded-[12px] overflow-hidden"
-                              style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                              style={{ border: `1px solid rgba(0,0,0,0.07)` }}
                             >
                               <div
                                 className="px-4 py-2"
-                                style={{ background: "#F5F5F5", borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                style={{ background: "#F5F5F5", borderBottom: "1px solid rgba(0,0,0,0.07)" }}
                               >
                                 <p className="text-[9px] uppercase tracking-widest font-semibold" style={{ color: "#9CA3AF" }}>Kennzahlen im Vergleich</p>
                               </div>
                               <div className="overflow-x-auto">
                                 <table className="w-full text-xs tabular-nums">
                                   <thead>
-                                    <tr style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}>
+                                    <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
                                       <th className="text-left font-medium px-4 py-2" style={{ color: "#9CA3AF" }}>Kennzahl</th>
                                       {szenarien.map((s) => (
                                         <th key={s.id} className="text-right font-semibold px-4 py-2" style={{ color: "#101418" }}>{s.label}</th>
@@ -1322,7 +1322,7 @@ export default function CalculatorPage() {
                                     ].map(({ label, field, vals }) => {
                                       const best = bestIdx(field);
                                       return (
-                                        <tr key={label} style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}>
+                                        <tr key={label} style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
                                           <td className="px-4 py-2.5" style={{ color: "#6B7280" }}>{label}</td>
                                           {vals.map((v, ci) => (
                                             <td
@@ -1372,7 +1372,7 @@ export default function CalculatorPage() {
                                   <div
                                     key={label}
                                     className="rounded-[10px] p-3"
-                                    style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                    style={{ background: "#F5F5F5", border: `1px solid rgba(0,0,0,0.07)` }}
                                   >
                                     <p className="text-[9px] uppercase tracking-wide mb-1.5" style={{ color: "#9CA3AF" }}>{label}</p>
                                     <p className="text-lg font-semibold mt-1.5 tabular-nums" style={{ color }}>{value}</p>
@@ -1382,7 +1382,7 @@ export default function CalculatorPage() {
 
                               <div
                                 className="flex flex-col rounded-[12px] overflow-hidden mb-4"
-                                style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                style={{ border: `1px solid rgba(0,0,0,0.07)` }}
                               >
                                 {[
                                   { label: "AfA-Satz",          value: `${(afaResult.afa_rate * 100).toFixed(1)} %` },
@@ -1394,7 +1394,7 @@ export default function CalculatorPage() {
                                   <div
                                     key={label}
                                     className="flex justify-between px-4 py-3"
-                                    style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                    style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}
                                   >
                                     <span className="text-sm" style={{ color: "#6B7280" }}>{label}</span>
                                     <span className="text-sm font-semibold" style={{ color: "#101418" }}>{value}</span>
@@ -1407,7 +1407,7 @@ export default function CalculatorPage() {
                                 className="rounded-[12px] px-4 py-4 flex items-start gap-3"
                                 style={{ background: "rgba(45,106,45,0.08)", border: `1px solid rgba(45,106,45,0.15)` }}
                               >
-                                <PiggyBank size={18} color={"#2D6A2D"} className="mt-0.5 flex-shrink-0" />
+                                <PiggyBank size={18} color="#2D6A2D" className="mt-0.5 flex-shrink-0" />
                                 <div>
                                   <p className="text-sm" style={{ color: "#101418" }}>
                                     Durch AfA reduzierst du dein zu versteuerndes Einkommen um{" "}
@@ -1425,11 +1425,11 @@ export default function CalculatorPage() {
                               {steuerForm.kaufdatum && spekuResult && (
                                 <div
                                   className="mt-4 rounded-[12px] overflow-hidden"
-                                  style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                  style={{ border: `1px solid rgba(0,0,0,0.07)` }}
                                 >
                                   <div
                                     className="px-4 py-3 flex items-center justify-between"
-                                    style={{ background: "#F5F5F5", borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                    style={{ background: "#F5F5F5", borderBottom: "1px solid rgba(0,0,0,0.07)" }}
                                   >
                                     <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6B7280" }}>Spekulationsfrist</p>
                                     {spekuResult.ist_spekulationsfrei && (
@@ -1454,7 +1454,7 @@ export default function CalculatorPage() {
                                         <div className="mt-3">
                                           <div
                                             className="rounded-full h-1.5 overflow-hidden"
-                                            style={{ background: "#F5F5F5" }}
+                                            style={{ background: "rgba(0,0,0,0.06)" }}
                                           >
                                             <motion.div
                                               className="h-full rounded-full"
@@ -1497,7 +1497,7 @@ export default function CalculatorPage() {
                               <div
                                 key={prog.id}
                                 className="rounded-[12px] overflow-hidden"
-                                style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                                style={{ border: `1px solid rgba(0,0,0,0.07)` }}
                               >
                                 <div className="px-4 py-3 flex items-start justify-between">
                                   <div>
@@ -1537,7 +1537,7 @@ export default function CalculatorPage() {
                             className="mt-4 rounded-[10px] px-4 py-3 flex items-start gap-2"
                             style={{ background: "rgba(146,64,14,0.08)", border: `1px solid rgba(146,64,14,0.2)` }}
                           >
-                            <Warning size={14} color={"#92400E"} className="mt-0.5 flex-shrink-0" />
+                            <Warning size={14} color="#92400E" className="mt-0.5 flex-shrink-0" />
                             <div>
                               <p className="text-[10px] leading-relaxed" style={{ color: "#6B7280" }}>
                                 Förderangaben ohne Gewähr. Aktuelle Konditionen und Voraussetzungen bei der KfW Bank prüfen.
@@ -1564,12 +1564,12 @@ export default function CalculatorPage() {
                 {activeTab === "Übersicht" && result!.ltv > 0 && (
                   <div
                     className="mt-4 rounded-[14px] px-5 py-4 flex items-center gap-4"
-                    style={{ background: "#FFFFFF", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
+                    style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
                   >
                     <p className="text-xs font-semibold whitespace-nowrap" style={{ color: "#6B7280" }}>LTV</p>
                     <div
                       className="flex-1 h-2 rounded-full overflow-hidden"
-                      style={{ background: "#F5F5F5" }}
+                      style={{ background: "rgba(0,0,0,0.06)" }}
                     >
                       <motion.div
                         className="h-full rounded-full"
