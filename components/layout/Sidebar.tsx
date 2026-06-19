@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
@@ -131,14 +130,13 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
       }}
     >
       {/* Logo */}
-      <div className="px-4 pt-6 pb-3 flex-shrink-0">
-        <Image
+      <div className="px-3 pt-6 pb-3 flex-shrink-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/imvestra-logo-horizontal.svg"
           alt="Imvestra"
-          width={1450}
-          height={340}
-          priority
           className="w-full h-auto"
+          draggable={false}
         />
       </div>
 
