@@ -37,7 +37,7 @@ function scoreLTV(ltv: number): PortfolioDimension {
 
   if (ltv <= 0.50) { score = 25; detail = "Konservativ"; color = "#22C55E"; }
   else if (ltv <= 0.60) { score = 22; detail = "Solide"; color = "#22C55E"; }
-  else if (ltv <= 0.70) { score = 17; detail = "Moderat"; color = "#00E0D7"; }
+  else if (ltv <= 0.70) { score = 17; detail = "Moderat"; color = "#A07830"; }
   else if (ltv <= 0.80) { score = 10; detail = "Erhöht"; color = "#FFB800"; }
   else { score = 3; detail = "Kritisch hoch"; color = "#FF4444"; }
 
@@ -51,7 +51,7 @@ function scoreCashflow(monthly: number, roe: number): PortfolioDimension {
 
   if (monthly > 0 && roe >= 0.08) { score = 25; detail = "Stark positiv"; color = "#22C55E"; }
   else if (monthly > 0 && roe >= 0.05) { score = 20; detail = "Positiv"; color = "#22C55E"; }
-  else if (monthly > 0 && roe >= 0.02) { score = 14; detail = "Knapp positiv"; color = "#00E0D7"; }
+  else if (monthly > 0 && roe >= 0.02) { score = 14; detail = "Knapp positiv"; color = "#A07830"; }
   else if (monthly >= -100) { score = 8; detail = "Leicht negativ"; color = "#FFB800"; }
   else { score = 2; detail = "Negativ"; color = "#FF4444"; }
 
@@ -79,7 +79,7 @@ function scoreROE(roe: number): PortfolioDimension {
 
   if (roe >= 0.10) { score = 25; detail = "> 10 %"; color = "#22C55E"; }
   else if (roe >= 0.07) { score = 21; detail = "> 7 %"; color = "#22C55E"; }
-  else if (roe >= 0.04) { score = 16; detail = "> 4 %"; color = "#00E0D7"; }
+  else if (roe >= 0.04) { score = 16; detail = "> 4 %"; color = "#A07830"; }
   else if (roe >= 0.01) { score = 9; detail = "< 4 %"; color = "#FFB800"; }
   else { score = 2; detail = "Negativ"; color = "#FF4444"; }
 
@@ -96,7 +96,7 @@ function scoreLabel(total: number): PortfolioHealthScore["label"] {
 
 function scoreColor(total: number): string {
   if (total >= 75) return "#22C55E";
-  if (total >= 55) return "#00E0D7";
+  if (total >= 55) return "#A07830";
   if (total >= 35) return "#FFB800";
   return "#FF4444";
 }

@@ -4,63 +4,44 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { signOut } from "@/lib/auth-actions";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import {
-  HouseLine,
-  Calculator,
-  MapPin,
-  FilePdf,
-  Buildings,
-  UsersFour,
-  Bank,
-  CheckSquare,
-  Receipt,
-  Tag,
-  SignOut,
-  MagnifyingGlass,
-  CaretLeft,
-  CaretRight,
-  Gear,
+  HouseLine, Calculator, MapPin, FilePdf, Buildings,
+  UsersFour, CheckSquare, Receipt, Tag, SignOut,
+  MagnifyingGlass, Gear, ChartBar,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/lib/auth-actions";
 
-type NavItem = {
-  Icon: PhosphorIcon;
-  label: string;
-  href: string;
-  badge?: string;
-};
-
-type NavSection = {
-  section?: string;
-  items: NavItem[];
-};
+type NavItem = { Icon: PhosphorIcon; label: string; href: string; badge?: string };
+type NavSection = { section?: string; items: NavItem[] };
 
 const navSections: NavSection[] = [
   {
+    section: "MENÜ",
     items: [
-      { Icon: HouseLine, label: "Übersicht", href: "/dashboard" },
+      { Icon: HouseLine,   label: "Übersicht",   href: "/dashboard" },
+      { Icon: Buildings,   label: "Portfolio",    href: "/portfolio" },
+      { Icon: Calculator,  label: "Rechner",      href: "/calculator" },
+      { Icon: Tag,         label: "Verhandlung",  href: "/verhandlung" },
+      { Icon: MapPin,      label: "Standort",     href: "/standort" },
+      { Icon: FilePdf,     label: "PDF Export",   href: "/pdf-export" },
     ],
   },
   {
     section: "VERWALTUNG",
     items: [
-      { Icon: Buildings,   label: "Portfolio", href: "/portfolio" },
       { Icon: UsersFour,   label: "Mieter",    href: "/mieter" },
-      { Icon: Bank,        label: "Finanzen",  href: "/finanzen" },
+      { Icon: ChartBar,    label: "Finanzen",  href: "/finanzen" },
       { Icon: CheckSquare, label: "Aufgaben",  href: "/aufgaben" },
       { Icon: Receipt,     label: "Steuern",   href: "/steuern" },
     ],
   },
   {
-    section: "ANALYSE",
+    section: "KONTO",
     items: [
-      { Icon: Calculator, label: "Rechner",     href: "/calculator" },
-      { Icon: Tag,        label: "Verhandlung", href: "/verhandlung" },
-      { Icon: MapPin,     label: "Standort",    href: "/standort" },
-      { Icon: FilePdf,    label: "PDF Export",  href: "/pdf-export" },
+      { Icon: Gear,    label: "Einstellungen", href: "/settings" },
     ],
   },
 ];
@@ -70,119 +51,58 @@ function isActive(href: string, pathname: string) {
   return pathname.startsWith(href);
 }
 
-function NavLink({
-  Icon,
-  label,
-  href,
-  badge,
-  taskCount,
-  collapsed,
-  active,
-}: NavItem & { taskCount?: number; collapsed: boolean; active: boolean }) {
+function NavLink({ Icon, label, href, taskCount, active }: NavItem & { taskCount?: number; active: boolean }) {
   const isAufgaben = href === "/aufgaben";
   const showBadge = isAufgaben && (taskCount ?? 0) > 0;
 
   return (
-    <Link href={href} className="block mb-[2px]" title={collapsed ? label : undefined}>
-      <motion.div
-        className="relative flex items-center rounded-[8px] cursor-pointer"
-        style={{
-          padding: collapsed ? "7px 0" : "7px 10px",
-          justifyContent: collapsed ? "center" : "flex-start",
-          gap: collapsed ? 0 : 10,
-          background: active ? "rgba(201,168,106,0.1)" : "transparent",
-          border: active ? "1px solid rgba(201,168,106,0.15)" : "1px solid transparent",
-          color: active ? "#C9A86A" : "#4A3A2A",
-        }}
-        whileHover={active ? {} : { backgroundColor: "rgba(255,255,255,0.04)" }}
-        transition={{ duration: 0.15 }}
-      >
-        {/* Active indicator pill */}
+    <Link href={href} className="block mb-0.5">
+      <div className="relative">
+        {/* Active left bar */}
         {active && (
           <motion.div
-            layoutId="sidebar-active-bar"
-            className="absolute left-0 top-[5px] bottom-[5px] w-[2px] rounded-full"
-            style={{ background: "#C9A86A" }}
+            layoutId="nav-active-bar"
+            className="absolute left-[-12px] rounded-[0_3px_3px_0]"
+            style={{ top: "20%", bottom: "20%", width: 4, background: "#A07830" }}
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
           />
         )}
-
-        <Icon
-          size={15}
-          weight={active ? "bold" : "regular"}
-          color={active ? "#C9A86A" : "#4A3A2A"}
-          className="flex-shrink-0 transition-colors duration-150"
-        />
-
-        <AnimatePresence initial={false}>
-          {!collapsed && (
-            <motion.span
-              key="label"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ duration: 0.14 }}
-              className="text-[13px] flex-1 whitespace-nowrap overflow-hidden leading-none"
-              style={{
-                fontWeight: active ? 500 : 400,
-                color: active ? "#C9A86A" : "#6A5A4A",
-              }}
+        <motion.div
+          className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer transition-all duration-150"
+          style={{
+            background: active ? "#A07830" : "transparent",
+            color: active ? "white" : "#6B7280",
+          }}
+          whileHover={active ? {} : { backgroundColor: "rgba(0,0,0,0.04)", color: "#101418" }}
+          transition={{ duration: 0.1 }}
+        >
+          <Icon size={16} weight={active ? "bold" : "regular"} color={active ? "white" : "#9CA3AF"} className="flex-shrink-0" />
+          <span className="text-[14px] flex-1 font-medium leading-none" style={{ fontWeight: active ? 600 : 400 }}>
+            {label}
+          </span>
+          {showBadge && (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full leading-none flex-shrink-0 tabular-nums"
+              style={active
+                ? { background: "rgba(255,255,255,0.2)", color: "white" }
+                : { background: "rgba(185,28,28,0.1)", color: "#B91C1C" }
+              }
             >
-              {label}
-            </motion.span>
+              {taskCount}
+            </span>
           )}
-        </AnimatePresence>
-
-        {badge && !isAufgaben && !collapsed && (
-          <span
-            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0"
-            style={{ background: "rgba(160,120,48,0.15)", color: "#C9A86A" }}
-          >
-            {badge}
-          </span>
-        )}
-
-        {showBadge && !collapsed && (
-          <span
-            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0 tabular-nums"
-            style={{ background: "rgba(185,28,28,0.15)", color: "#EF4444" }}
-          >
-            {taskCount}
-          </span>
-        )}
-
-        {showBadge && collapsed && (
-          <span
-            className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full"
-            style={{ background: "#EF4444" }}
-          />
-        )}
-      </motion.div>
+        </motion.div>
+      </div>
     </Link>
   );
 }
 
-interface SidebarProps {
-  userEmail?: string;
-}
-
-export default function Sidebar({ userEmail }: SidebarProps) {
-  const pathname     = usePathname();
-  const avatarLetter = userEmail ? userEmail[0].toUpperCase() : "?";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function Sidebar({ userEmail }: { userEmail?: string }) {
+  const pathname = usePathname();
   const [openTaskCount, setOpenTaskCount] = useState(0);
-  const [collapsed, setCollapsed] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("sidebar-collapsed");
-    if (stored === "true") setCollapsed(true);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("sidebar-collapsed", String(collapsed));
-  }, [collapsed]);
-
-  const openPalette = () =>
-    document.dispatchEvent(new CustomEvent("imvestra:palette:open"));
+  const openPalette = () => document.dispatchEvent(new CustomEvent("imvestra:palette:open"));
 
   useEffect(() => {
     const supabase = createClient();
@@ -198,251 +118,106 @@ export default function Sidebar({ userEmail }: SidebarProps) {
   }, []);
 
   return (
-    <motion.aside
-      animate={{ width: collapsed ? 56 : 220 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="flex-shrink-0 h-screen sticky top-0 flex flex-col overflow-hidden"
+    <aside
+      className="w-[240px] h-screen sticky top-0 flex flex-col flex-shrink-0 overflow-hidden"
       style={{
-        background: "#18160E",
-        borderRight: "1px solid rgba(201,168,106,0.08)",
+        background: "#FFFFFF",
+        borderRight: "1px solid rgba(0,0,0,0.07)",
+        boxShadow: "2px 0 8px rgba(0,0,0,0.04)",
       }}
     >
-      {/* Logo + collapse */}
-      <div
-        className="h-[60px] flex items-center flex-shrink-0 px-4"
-        style={{ borderBottom: "1px solid rgba(201,168,106,0.08)" }}
-      >
-        <div className="flex items-center justify-between w-full">
-          <AnimatePresence initial={false}>
-            {!collapsed && (
-              <motion.div
-                key="logo"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                <Image
-                  src="/logo.svg"
-                  alt="Imvestra"
-                  width={96}
-                  height={22}
-                  priority
-                  style={{
-                    filter: "brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(600%) hue-rotate(15deg) brightness(90%)",
-                  }}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <button
-            onClick={() => setCollapsed(c => !c)}
-            className="w-[22px] h-[22px] rounded-[5px] flex items-center justify-center flex-shrink-0 transition-colors duration-150"
-            style={{
-              color: "#4A3A2A",
-              marginLeft: collapsed ? "auto" : 0,
-              marginRight: collapsed ? "auto" : 0,
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,168,106,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "#C9A86A"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#4A3A2A"; }}
-            aria-label={collapsed ? "Sidebar aufklappen" : "Sidebar einklappen"}
-          >
-            {collapsed ? <CaretRight size={11} /> : <CaretLeft size={11} />}
-          </button>
-        </div>
+      {/* Logo */}
+      <div className="px-6 pt-7 pb-5 flex items-center gap-2.5 flex-shrink-0">
+        <Image
+          src="/logo.svg"
+          alt="Imvestra"
+          width={24}
+          height={24}
+          priority
+          style={{ filter: "brightness(0) saturate(100%) invert(55%) sepia(60%) saturate(500%) hue-rotate(15deg) brightness(85%)" }}
+        />
+        <span className="text-[18px] font-bold" style={{ color: "#A07830" }}>Imvestra</span>
       </div>
 
-      {/* Search / ⌘K */}
-      <div className="px-3 py-3 flex-shrink-0">
+      {/* Search */}
+      <div className="px-4 pb-5 flex-shrink-0">
         <button
           onClick={openPalette}
           aria-label="Suche (⌘K)"
-          title={collapsed ? "Suchen (⌘K)" : undefined}
-          className="w-full flex items-center rounded-[7px] transition-all duration-150"
-          style={{
-            padding: collapsed ? "7px 0" : "7px 10px",
-            justifyContent: collapsed ? "center" : "flex-start",
-            gap: collapsed ? 0 : 8,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(201,168,106,0.08)",
-            color: "#4A3A2A",
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,106,0.2)"; (e.currentTarget as HTMLButtonElement).style.color = "#6A5A3A"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,106,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "#4A3A2A"; }}
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-[10px] transition-all duration-150"
+          style={{ background: "#F5F5F5" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#EFEFEF"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5"; }}
         >
-          <MagnifyingGlass size={13} className="flex-shrink-0" />
-          <AnimatePresence initial={false}>
-            {!collapsed && (
-              <motion.span
-                key="search-text"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.12 }}
-                className="text-[12px] flex-1 text-left whitespace-nowrap"
-                style={{ color: "#4A3A2A" }}
-              >
-                Suchen...
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <AnimatePresence initial={false}>
-            {!collapsed && (
-              <motion.kbd
-                key="kbd"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.12 }}
-                className="text-[10px] px-1.5 py-0.5 rounded-[4px] flex-shrink-0 leading-none"
-                style={{
-                  background: "rgba(201,168,106,0.06)",
-                  color: "#6A5A3A",
-                  border: "1px solid rgba(201,168,106,0.1)",
-                }}
-              >
-                ⌘K
-              </motion.kbd>
-            )}
-          </AnimatePresence>
+          <MagnifyingGlass size={14} color="#9CA3AF" className="flex-shrink-0" />
+          <span className="text-[13px] flex-1 text-left" style={{ color: "#9CA3AF" }}>Suchen...</span>
+          <kbd
+            className="text-[10px] px-1.5 py-0.5 rounded-[4px] leading-none ml-auto"
+            style={{ background: "white", color: "#9CA3AF", border: "1px solid rgba(0,0,0,0.08)" }}
+          >
+            ⌘K
+          </kbd>
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 overflow-y-auto overflow-x-hidden py-1 space-y-[2px]">
+      <nav className="flex-1 px-3 overflow-y-auto py-1 space-y-0.5">
         {navSections.map((section, si) => (
-          <div key={si}>
+          <div key={si} className={si > 0 ? "mt-5" : ""}>
             {section.section && (
-              <div style={{ height: collapsed ? 12 : "auto", overflow: "hidden" }}>
-                <AnimatePresence initial={false}>
-                  {!collapsed && (
-                    <motion.p
-                      key={`section-${si}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.12 }}
-                      className="px-[10px] pt-5 pb-2 text-[9px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap"
-                      style={{ color: "#2E2618" }}
-                    >
-                      {section.section}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-                {collapsed && si > 0 && (
-                  <div
-                    className="mx-auto my-3"
-                    style={{ width: 20, height: 1, background: "rgba(201,168,106,0.08)" }}
-                  />
-                )}
-              </div>
+              <p className="px-3 mb-2 text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: "#9CA3AF" }}>
+                {section.section}
+              </p>
             )}
-
             {section.items.map(item => (
               <NavLink
                 key={item.href}
                 {...item}
                 taskCount={item.href === "/aufgaben" ? openTaskCount : 0}
-                collapsed={collapsed}
                 active={isActive(item.href, pathname)}
               />
             ))}
           </div>
         ))}
+
+        {/* Sign out separate */}
+        <div className="mt-1">
+          <button
+            onClick={() => signOut()}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] transition-all duration-150 mb-0.5"
+            style={{ color: "#6B7280" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(185,28,28,0.06)"; (e.currentTarget as HTMLButtonElement).style.color = "#B91C1C"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; }}
+          >
+            <SignOut size={16} color="currentColor" className="flex-shrink-0" />
+            <span className="text-[14px]">Abmelden</span>
+          </button>
+        </div>
       </nav>
 
-      {/* Bottom */}
-      <div
-        className="flex-shrink-0 p-3"
-        style={{ borderTop: "1px solid rgba(201,168,106,0.08)" }}
-      >
-        <AnimatePresence initial={false}>
-          {!collapsed && (
-            <motion.div
-              key="settings"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
-              className="mb-2"
-            >
-              <Link
-                href="/settings"
-                className="flex items-center gap-2.5 px-[10px] py-[7px] rounded-[7px] transition-colors duration-150"
-                style={{ color: "#4A3A2A" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLAnchorElement).style.color = "#6A5A3A"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; (e.currentTarget as HTMLAnchorElement).style.color = "#4A3A2A"; }}
-              >
-                <Gear size={14} className="flex-shrink-0" />
-                <span className="text-[12px]">Einstellungen</span>
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* User row */}
+      {/* Promo card */}
+      <div className="px-4 pb-6 flex-shrink-0">
         <div
-          className="flex items-center rounded-[7px] px-[10px] py-[7px] transition-colors duration-150 cursor-default"
-          style={{
-            justifyContent: collapsed ? "center" : "flex-start",
-            gap: collapsed ? 0 : 10,
-          }}
-          title={collapsed ? (userEmail ?? "") : undefined}
+          className="rounded-[14px] p-5"
+          style={{ background: "linear-gradient(135deg, #18160E 0%, #A07830 100%)" }}
         >
-          <div
-            className="w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold leading-none"
-            style={{
-              background: "rgba(160,120,48,0.15)",
-              border: "1px solid rgba(201,168,106,0.2)",
-              color: "#C9A86A",
-            }}
+          <p className="text-[10px] font-semibold uppercase mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Aktueller Plan
+          </p>
+          <p className="text-[13px] font-semibold leading-snug mb-3" style={{ color: "white" }}>
+            Upgrade für unbegrenzte Objekte & PDF-Export
+          </p>
+          <Link
+            href="/settings"
+            className="block w-full text-center text-[12px] font-bold py-2 rounded-[8px] transition-all duration-150"
+            style={{ background: "white", color: "#A07830" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#F5F5F5"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "white"; }}
           >
-            {avatarLetter}
-          </div>
-
-          <AnimatePresence initial={false}>
-            {!collapsed && (
-              <motion.div
-                key="user-info"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.14 }}
-                className="min-w-0 flex-1 overflow-hidden"
-              >
-                <p
-                  className="text-[11px] truncate leading-tight"
-                  style={{ color: "#4A3A2A", maxWidth: 120 }}
-                >
-                  {userEmail ?? ""}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence initial={false}>
-            {!collapsed && (
-              <motion.button
-                key="signout"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.12 }}
-                onClick={() => signOut()}
-                className="flex-shrink-0 p-1 rounded-[5px] transition-all duration-150"
-                style={{ color: "#3A2A1A" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(185,28,28,0.1)"; (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#3A2A1A"; }}
-                title="Abmelden"
-                aria-label="Abmelden"
-              >
-                <SignOut size={13} />
-              </motion.button>
-            )}
-          </AnimatePresence>
+            Jetzt upgraden →
+          </Link>
         </div>
       </div>
-    </motion.aside>
+    </aside>
   );
 }

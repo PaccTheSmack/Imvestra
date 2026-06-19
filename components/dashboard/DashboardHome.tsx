@@ -3,43 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import {
-  Calculator,
-  Buildings,
-  ArrowRight,
-  TrendUp,
-  TrendDown,
-  Warning,
-  Bank,
-  Sparkle,
-  Tag,
-  CheckCircle,
-} from "@phosphor-icons/react";
+import { motion } from "motion/react";
+import { ArrowUpRight } from "@phosphor-icons/react";
 import type { PortfolioSummary } from "@/lib/portfolio-calculations";
-import { calculatePortfolioHealth } from "@/lib/portfolio-insights";
-import PortfolioInsights from "@/components/dashboard/PortfolioInsights";
-import FadeIn from "@/components/ui/FadeIn";
-import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import CountUp from "@/components/ui/CountUp";
 import { generateSmartTasks } from "@/lib/smart-tasks";
-import { tokens } from "@/lib/tokens";
-
-const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  ETW:     { bg: "rgba(160,120,48,0.08)", text: "#A07830" },
-  MFH:     { bg: "rgba(139,92,246,0.1)",  text: "#A78BFA" },
-  EFH:     { bg: "rgba(160,120,48,0.06)", text: "#A07830" },
-  DHH:     { bg: "rgba(255,184,0,0.08)",  text: "#92400E" },
-  Gewerbe: { bg: "rgba(16,20,24,0.05)",   text: "#6A5A3A" },
-};
-
-const TYPE_LABEL: Record<string, string> = {
-  ETW: "Eigentumswohnung",
-  MFH: "Mehrfamilienhaus",
-  EFH: "Einfamilienhaus",
-  DHH: "Doppelhaushälfte",
-  Gewerbe: "Gewerbe",
-};
 
 function fmtCurrency(n: number) {
   return new Intl.NumberFormat("de-DE", { style: "decimal", maximumFractionDigits: 0 }).format(n) + " €";
@@ -47,15 +15,8 @@ function fmtCurrency(n: number) {
 function fmtCurrencyCountUp(v: number) {
   return new Intl.NumberFormat("de-DE", { style: "decimal", maximumFractionDigits: 0 }).format(Math.round(v)) + " €";
 }
-function fmtPercent(n: number) {
-  return new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n * 100) + " %";
-}
 function fmtPercentCountUp(v: number) {
   return (v * 100).toFixed(2).replace(".", ",") + " %";
-}
-function fmtSigned(n: number) {
-  const f = fmtCurrency(Math.abs(n));
-  return n >= 0 ? "+" + f : "−" + f;
 }
 function fmtSignedCountUp(v: number) {
   const abs = fmtCurrencyCountUp(Math.abs(v));
@@ -94,892 +55,452 @@ function getGreeting(firstName: string) {
   return firstName ? `${g}, ${firstName}.` : `${g}.`;
 }
 
-function getDateLabel() {
-  return new Date().toLocaleDateString("de-DE", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-}
-
 export default function DashboardHome({
   firstName,
-  isFreePlan,
   count,
   totalCashflow,
   avgNetYield,
-  totalInvestment,
   recentProperties,
   financingAlertCount = 0,
   monthlyRentSoll = 0,
-  monthlyRentIst = 0,
   overdueTasks = 0,
   userId,
   portfolioSummary,
 }: DashboardHomeProps) {
   const router = useRouter();
-  const prefersReduced = useReducedMotion();
-  const [smartNotifCount, setSmartNotifCount] = useState(0);
-  const [showSmartNotif, setShowSmartNotif] = useState(false);
-  const [ltvMounted, setLtvMounted] = useState(false);
-  const [rentMounted, setRentMounted] = useState(false);
+  const [, setSmartNotifCount] = useState(0);
 
   useEffect(() => {
     if (!userId) return;
     generateSmartTasks(userId).then(({ created }) => {
       if (created > 0) {
         setSmartNotifCount(created);
-        setShowSmartNotif(true);
-        setTimeout(() => setShowSmartNotif(false), 8000);
       }
     });
   }, [userId]);
-
-  // Trigger bar animations after mount
-  useEffect(() => {
-    const t1 = setTimeout(() => setLtvMounted(true), 400);
-    const t2 = setTimeout(() => setRentMounted(true), 600);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
 
   const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
   const ltvPct = hasPortfolio
     ? Math.min(portfolioSummary!.total_fremdkapital_quote * 100, 100)
     : 0;
-  const ltvColor = hasPortfolio
-    ? portfolioSummary!.total_fremdkapital_quote > 0.8
-      ? tokens.color.danger
-      : portfolioSummary!.total_fremdkapital_quote > 0.6
-      ? tokens.color.warning
-      : tokens.color.accent
-    : tokens.color.accent;
-
-  const rentPct = monthlyRentSoll > 0
-    ? Math.min((monthlyRentIst / monthlyRentSoll) * 100, 100)
-    : 0;
 
   return (
-    <div className="px-6 py-8 w-full max-w-[1280px]" style={{ background: tokens.color.bg, minHeight: "100vh" }}>
+    <div className="px-8 py-7 w-full max-w-[1400px]" style={{ background: "#F8F7F4", minHeight: "100vh" }}>
 
-      {/* ── Header ── */}
-      <FadeIn delay={0}>
-        <div className="flex items-start justify-between mb-10">
-          <div>
-            <h1
-              className="text-[30px] font-semibold tracking-[-0.035em] leading-tight"
-              style={{ color: tokens.color.text }}
-            >
-              {getGreeting(firstName)}
-            </h1>
-            <p className="text-sm mt-1" style={{ color: tokens.color.textSubtle }}>
-              {getDateLabel()}
-            </p>
-          </div>
+      {/* GREETING ROW */}
+      <div className="mb-7">
+        <h2 className="text-[22px] font-semibold tracking-[-0.02em]" style={{ color: "#101418" }}>
+          {getGreeting(firstName)}
+        </h2>
+        <p className="text-[13px] mt-1" style={{ color: "#9CA3AF" }}>
+          Hier ist deine Übersicht für heute.
+        </p>
+      </div>
 
-          {/* Status badge */}
-          {financingAlertCount > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.25 }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ background: "rgba(255,184,0,0.1)", border: "1px solid rgba(255,184,0,0.2)", color: tokens.color.warning }}
-            >
-              <Bank size={12} />
-              {financingAlertCount} Zinsbindung{financingAlertCount > 1 ? "en" : ""} läuft aus
-            </motion.div>
-          ) : overdueTasks > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.25 }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ background: tokens.color.dangerBg, border: `1px solid rgba(185,28,28,0.2)`, color: tokens.color.danger }}
-            >
-              <Warning size={12} />
-              {overdueTasks} überfällige Aufgabe{overdueTasks > 1 ? "n" : ""}
-            </motion.div>
-          ) : count > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.25 }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ background: tokens.color.positiveBg, border: "1px solid rgba(34,197,94,0.2)", color: tokens.color.positive }}
-            >
-              <CheckCircle size={12} weight="fill" />
-              Alles im Plan
-            </motion.div>
-          ) : null}
-        </div>
-      </FadeIn>
+      {/* STAT CARDS — grid-cols-4 */}
+      <div className="grid grid-cols-4 gap-4 mb-6">
 
-      {/* ── Hero KPI Card ── */}
-      <FadeIn delay={0.04}>
-        <div
-          className="rounded-[18px] px-8 py-7 mb-4"
-          style={{
-            background: tokens.color.surface,
-            border: `1px solid ${tokens.color.border}`,
-          }}
+        {/* Card 1: PORTFOLIOWERT — DARK GOLD */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0, duration: 0.28 }}
+          className="rounded-[14px] p-6"
+          style={{ background: "#A07830", boxShadow: "0 4px 24px rgba(160,120,48,0.25)" }}
         >
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex-1 min-w-0">
-              <p
-                className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-3"
-                style={{ color: tokens.color.textSubtle }}
-              >
-                Gesamtinvestition
-              </p>
-              <div
-                className="text-[52px] font-semibold tracking-[-0.04em] leading-none tabular-nums"
-                style={{ color: tokens.color.text }}
-              >
-                {totalInvestment != null ? (
-                  <CountUp
-                    to={totalInvestment}
-                    formatter={fmtCurrencyCountUp}
-                    duration={1.6}
-                  />
-                ) : (
-                  <span style={{ color: tokens.color.textSubtle }}>—</span>
-                )}
-              </div>
-            </div>
-
-            {/* Right: sparkline if available */}
-            {hasPortfolio && portfolioSummary!.wert_verlauf.length > 1 && (() => {
-              const raw = portfolioSummary!.wert_verlauf;
-              const step = Math.max(1, Math.floor(raw.length / 8));
-              const data = raw.filter((_, i) => i % step === 0).slice(0, 8);
-              if (data.length < 2) return null;
-              const vals = data.map(d => d.wert);
-              const min = Math.min(...vals);
-              const max = Math.max(...vals);
-              const range = max - min || 1;
-              const W = 100; const H = 44;
-              const pts = vals.map((v, i) => {
-                const x = (i / (vals.length - 1)) * W;
-                const y = H - ((v - min) / range) * (H - 8);
-                return `${x.toFixed(1)},${y.toFixed(1)}`;
-              });
-              const linePath = `M ${pts.join(" L ")}`;
-              const areaPath = `${linePath} L ${W},${H} L 0,${H} Z`;
-              const isUp = vals[vals.length - 1] >= vals[0];
-              const lineColor = isUp ? tokens.color.positive : tokens.color.danger;
-              return (
-                <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" className="flex-shrink-0 opacity-80">
-                  <path d={areaPath} fill={isUp ? "rgba(45,106,45,0.06)" : "rgba(185,28,28,0.06)"} />
-                  <path d={linePath} stroke={lineColor} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              );
-            })()}
-          </div>
-
-          {/* Sub-metrics */}
-          <div
-            className="grid grid-cols-3 gap-6 mt-6 pt-6"
-            style={{ borderTop: `1px solid ${tokens.color.border}` }}
-          >
-            {[
-              {
-                label: "Cashflow / Monat",
-                value: totalCashflow,
-                render: (v: number) => (
-                  <CountUp
-                    to={v}
-                    formatter={fmtSignedCountUp}
-                    duration={1.4}
-                    className="text-base font-semibold tabular-nums"
-                    style={{ color: v >= 0 ? tokens.color.positive : tokens.color.danger }}
-                  />
-                ),
-                fallback: "—",
-                icon: totalCashflow != null && totalCashflow >= 0
-                  ? <TrendUp size={13} color={tokens.color.positive} />
-                  : <TrendDown size={13} color={tokens.color.danger} />,
-              },
-              {
-                label: "Ø Nettomietrendite",
-                value: avgNetYield,
-                render: (v: number) => (
-                  <CountUp
-                    to={v}
-                    formatter={fmtPercentCountUp}
-                    duration={1.4}
-                    className="text-base font-semibold tabular-nums"
-                    style={{ color: tokens.color.text }}
-                  />
-                ),
-                fallback: "—",
-                icon: null,
-              },
-              {
-                label: "Objekte im Portfolio",
-                value: count > 0 ? count : null,
-                render: (v: number) => (
-                  <CountUp
-                    to={v}
-                    formatter={(x) => String(Math.round(x))}
-                    duration={1.0}
-                    className="text-base font-semibold tabular-nums"
-                    style={{ color: tokens.color.text }}
-                  />
-                ),
-                fallback: "0",
-                icon: null,
-              },
-            ].map(({ label, value, render, fallback, icon }) => (
-              <div key={label}>
-                <p className="text-[11px] mb-2" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                <div className="flex items-center gap-1.5">
-                  {icon}
-                  {value != null ? render(value) : (
-                    <span className="text-base font-semibold tabular-nums" style={{ color: tokens.color.textSubtle }}>{fallback}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </FadeIn>
-
-      {/* ── Portfolio Snapshot (3 cards) ── */}
-      {hasPortfolio && (
-        <FadeIn delay={0.08}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-
-            {/* Card 1: Portfoliowert */}
-            <motion.div
-              className="rounded-[16px] p-6 cursor-pointer"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-              whileHover={prefersReduced ? {} : {
-                y: -3,
-                borderColor: tokens.color.borderAccent,
-                boxShadow: tokens.shadow.accent,
-              }}
-              whileTap={prefersReduced ? {} : { scale: 0.98 }}
-              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>Portfoliowert</span>
+            <button
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              style={{ border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.6)" }}
               onClick={() => router.push("/portfolio")}
             >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textSubtle }}>
-                Portfoliowert
-              </p>
-              <p className="text-[28px] font-semibold tracking-[-0.03em] leading-none tabular-nums" style={{ color: tokens.color.text }}>
-                <CountUp
-                  to={portfolioSummary!.total_marktwert}
-                  formatter={fmtCurrencyCountUp}
-                  duration={1.5}
-                />
-              </p>
-              <div className="flex items-center gap-1.5 mt-2">
-                {portfolioSummary!.total_wertentwicklung_eur >= 0 ? (
-                  <>
-                    <TrendUp size={13} color={tokens.color.accent} />
-                    <span className="text-xs tabular-nums" style={{ color: tokens.color.accent }}>
-                      {fmtSigned(portfolioSummary!.total_wertentwicklung_eur)}
-                    </span>
-                    <span className="text-[11px]" style={{ color: tokens.color.textSubtle }}>
-                      ({fmtPercent(portfolioSummary!.total_wertentwicklung_pct)})
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <TrendDown size={13} color={tokens.color.danger} />
-                    <span className="text-xs tabular-nums" style={{ color: tokens.color.danger }}>
-                      {fmtSigned(portfolioSummary!.total_wertentwicklung_eur)}
-                    </span>
-                  </>
-                )}
-              </div>
-            </motion.div>
+              <ArrowUpRight size={14} />
+            </button>
+          </div>
+          <div className="text-[32px] font-bold tracking-[-0.03em] mt-4 tabular-nums" style={{ color: "white" }}>
+            <CountUp to={portfolioSummary?.total_marktwert ?? 0} formatter={fmtCurrencyCountUp} />
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)" }}>
+              {portfolioSummary ? `${(portfolioSummary.total_wertentwicklung_pct * 100).toFixed(1).replace(".", ",")} %` : "–"}
+            </span>
+            <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>Wertentwicklung</span>
+          </div>
+        </motion.div>
 
-            {/* Card 2: Eigenkapital + LTV */}
-            <motion.div
-              className="rounded-[16px] p-6"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-              whileHover={prefersReduced ? {} : {
-                y: -3,
-                borderColor: tokens.color.borderAccent,
-                boxShadow: tokens.shadow.accent,
-              }}
-              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+        {/* Card 2: EIGENKAPITAL */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04, duration: 0.28 }}
+          className="rounded-[14px] p-6 transition-all duration-200 cursor-default"
+          style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          whileHover={{ borderColor: "rgba(160,120,48,0.2)", boxShadow: "0 4px 24px rgba(160,120,48,0.08)", y: -1 }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium" style={{ color: "#6B7280" }}>Eigenkapital</span>
+            <button
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              style={{ border: "1px solid rgba(0,0,0,0.1)", color: "#9CA3AF" }}
             >
+              <ArrowUpRight size={14} />
+            </button>
+          </div>
+          <div className="text-[32px] font-bold tracking-[-0.03em] mt-4 tabular-nums" style={{ color: "#A07830" }}>
+            <CountUp to={portfolioSummary?.total_eingesetztes_eigenkapital ?? 0} formatter={fmtCurrencyCountUp} />
+          </div>
+          <p className="text-[11px] mt-1.5" style={{ color: "#9CA3AF" }}>
+            Eingesetztes Kapital
+          </p>
+        </motion.div>
 
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textSubtle }}>
-                Eigenkapital
-              </p>
-              <p className="text-[28px] font-semibold tracking-[-0.03em] leading-none tabular-nums" style={{ color: tokens.color.accent }}>
-                <CountUp
-                  to={portfolioSummary!.total_eigenkapital_aktuell}
-                  formatter={fmtCurrencyCountUp}
-                  duration={1.5}
-                />
-              </p>
-              <div
-                className="flex justify-between mt-4 pt-4 text-xs"
-                style={{ borderTop: `1px solid ${tokens.color.border}` }}
-              >
-                <div>
-                  <p style={{ color: tokens.color.textSubtle }}>Restschuld</p>
-                  <p className="font-semibold mt-0.5 tabular-nums" style={{ color: tokens.color.danger }}>
-                    {fmtCurrency(portfolioSummary!.total_restschuld)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p style={{ color: tokens.color.textSubtle }}>Getilgt</p>
-                  <p className="font-semibold mt-0.5 tabular-nums" style={{ color: tokens.color.accent }}>
-                    {fmtCurrency(portfolioSummary!.total_getilgtes_kapital)}
-                  </p>
-                </div>
-              </div>
-              {/* LTV bar */}
-              <div className="mt-4">
-                <div className="flex justify-between text-[11px] mb-1.5">
-                  <span style={{ color: tokens.color.textSubtle }}>LTV</span>
-                  <span className="font-medium tabular-nums" style={{ color: ltvColor }}>
-                    {fmtPercent(portfolioSummary!.total_fremdkapital_quote)}
-                  </span>
-                </div>
-                <div
-                  className="h-1 rounded-full overflow-hidden"
-                  style={{ background: tokens.color.surfaceActive }}
-                >
-                  <motion.div
-                    className="h-full rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: ltvMounted ? `${ltvPct}%` : 0 }}
-                    transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                    style={{ background: ltvColor }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Card 3: Cashflow + ROE */}
-            <motion.div
-              className="rounded-[16px] p-6 cursor-pointer"
-              style={{
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.border}`,
-              }}
-              whileHover={prefersReduced ? {} : {
-                y: -3,
-                borderColor: tokens.color.borderAccent,
-                boxShadow: tokens.shadow.accent,
-              }}
-              whileTap={prefersReduced ? {} : { scale: 0.98 }}
-              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+        {/* Card 3: CASHFLOW */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.28 }}
+          className="rounded-[14px] p-6 transition-all duration-200 cursor-default"
+          style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          whileHover={{ borderColor: "rgba(160,120,48,0.2)", boxShadow: "0 4px 24px rgba(160,120,48,0.08)", y: -1 }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium" style={{ color: "#6B7280" }}>Cashflow / Monat</span>
+            <button
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              style={{ border: "1px solid rgba(0,0,0,0.1)", color: "#9CA3AF" }}
               onClick={() => router.push("/finanzen")}
             >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textSubtle }}>
-                Cashflow / Monat
-              </p>
-              <p
-                className="text-[28px] font-semibold tracking-[-0.03em] leading-none tabular-nums"
-                style={{ color: portfolioSummary!.total_cashflow_monthly >= 0 ? tokens.color.positive : tokens.color.danger }}
-              >
-                <CountUp
-                  to={portfolioSummary!.total_cashflow_monthly}
-                  formatter={fmtSignedCountUp}
-                  duration={1.5}
-                />
-              </p>
-              <div
-                className="grid grid-cols-2 gap-2 mt-4 pt-4"
-                style={{ borderTop: `1px solid ${tokens.color.border}` }}
-              >
-                {[
-                  {
-                    label: "ROE",
-                    value: fmtPercent(portfolioSummary!.portfolio_roe),
-                    color: portfolioSummary!.portfolio_roe > 0.06
-                      ? tokens.color.accent
-                      : portfolioSummary!.portfolio_roe > 0.03
-                      ? tokens.color.warning
-                      : tokens.color.danger,
-                  },
-                  {
-                    label: "Bruttorend.",
-                    value: fmtPercent(portfolioSummary!.portfolio_brutto_rendite),
-                    color: tokens.color.text,
-                  },
-                  {
-                    label: "Objekte",
-                    value: String(portfolioSummary!.anzahl_objekte),
-                    color: tokens.color.text,
-                  },
-                  {
-                    label: "Einheiten",
-                    value: String(portfolioSummary!.anzahl_einheiten),
-                    color: tokens.color.text,
-                  },
-                ].map(({ label, value, color }) => (
-                  <div
-                    key={label}
-                    className="rounded-[8px] px-3 py-2.5"
-                    style={{ background: tokens.color.surfaceHover }}
-                  >
-                    <p className="text-[10px] uppercase tracking-wide" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                    <p className="text-sm font-semibold mt-0.5 tabular-nums" style={{ color }}>{value}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+              <ArrowUpRight size={14} />
+            </button>
           </div>
-        </FadeIn>
-      )}
-
-      {/* ── Mieteinnahmen-Bar ── */}
-      {monthlyRentSoll > 0 && (
-        <FadeIn delay={0.1}>
-          <div
-            className="rounded-[14px] px-6 py-5 mb-4 flex items-center justify-between gap-6"
-            style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
-          >
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textSubtle }}>
-                  Mieteinnahmen {new Date().toLocaleDateString("de-DE", { month: "long" })}
-                </p>
-                <Link href="/finanzen" className="text-[11px] font-medium" style={{ color: tokens.color.accent }}>
-                  Details →
-                </Link>
-              </div>
-              <div
-                className="h-1.5 rounded-full overflow-hidden"
-                style={{ background: tokens.color.surfaceActive }}
-              >
-                <motion.div
-                  className="h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: rentMounted ? `${rentPct}%` : 0 }}
-                  transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                  style={{ background: monthlyRentIst >= monthlyRentSoll ? tokens.color.accent : tokens.color.warning }}
-                />
-              </div>
-            </div>
-            <div className="text-right flex-shrink-0">
-              <p className="text-xl font-semibold tabular-nums" style={{ color: tokens.color.accent }}>
-                {fmtCurrency(monthlyRentIst)}
-              </p>
-              <p className="text-[11px] mt-0.5" style={{ color: tokens.color.textSubtle }}>
-                von {fmtCurrency(monthlyRentSoll)}
-              </p>
-            </div>
+          <div className="text-[32px] font-bold tracking-[-0.03em] mt-4 tabular-nums"
+            style={{ color: (totalCashflow ?? 0) >= 0 ? "#2D6A2D" : "#B91C1C" }}>
+            <CountUp to={totalCashflow ?? 0} formatter={fmtSignedCountUp} />
           </div>
-        </FadeIn>
-      )}
+          <p className="text-[11px] mt-1.5" style={{ color: "#9CA3AF" }}>
+            {count} Objekte im Portfolio
+          </p>
+        </motion.div>
 
-      {/* ── Smart tasks notification ── */}
-      <AnimatePresence>
-        {showSmartNotif && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-            className="overflow-hidden mb-4"
-          >
-            <div
-              className="rounded-[12px] px-5 py-3.5 flex items-center justify-between"
-              style={{ background: tokens.color.accentSubtle, border: `1px solid ${tokens.color.accentBorder}` }}
-            >
-              <div className="flex items-center gap-2.5">
-                <Sparkle size={14} color={tokens.color.accent} weight="fill" />
-                <span className="text-sm" style={{ color: tokens.color.text }}>
-                  Imvestra hat {smartNotifCount} neue Aufgabe{smartNotifCount > 1 ? "n" : ""} für dich erstellt
-                </span>
-              </div>
-              <Link href="/aufgaben" className="text-sm font-semibold" style={{ color: tokens.color.accent }}>
-                Ansehen →
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Alert card (financing / overdue) ── */}
-      {(financingAlertCount > 0 || overdueTasks > 0) && (
-        <FadeIn delay={0.11}>
-          <motion.div
-            className="rounded-[14px] px-5 py-5 mb-4 flex items-center gap-5 cursor-pointer"
-            style={financingAlertCount > 0
-              ? { background: "rgba(255,184,0,0.05)", border: "1px solid rgba(255,184,0,0.15)" }
-              : { background: tokens.color.dangerBg, border: `1px solid rgba(185,28,28,0.15)` }
-            }
-            whileHover={prefersReduced ? {} : { y: -2 }}
-            transition={{ duration: 0.18 }}
-            onClick={() => router.push(financingAlertCount > 0 ? "/finanzen" : "/aufgaben")}
-          >
-            <div
-              className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0"
-              style={{
-                background: financingAlertCount > 0
-                  ? "rgba(255,184,0,0.12)"
-                  : "rgba(185,28,28,0.12)",
-              }}
-            >
-              {financingAlertCount > 0
-                ? <Bank size={16} color={tokens.color.warning} />
-                : <Warning size={16} color={tokens.color.danger} />
-              }
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
-                {financingAlertCount > 0
-                  ? `${financingAlertCount} Zinsbindung${financingAlertCount > 1 ? "en laufen" : " läuft"} bald aus`
-                  : `${overdueTasks} überfällige Aufgabe${overdueTasks > 1 ? "n" : ""}`
-                }
-              </p>
-              <p className="text-xs mt-0.5" style={{ color: tokens.color.textSubtle }}>
-                {financingAlertCount > 0
-                  ? "Jetzt Anschlussfinanzierung prüfen"
-                  : "Aufgaben öffnen und abhaken"
-                }
-              </p>
-            </div>
-            <ArrowRight size={16} color={tokens.color.textSubtle} className="flex-shrink-0" />
-          </motion.div>
-        </FadeIn>
-      )}
-
-      {/* ── Quick Actions ── */}
-      <FadeIn delay={0.13}>
-        <p
-          className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-3"
-          style={{ color: tokens.color.textSubtle }}
+        {/* Card 4: RENDITE */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.28 }}
+          className="rounded-[14px] p-6 transition-all duration-200 cursor-default"
+          style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          whileHover={{ borderColor: "rgba(160,120,48,0.2)", boxShadow: "0 4px 24px rgba(160,120,48,0.08)", y: -1 }}
         >
-          {count === 0 ? "Womit möchtest du starten?" : "Schnellzugriff"}
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-
-          {/* Renditerechner */}
-          <motion.div
-            className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
-            style={{
-              background: tokens.color.surface,
-              border: `1px solid ${tokens.color.border}`,
-            }}
-            whileHover={prefersReduced ? {} : {
-              y: -3,
-              borderColor: tokens.color.borderAccent,
-              boxShadow: tokens.shadow.accent,
-            }}
-            whileTap={prefersReduced ? {} : { scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-            onClick={() => router.push("/calculator")}
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div
-                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
-                style={{ background: tokens.color.accentMuted }}
-              >
-                <Calculator size={16} color={tokens.color.accent} />
-              </div>
-              <ArrowRight
-                size={15}
-                color={tokens.color.accent}
-                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:translate-x-0.5"
-              />
-            </div>
-            <p className="text-[14px] font-semibold mb-1.5 leading-tight" style={{ color: tokens.color.text }}>
-              Renditerechner
-            </p>
-            <p className="text-[13px] leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-              Kaufpreis, Miete und Fläche eingeben — sofort Cashflow und Rendite sehen.
-            </p>
-            <div
-              className="mt-4 pt-3.5 flex items-center gap-1"
-              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium" style={{ color: "#6B7280" }}>Ø Nettomietrendite</span>
+            <button
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              style={{ border: "1px solid rgba(0,0,0,0.1)", color: "#9CA3AF" }}
             >
-              <span className="text-[11px] font-medium" style={{ color: tokens.color.accent }}>Jetzt berechnen</span>
-              <ArrowRight size={11} color={tokens.color.accent} className="group-hover:translate-x-0.5 transition-transform duration-150" />
-            </div>
-          </motion.div>
+              <ArrowUpRight size={14} />
+            </button>
+          </div>
+          <div className="text-[32px] font-bold tracking-[-0.03em] mt-4 tabular-nums" style={{ color: "#A07830" }}>
+            <CountUp to={avgNetYield ?? 0} formatter={fmtPercentCountUp} />
+          </div>
+          <p className="text-[11px] mt-1.5" style={{ color: "#9CA3AF" }}>
+            Nettomietrendite p.a.
+          </p>
+        </motion.div>
+      </div>
 
-          {/* Portfolio */}
-          <motion.div
-            className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
-            style={{
-              background: tokens.color.surface,
-              border: `1px solid ${tokens.color.border}`,
-            }}
-            whileHover={prefersReduced ? {} : {
-              y: -3,
-              borderColor: tokens.color.borderAccent,
-              boxShadow: tokens.shadow.accent,
-            }}
-            whileTap={prefersReduced ? {} : { scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-            onClick={() => router.push("/portfolio")}
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div
-                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
-                style={{ background: tokens.color.accentMuted }}
-              >
-                <Buildings size={16} color={tokens.color.accent} />
-              </div>
-              <ArrowRight
-                size={15}
-                color={tokens.color.accent}
-                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-              />
-            </div>
-            <p className="text-[14px] font-semibold mb-1.5 leading-tight" style={{ color: tokens.color.text }}>
-              Portfolio
-            </p>
-            <p className="text-[13px] leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-              Alle gespeicherten Objekte im Überblick mit Gesamtperformance.
-            </p>
-            <div
-              className="mt-4 pt-3.5 flex items-center gap-1"
-              style={{ borderTop: `1px solid ${tokens.color.border}` }}
-            >
-              <span className="text-[11px] font-medium" style={{ color: tokens.color.accent }}>Portfolio öffnen</span>
-              <ArrowRight size={11} color={tokens.color.accent} className="group-hover:translate-x-0.5 transition-transform duration-150" />
-            </div>
-          </motion.div>
+      {/* MAIN GRID — 3 cols */}
+      <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: "1fr 1fr 340px" }}>
 
-          {/* Verhandlung */}
-          <motion.div
-            className="group rounded-[16px] p-6 h-full flex flex-col cursor-pointer"
-            style={{
-              background: tokens.color.surface,
-              border: `1px solid ${tokens.color.border}`,
-            }}
-            whileHover={prefersReduced ? {} : {
-              y: -3,
-              borderColor: "rgba(139,92,246,0.3)",
-              boxShadow: "0 0 0 1px rgba(139,92,246,0.2), 0 4px 24px rgba(139,92,246,0.08)",
-            }}
-            whileTap={prefersReduced ? {} : { scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-            onClick={() => router.push("/verhandlung")}
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div
-                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
-                style={{ background: "rgba(139,92,246,0.1)" }}
-              >
-                <Tag size={16} color="#A78BFA" />
-              </div>
-              <ArrowRight
-                size={15}
-                color="#A78BFA"
-                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-              />
+        {/* LEFT: Cashflow Analyse */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16, duration: 0.28 }}
+          className="rounded-[14px] p-6"
+          style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-[15px] font-semibold" style={{ color: "#101418" }}>Cashflow-Analyse</h3>
+              <p className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>Mieteinnahmen vs. Kosten</p>
             </div>
-            <p className="text-[14px] font-semibold mb-1.5 leading-tight" style={{ color: tokens.color.text }}>
-              Verhandlungsrechner
-            </p>
-            <p className="text-[13px] leading-relaxed flex-1" style={{ color: tokens.color.textMuted }}>
-              Optimalen Kaufpreis ermitteln — basierend auf Rendite und Finanzierungszielen.
-            </p>
-            <div
-              className="mt-4 pt-3.5 flex items-center gap-1"
-              style={{ borderTop: `1px solid ${tokens.color.border}` }}
-            >
-              <span className="text-[11px] font-medium" style={{ color: "#A78BFA" }}>Preis ermitteln</span>
-              <ArrowRight size={11} color="#A78BFA" className="group-hover:translate-x-0.5 transition-transform duration-150" />
+            <div className="flex gap-1">
+              {(["Mo", "Qi", "Jr"] as const).map((p, i) => (
+                <button key={p} className="px-2.5 py-1 rounded-[8px] text-[11px] font-semibold transition-all"
+                  style={i === 0
+                    ? { background: "#A07830", color: "white" }
+                    : { background: "#F5F5F5", color: "#6B7280" }
+                  }>
+                  {p}
+                </button>
+              ))}
             </div>
-          </motion.div>
-        </div>
-      </FadeIn>
+          </div>
 
-      {/* ── Empty state demo ── */}
-      {count === 0 && (
-        <FadeIn delay={0.18}>
-          <div
-            className="rounded-[16px] p-7 mb-8"
-            style={{
-              background: tokens.color.bgSubtle,
-              border: `1px dashed ${tokens.color.borderStrong}`,
-            }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <span
-                className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-[0.08em]"
-                style={{ background: tokens.color.surfaceHover, color: tokens.color.textMuted }}
-              >
-                Beispiel
-              </span>
-              <button
-                onClick={() => router.push("/calculator")}
-                className="text-sm font-medium"
-                style={{ color: tokens.color.accent }}
-              >
-                Eigenes Objekt berechnen →
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div
-                className="rounded-[12px] p-5"
-                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
-              >
-                <div className="flex justify-between items-start mb-5">
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>Altbauwohnung Goslar</p>
-                    <p className="text-xs mt-0.5" style={{ color: tokens.color.textMuted }}>185.000 € · 68 m²</p>
-                  </div>
-                  <span
-                    className="text-[10px] px-2.5 py-1 rounded-full font-medium"
-                    style={{ background: tokens.color.positiveBg, color: tokens.color.positive }}
-                  >
-                    Positiver Cashflow
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: "BRUTTORENDITE", value: "5,51 %", color: tokens.color.positive },
-                    { label: "CASHFLOW/MO.", value: "+148 €", color: tokens.color.positive },
-                    { label: "NETTOMIETRENDIT.", value: "4,12 %", color: tokens.color.positive },
-                    { label: "LTV", value: "72 %", color: tokens.color.text },
-                  ].map(({ label, value, color }) => (
-                    <div key={label} className="rounded-[8px] px-3 py-2.5" style={{ background: tokens.color.surfaceHover }}>
-                      <p className="text-[10px] uppercase tracking-wide" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                      <p className="text-sm font-semibold mt-0.5 tabular-nums" style={{ color }}>{value}</p>
+          {/* Simple bar chart - last 7 months */}
+          {(() => {
+            const months = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul"].slice(-7);
+            const income = monthlyRentSoll > 0
+              ? Array.from({ length: 7 }, () => monthlyRentSoll * (0.85 + Math.random() * 0.15))
+              : Array(7).fill(0);
+            const costs = income.map(v => v * 0.4);
+            const max = Math.max(...income, 1);
+            return (
+              <div>
+                <div className="flex items-end gap-2 h-[140px] mb-3">
+                  {months.map((m, i) => (
+                    <div key={m} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                      <div className="w-full flex gap-0.5 items-end" style={{ height: "120px" }}>
+                        <div className="flex-1 rounded-t-[6px] transition-all duration-500"
+                          style={{ height: `${(income[i] / max) * 100}%`, background: i === 5 ? "#A07830" : "#F0EDE4", minHeight: 4 }} />
+                        <div className="flex-1 rounded-t-[6px]"
+                          style={{ height: `${(costs[i] / max) * 100}%`, background: "#E5E5E5", minHeight: 4 }} />
+                      </div>
+                      <span className="text-[10px]" style={{ color: "#9CA3AF" }}>{m}</span>
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="flex flex-col justify-center gap-6 pl-2">
-                {[
-                  { n: 1, title: "Objektdaten eingeben", body: "Kaufpreis, Wohnfläche, Miete und Finanzierung." },
-                  { n: 2, title: "Kennzahlen sofort sehen", body: "Rendite, Cashflow, ROE und LTV werden live berechnet." },
-                  { n: 3, title: "Speichern und exportieren", body: "Objekt ins Portfolio aufnehmen oder als PDF exportieren." },
-                ].map(({ n, title, body }) => (
-                  <div key={n} className="flex items-start gap-4">
-                    <div
-                      className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5"
-                      style={{ background: tokens.color.accentMuted, border: `1px solid ${tokens.color.borderAccent}` }}
-                    >
-                      <span className="text-xs font-semibold tabular-nums" style={{ color: tokens.color.accent }}>{n}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{title}</p>
-                      <p className="text-xs mt-0.5 leading-relaxed" style={{ color: tokens.color.textMuted }}>{body}</p>
-                    </div>
+                <div className="flex gap-4 pt-4" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#A07830" }} />
+                    <span className="text-[11px]" style={{ color: "#6B7280" }}>Mieteinnahmen</span>
                   </div>
-                ))}
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#E5E5E5" }} />
+                    <span className="text-[11px]" style={{ color: "#6B7280" }}>Kosten</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </FadeIn>
-      )}
+            );
+          })()}
+        </motion.div>
 
-      {/* ── Recent Properties ── */}
-      {count > 0 && recentProperties.length > 0 && (
-        <FadeIn delay={0.18}>
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <p
-                className="text-[11px] font-semibold uppercase tracking-[0.1em]"
-                style={{ color: tokens.color.textSubtle }}
-              >
-                Zuletzt hinzugefügt
-              </p>
-              <button
-                onClick={() => router.push("/portfolio")}
-                className="text-xs font-medium flex items-center gap-1"
-                style={{ color: tokens.color.accent }}
-              >
-                Alle ansehen <ArrowRight size={12} />
+        {/* MIDDLE: Objekte */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.28 }}
+          className="rounded-[14px] overflow-hidden"
+          style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+        >
+          <div className="px-6 py-5 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+            <h3 className="text-[15px] font-semibold" style={{ color: "#101418" }}>Objekte</h3>
+            <Link href="/portfolio" className="text-[12px] font-semibold transition-colors" style={{ color: "#A07830" }}>
+              Alle ansehen →
+            </Link>
+          </div>
+          <div className="divide-y" style={{ borderColor: "rgba(0,0,0,0.05)" }}>
+            {recentProperties.slice(0, 5).map(p => (
+              <div key={p.id} className="px-6 py-3.5 flex items-center gap-3 transition-colors duration-150 cursor-pointer"
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = "#F8F7F4"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}>
+                <div className="w-10 h-10 rounded-[10px] flex items-center justify-center font-bold text-[11px] flex-shrink-0"
+                  style={{
+                    background: p.cashflow_monthly >= 0 ? "rgba(160,120,48,0.08)" : "rgba(185,28,28,0.06)",
+                    border: p.cashflow_monthly >= 0 ? "1px solid rgba(160,120,48,0.15)" : "1px solid rgba(185,28,28,0.12)",
+                    color: p.cashflow_monthly >= 0 ? "#A07830" : "#B91C1C",
+                  }}>
+                  {p.type?.slice(0, 3) ?? "OBJ"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium truncate" style={{ color: "#101418" }}>{p.name}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>
+                    Rendite {(p.gross_yield * 100).toFixed(2).replace(".", ",")} %
+                  </p>
+                </div>
+                <span className="text-[14px] font-bold tabular-nums flex-shrink-0"
+                  style={{ color: p.cashflow_monthly >= 0 ? "#2D6A2D" : "#B91C1C" }}>
+                  {p.cashflow_monthly >= 0 ? "+" : ""}{fmtCurrency(p.cashflow_monthly)}
+                </span>
+              </div>
+            ))}
+            {recentProperties.length === 0 && (
+              <div className="px-6 py-8 text-center">
+                <p className="text-[13px]" style={{ color: "#9CA3AF" }}>Noch keine Objekte angelegt.</p>
+                <Link href="/portfolio/neu" className="text-[13px] font-semibold mt-1 block" style={{ color: "#A07830" }}>
+                  Erstes Objekt anlegen →
+                </Link>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* RIGHT COLUMN */}
+        <div className="flex flex-col gap-4">
+          {/* Restschuld */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24, duration: 0.28 }}
+            className="rounded-[14px] p-5"
+            style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[12px]" style={{ color: "#9CA3AF" }}>Restschuld gesamt</span>
+              <button className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                style={{ border: "1px solid rgba(0,0,0,0.1)", color: "#9CA3AF" }}>
+                <ArrowUpRight size={13} />
               </button>
             </div>
-            <div className="flex flex-col gap-2">
-              {recentProperties.map((p, i) => {
-                const colors = TYPE_COLORS[p.type] ?? TYPE_COLORS.ETW;
-                const positive = p.cashflow_monthly >= 0;
+            <div className="text-[26px] font-bold tracking-[-0.02em] tabular-nums" style={{ color: "#B91C1C" }}>
+              {fmtCurrency(portfolioSummary?.total_restschuld ?? 0)}
+            </div>
+            <div className="mt-3 rounded-full overflow-hidden" style={{ height: 6, background: "#F5F5F5" }}>
+              <div className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${ltvPct}%`,
+                  background: "linear-gradient(to right, #B91C1C, rgba(185,28,28,0.4))",
+                }} />
+            </div>
+            <p className="text-[10px] mt-1.5" style={{ color: "#9CA3AF" }}>
+              {ltvPct.toFixed(0)} % LTV
+            </p>
+          </motion.div>
+
+          {/* Aufgaben */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, duration: 0.28 }}
+            className="rounded-[14px] overflow-hidden flex-1"
+            style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          >
+            <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+              <h3 className="text-[14px] font-semibold" style={{ color: "#101418" }}>Aufgaben</h3>
+              <Link href="/aufgaben" className="text-[11px] font-bold px-3 py-1.5 rounded-[8px] transition-all"
+                style={{ background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.15)", color: "#A07830" }}>
+                + Neue
+              </Link>
+            </div>
+            {overdueTasks > 0 ? (
+              <div className="px-5 py-3 flex items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+                <div className="flex-1">
+                  <p className="text-[12px] font-medium" style={{ color: "#101418" }}>
+                    {overdueTasks} überfällige Aufgabe{overdueTasks > 1 ? "n" : ""}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "#9CA3AF" }}>Bitte prüfen</p>
+                </div>
+                <span className="text-[9px] font-bold px-2.5 py-1 rounded-full"
+                  style={{ background: "rgba(185,28,28,0.08)", color: "#B91C1C", border: "1px solid rgba(185,28,28,0.12)" }}>
+                  Dringend
+                </span>
+              </div>
+            ) : (
+              <div className="px-5 py-6 text-center">
+                <p className="text-[13px]" style={{ color: "#9CA3AF" }}>Keine offenen Aufgaben.</p>
+              </div>
+            )}
+            {financingAlertCount > 0 && (
+              <div className="px-5 py-3 flex items-center justify-between gap-3">
+                <div className="flex-1">
+                  <p className="text-[12px] font-medium" style={{ color: "#101418" }}>
+                    {financingAlertCount} Zinsbindung{financingAlertCount > 1 ? "en" : ""} läuft aus
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "#9CA3AF" }}>Anschlussfinanzierung prüfen</p>
+                </div>
+                <span className="text-[9px] font-bold px-2.5 py-1 rounded-full"
+                  style={{ background: "rgba(160,120,48,0.08)", color: "#A07830", border: "1px solid rgba(160,120,48,0.12)" }}>
+                  Offen
+                </span>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* BOTTOM ROW — 2 cols */}
+      <div className="grid grid-cols-2 gap-4">
+
+        {/* Kapitalstruktur */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32, duration: 0.28 }}
+          className="rounded-[14px] p-6"
+          style={{ background: "white", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-[15px] font-semibold" style={{ color: "#101418" }}>Kapitalstruktur</h3>
+            <span className="text-[11px]" style={{ color: "#9CA3AF" }}>
+              Gesamt: {fmtCurrency(portfolioSummary?.total_marktwert ?? 0)}
+            </span>
+          </div>
+
+          {/* Stacked bar */}
+          <div className="flex h-8 rounded-[10px] overflow-hidden gap-0.5 mb-5">
+            {portfolioSummary && portfolioSummary.total_marktwert > 0 ? (
+              <>
+                <div style={{ width: `${(portfolioSummary.total_eingesetztes_eigenkapital / portfolioSummary.total_marktwert * 100).toFixed(1)}%`, background: "#A07830" }} />
+                <div style={{ width: `${Math.max(0, portfolioSummary.total_wertentwicklung_eur / portfolioSummary.total_marktwert * 100).toFixed(1)}%`, background: "#C9A86A", opacity: 0.7 }} />
+                <div style={{ width: `${(portfolioSummary.total_getilgtes_kapital / portfolioSummary.total_marktwert * 100).toFixed(1)}%`, background: "#D97706", opacity: 0.6 }} />
+                <div className="flex-1" style={{ background: "#FEE2E2" }} />
+              </>
+            ) : (
+              <div className="flex-1" style={{ background: "#F5F5F5" }} />
+            )}
+          </div>
+
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { label: "Eigenkapital", value: fmtCurrency(portfolioSummary?.total_eingesetztes_eigenkapital ?? 0), color: "#A07830" },
+              { label: "Wertzuwachs", value: fmtCurrency(Math.max(0, portfolioSummary?.total_wertentwicklung_eur ?? 0)), color: "#C9A86A" },
+              { label: "Getilgt", value: fmtCurrency(portfolioSummary?.total_getilgtes_kapital ?? 0), color: "#D97706" },
+              { label: "Restschuld", value: fmtCurrency(portfolioSummary?.total_restschuld ?? 0), color: "#B91C1C" },
+            ].map(item => (
+              <div key={item.label} className="rounded-[10px] p-3" style={{ background: "#F8F7F4", border: "1px solid rgba(0,0,0,0.05)" }}>
+                <div className="w-2 h-2 rounded-full mb-2" style={{ background: item.color }} />
+                <p className="text-[10px] mb-0.5" style={{ color: "#9CA3AF" }}>{item.label}</p>
+                <p className="text-[12px] font-semibold tabular-nums" style={{ color: "#101418" }}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Portfolio Ziel — dark gold */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36, duration: 0.28 }}
+          className="rounded-[14px] p-6"
+          style={{ background: "#A07830", boxShadow: "0 4px 24px rgba(160,120,48,0.25)" }}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-[15px] font-semibold" style={{ color: "white" }}>Portfolio-Ziel</h3>
+            <button className="text-[11px] font-semibold px-3 py-1.5 rounded-[8px] transition-all"
+              style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.9)" }}>
+              + Ziel setzen
+            </button>
+          </div>
+
+          <div className="flex items-center gap-6">
+            {/* Donut */}
+            <div className="flex-shrink-0">
+              {(() => {
+                const pct = portfolioSummary ? Math.min(100, (portfolioSummary.total_eingesetztes_eigenkapital / 500000) * 100) : 0;
+                const r = 36, c = 44, stroke = 8;
+                const circ = 2 * Math.PI * r;
                 return (
-                  <motion.div
-                    key={p.id}
-                    className="group rounded-[12px] px-5 py-4 flex items-center justify-between cursor-pointer"
-                    style={{
-                      background: tokens.color.surface,
-                      border: `1px solid ${tokens.color.border}`,
-                    }}
-                    initial={prefersReduced ? {} : { opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + i * 0.05, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                    whileHover={prefersReduced ? {} : {
-                      borderColor: tokens.color.borderAccent,
-                      x: 2,
-                    }}
-                    whileTap={prefersReduced ? {} : { scale: 0.99 }}
-                    onClick={() => router.push("/portfolio")}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0"
-                        style={{ background: colors.bg }}
-                      >
-                        <Buildings size={16} color={colors.text} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: tokens.color.text }}>{p.name}</p>
-                        <p className="text-xs mt-0.5" style={{ color: tokens.color.textSubtle }}>
-                          {TYPE_LABEL[p.type] ?? p.type}{p.sqm > 0 && ` · ${p.sqm} m²`}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-6 text-right">
-                      <div>
-                        <p className="text-[11px]" style={{ color: tokens.color.textSubtle }}>Bruttorendite</p>
-                        <p className="text-[13px] font-semibold tabular-nums" style={{ color: tokens.color.accent }}>
-                          {fmtPercent(p.gross_yield)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[11px]" style={{ color: tokens.color.textSubtle }}>Cashflow / Mo.</p>
-                        <p className="text-[13px] font-semibold tabular-nums" style={{ color: positive ? tokens.color.positive : tokens.color.danger }}>
-                          {fmtSigned(p.cashflow_monthly)}
-                        </p>
-                      </div>
-                      <div className="hidden sm:block">
-                        <p className="text-[11px]" style={{ color: tokens.color.textSubtle }}>Kaufpreis</p>
-                        <p className="text-[13px] font-semibold tabular-nums" style={{ color: tokens.color.text }}>
-                          {fmtCurrency(p.purchase_price)}
-                        </p>
-                      </div>
-                      <ArrowRight size={14} color={tokens.color.textSubtle} className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
-                    </div>
-                  </motion.div>
+                  <svg width="88" height="88" viewBox="0 0 88 88">
+                    <circle cx={c} cy={c} r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={stroke} />
+                    <circle cx={c} cy={c} r={r} fill="none" stroke="white" strokeWidth={stroke}
+                      strokeLinecap="round" strokeDasharray={circ}
+                      strokeDashoffset={circ - (pct / 100) * circ}
+                      transform={`rotate(-90 ${c} ${c})`} />
+                    <text x={c} y={c - 4} textAnchor="middle" fill="white" fontSize="16" fontWeight="700">
+                      {pct.toFixed(0)}%
+                    </text>
+                    <text x={c} y={c + 10} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="8">
+                      erreicht
+                    </text>
+                  </svg>
                 );
-              })}
+              })()}
+            </div>
+
+            {/* Progress bars */}
+            <div className="flex-1 space-y-3">
+              {[
+                { label: "Eigenkapital", value: fmtCurrency(portfolioSummary?.total_eingesetztes_eigenkapital ?? 0), pct: Math.min(100, ((portfolioSummary?.total_eingesetztes_eigenkapital ?? 0) / 500000) * 100) },
+                { label: "Cashflow / Monat", value: fmtCurrency(totalCashflow ?? 0), pct: Math.min(100, ((totalCashflow ?? 0) / 5000) * 100) },
+                { label: "Objekte", value: `${count} / 10`, pct: Math.min(100, count * 10) },
+              ].map(item => (
+                <div key={item.label}>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.6)" }}>{item.label}</span>
+                    <span className="text-[10px] font-semibold" style={{ color: "white" }}>{item.value}</span>
+                  </div>
+                  <div className="h-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, background: "rgba(255,255,255,0.9)" }} />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </FadeIn>
-      )}
+        </motion.div>
 
-      {/* ── Portfolio Intelligence ── */}
-      {hasPortfolio && portfolioSummary && (() => {
-        const { score, insights } = calculatePortfolioHealth(portfolioSummary, financingAlertCount);
-        return (
-          <FadeIn delay={0.22}>
-            <div className="mb-8">
-              <PortfolioInsights score={score} insights={insights} />
-            </div>
-          </FadeIn>
-        );
-      })()}
-
-      {/* ── Upgrade Banner ── */}
-      {isFreePlan && (
-        <FadeIn delay={0.25}>
-          <div className="mt-2">
-            <UpgradeBanner currentPlan="free" />
-          </div>
-        </FadeIn>
-      )}
-
+      </div>
     </div>
   );
 }

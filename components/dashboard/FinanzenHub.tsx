@@ -23,7 +23,6 @@ import DarkButton from "@/components/ui/DarkButton";
 import DarkInput from "@/components/ui/DarkInput";
 import DarkSelect from "@/components/ui/DarkSelect";
 import FadeIn from "@/components/ui/FadeIn";
-import { tokens } from "@/lib/tokens";
 import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
 import type { Property, Tenant, RentPayment, Expense, BankAccount, BankTransaction } from "@/types";
 import { EXPENSE_CATEGORIES } from "@/types";
@@ -88,7 +87,7 @@ const URGENCY_BORDER: Record<UrgencyKind, string> = {
   expired:  "rgba(255,68,68,0.3)",
   critical: "rgba(255,68,68,0.2)",
   warning:  "rgba(255,184,0,0.2)",
-  ok:       "rgba(16,20,24,0.08)",
+  ok:       "rgba(0,0,0,0.07)",
 };
 const URGENCY_COLOR: Record<UrgencyKind, string> = {
   expired:  "#FF4444",
@@ -167,20 +166,20 @@ function Modal({ show, onClose, title, children, footer }: {
             exit={{ opacity: 0, y: 8, scale: 0.97 }}
             transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
             className="w-full max-w-[480px] rounded-[20px] overflow-hidden"
-            style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)", boxShadow: "0 24px 80px rgba(16,20,24,0.12)" }}
+            style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.12)" }}
           >
-            <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(16,20,24,0.06)" }}>
-              <p className="text-base font-semibold" style={{ color: tokens.color.text }}>{title}</p>
-              <button onClick={onClose} style={{ color: "#666" }}
+            <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+              <p className="text-base font-semibold" style={{ color: "#101418" }}>{title}</p>
+              <button onClick={onClose} style={{ color: "#6B7280" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#101418")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}>
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}>
                 <X size={18} />
               </button>
             </div>
             <div className="px-6 py-5 flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
               {children}
             </div>
-            <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}>
+            <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
               {footer}
             </div>
           </motion.div>
@@ -199,24 +198,24 @@ function MonthSelector({ value, onChange }: { value: string; onChange: (m: strin
       <button
         onClick={() => onChange(shiftMonth(value, -1))}
         className="p-1.5 rounded-[6px] transition-colors"
-        style={{ color: "#A89A7A" }}
+        style={{ color: "#9CA3AF" }}
         onMouseEnter={(e) => (e.currentTarget.style.color = "#6A5A3A")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#A89A7A")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
       >
         <CaretLeft size={16} />
       </button>
       <div
         className="text-sm font-medium rounded-[8px] px-4 py-2"
-        style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}`, color: tokens.color.text }}
+        style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)", color: "#101418" }}
       >
         {MONTHS_FULL[m - 1]} {y}
       </div>
       <button
         onClick={() => { if (!isFuture) onChange(shiftMonth(value, 1)); }}
         className="p-1.5 rounded-[6px] transition-colors"
-        style={{ color: isFuture ? "#E0D9CC" : "#A89A7A" }}
+        style={{ color: isFuture ? "#E0D9CC" : "#9CA3AF" }}
         onMouseEnter={(e) => { if (!isFuture) e.currentTarget.style.color = "#6A5A3A"; }}
-        onMouseLeave={(e) => (e.currentTarget.style.color = isFuture ? "#E0D9CC" : "#A89A7A")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = isFuture ? "#E0D9CC" : "#9CA3AF")}
       >
         <CaretRight size={16} />
       </button>
@@ -390,10 +389,10 @@ export default function FinanzenHub({
 
   // ── Stat cards (summary bar) ───────────────────────────────────────────────
   const summaryCards = [
-    { label: "SOLL / MONAT",  value: formatCurrency(sollEinnahmen),            color: tokens.color.text,                                   icon: CalendarBlank },
-    { label: "IST-EINNAHMEN", value: formatCurrency(istEinnahmen),             color: istEinnahmen >= sollEinnahmen ? "#A07830" : "#FFB800", icon: CheckCircle  },
-    { label: "AUSGABEN",      value: formatCurrency(ausgabenMonth),            color: "#FF4444",                                            icon: ArrowDown    },
-    { label: "NET CASHFLOW",  value: formatCurrencySigned(netCashflow),        color: netCashflow >= 0 ? "#A07830" : "#FF4444",             icon: netCashflow >= 0 ? TrendUp : TrendDown },
+    { label: "SOLL / MONAT",  value: formatCurrency(sollEinnahmen),            color: "#101418",                                   icon: CalendarBlank, hero: false },
+    { label: "IST-EINNAHMEN", value: formatCurrency(istEinnahmen),             color: istEinnahmen >= sollEinnahmen ? "#A07830" : "#FFB800", icon: CheckCircle, hero: false },
+    { label: "AUSGABEN",      value: formatCurrency(ausgabenMonth),            color: "#FF4444",                                            icon: ArrowDown,   hero: false },
+    { label: "NET CASHFLOW",  value: formatCurrencySigned(netCashflow),        color: netCashflow >= 0 ? "#FFFFFF" : "#FF4444",             icon: netCashflow >= 0 ? TrendUp : TrendDown, hero: netCashflow >= 0 },
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -401,7 +400,7 @@ export default function FinanzenHub({
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-6 w-full" style={{ minHeight: "100vh", background: tokens.color.bg }}>
+    <div className="p-6 w-full" style={{ minHeight: "100vh", background: "#F8F7F4" }}>
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-6">
@@ -412,7 +411,7 @@ export default function FinanzenHub({
           >
             <Bank size={18} color="#A07830" />
           </div>
-          <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>
+          <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: "#101418" }}>
             Finanzen
           </h1>
         </div>
@@ -436,15 +435,18 @@ export default function FinanzenHub({
       {/* ── Summary bar ────────────────────────────────────────────────── */}
       <FadeIn delay={0}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          {summaryCards.map(({ label, value, color, icon: Icon }) => (
+          {summaryCards.map(({ label, value, color, icon: Icon, hero }) => (
             <div
               key={label}
-              className="rounded-[12px] px-4 py-3.5"
-              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+              className="rounded-[14px] px-4 py-3.5"
+              style={hero
+                ? { background: "#A07830", border: "1px solid rgba(0,0,0,0.07)" }
+                : { background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }
+              }
             >
               <div className="flex items-center gap-1.5 mb-2">
-                <Icon size={12} color={tokens.color.textMuted} />
-                <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: tokens.color.textMuted }}>
+                <Icon size={12} color={hero ? "rgba(255,255,255,0.7)" : "#6B7280"} />
+                <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: hero ? "rgba(255,255,255,0.7)" : "#6B7280" }}>
                   {label}
                 </p>
               </div>
@@ -457,21 +459,21 @@ export default function FinanzenHub({
       </FadeIn>
 
       {/* ── Tab bar ────────────────────────────────────────────────────── */}
-      <div className="flex gap-0 mb-6 overflow-x-auto" style={{ borderBottom: "1px solid rgba(16,20,24,0.06)" }}>
+      <div className="flex gap-0 mb-6 overflow-x-auto" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
         {TABS.map(({ id, label, badge }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className="px-1 mr-6 pb-3 text-sm font-medium cursor-pointer transition-colors relative flex items-center gap-2 flex-shrink-0"
-            style={{ color: activeTab === id ? tokens.color.accent : tokens.color.textSubtle }}
+            style={{ color: activeTab === id ? "#A07830" : "#9CA3AF" }}
             onMouseEnter={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#6A5A3A"; }}
-            onMouseLeave={(e) => { if (activeTab !== id) e.currentTarget.style.color = tokens.color.textSubtle; }}
+            onMouseLeave={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#9CA3AF"; }}
           >
             {label}
             {badge && (
               <span
                 className="text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide"
-                style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
+                style={{ background: "rgba(160,120,48,0.08)", color: "#A07830" }}
               >
                 {badge}
               </span>
@@ -480,7 +482,7 @@ export default function FinanzenHub({
               <motion.div
                 layoutId="tab-indicator"
                 className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full"
-                style={{ background: tokens.color.accent }}
+                style={{ background: "#A07830" }}
                 transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               />
             )}
@@ -506,24 +508,24 @@ export default function FinanzenHub({
               {/* Soll vs Ist card */}
               <div
                 className="rounded-[14px] p-5 mb-4"
-                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
               >
                 <div className="flex justify-between mb-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textMuted }}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: "#6B7280" }}>
                     Mieteinnahmen
                   </p>
-                  <p className="text-xs" style={{ color: tokens.color.textSubtle }}>
+                  <p className="text-xs" style={{ color: "#9CA3AF" }}>
                     {MONTHS_FULL[selMonth - 1]} {selYear}
                   </p>
                 </div>
 
                 <div className="flex justify-between text-xs mb-2">
-                  <span style={{ color: "#777" }}>Eingegangen</span>
-                  <span style={{ color: tokens.color.text }}>
+                  <span style={{ color: "#6B7280" }}>Eingegangen</span>
+                  <span style={{ color: "#101418" }}>
                     {formatCurrency(istEinnahmen)} / {formatCurrency(sollEinnahmen)}
                   </span>
                 </div>
-                <div className="rounded-full h-2 overflow-hidden" style={{ background: "#F0EDE4" }}>
+                <div className="rounded-full h-2 overflow-hidden" style={{ background: "#F5F5F5" }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(sollCoveredPct, 100)}%` }}
@@ -535,11 +537,11 @@ export default function FinanzenHub({
 
                 {/* Payment list */}
                 <div className="mt-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-3" style={{ color: tokens.color.textMuted }}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-3" style={{ color: "#6B7280" }}>
                     Zahlungen dieses Monats
                   </p>
                   {thisMonthPayments.length === 0 ? (
-                    <p className="text-sm text-center py-4" style={{ color: tokens.color.textSubtle }}>
+                    <p className="text-sm text-center py-4" style={{ color: "#9CA3AF" }}>
                       Noch keine Zahlungen in diesem Monat.
                     </p>
                   ) : (
@@ -552,15 +554,15 @@ export default function FinanzenHub({
                           <div
                             key={p.id}
                             className="flex items-center justify-between py-3 px-2 rounded-[8px] -mx-2 transition-colors"
-                            style={{ borderBottom: "1px solid rgba(16,20,24,0.04)" }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = tokens.color.surfaceHover)}
+                            style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "#F8F7F4")}
                             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                           >
                             <div>
-                              <p className="text-sm font-medium" style={{ color: tokens.color.text }}>
+                              <p className="text-sm font-medium" style={{ color: "#101418" }}>
                                 {tenant?.name ?? "Unbekannter Mieter"}
                               </p>
-                              <p className="text-[11px] mt-0.5" style={{ color: tokens.color.textSubtle }}>
+                              <p className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>
                                 {prop?.name ?? ""}
                               </p>
                             </div>
@@ -583,9 +585,9 @@ export default function FinanzenHub({
               {/* 6-month chart */}
               <div
                 className="rounded-[14px] p-5"
-                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
               >
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-5" style={{ color: tokens.color.textMuted }}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-5" style={{ color: "#6B7280" }}>
                   Letzte 6 Monate
                 </p>
                 <div className="flex items-end gap-2" style={{ height: 100 }}>
@@ -607,18 +609,18 @@ export default function FinanzenHub({
                           style={{ background: "#FF4444", opacity: 0.6, minHeight: exp > 0 ? 2 : 0 }}
                         />
                       </div>
-                      <p className="text-[10px]" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                      <p className="text-[10px]" style={{ color: "#9CA3AF" }}>{label}</p>
                     </div>
                   ))}
                 </div>
                 <div className="flex items-center gap-4 mt-4">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#A07830", opacity: 0.75 }} />
-                    <span className="text-[11px]" style={{ color: tokens.color.textMuted }}>Einnahmen</span>
+                    <span className="text-[11px]" style={{ color: "#6B7280" }}>Einnahmen</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#FF4444", opacity: 0.6 }} />
-                    <span className="text-[11px]" style={{ color: tokens.color.textMuted }}>Ausgaben</span>
+                    <span className="text-[11px]" style={{ color: "#6B7280" }}>Ausgaben</span>
                   </div>
                 </div>
               </div>
@@ -633,13 +635,13 @@ export default function FinanzenHub({
               {/* Category breakdown */}
               <div
                 className="rounded-[14px] p-5 mb-4"
-                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
               >
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textMuted }}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: "#6B7280" }}>
                   Ausgaben nach Kategorie
                 </p>
                 {Object.keys(categoryTotals).length === 0 ? (
-                  <p className="text-sm" style={{ color: tokens.color.textSubtle }}>Keine Ausgaben in diesem Monat.</p>
+                  <p className="text-sm" style={{ color: "#9CA3AF" }}>Keine Ausgaben in diesem Monat.</p>
                 ) : (
                   Object.entries(categoryTotals)
                     .sort(([, a], [, b]) => (b as number) - (a as number))
@@ -651,17 +653,17 @@ export default function FinanzenHub({
                         <div
                           key={cat}
                           className="flex items-center justify-between py-2.5"
-                          style={{ borderBottom: "1px solid rgba(16,20,24,0.04)" }}
+                          style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: info.color }} />
-                            <span className="text-sm" style={{ color: tokens.color.text }}>{info.label}</span>
+                            <span className="text-sm" style={{ color: "#101418" }}>{info.label}</span>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
+                            <p className="text-sm font-semibold" style={{ color: "#101418" }}>
                               {formatCurrency(total as number)}
                             </p>
-                            <p className="text-[10px] mt-0.5" style={{ color: tokens.color.textSubtle }}>
+                            <p className="text-[10px] mt-0.5" style={{ color: "#9CA3AF" }}>
                               {pct.toFixed(0)} %
                             </p>
                           </div>
@@ -674,21 +676,21 @@ export default function FinanzenHub({
               {/* Expense list */}
               <div
                 className="rounded-[14px] overflow-hidden"
-                style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
               >
                 <div
                   className="px-5 py-3 flex justify-between items-center"
-                  style={{ background: tokens.color.bg, borderBottom: `1px solid ${tokens.color.border}` }}
+                  style={{ background: "#F8F7F4", borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                 >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textMuted }}>Ausgaben</p>
-                  <p className="text-xs font-semibold" style={{ color: tokens.color.text }}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: "#6B7280" }}>Ausgaben</p>
+                  <p className="text-xs font-semibold" style={{ color: "#101418" }}>
                     {formatCurrency(ausgabenMonth)}
                   </p>
                 </div>
 
                 {thisMonthExpenses.length === 0 ? (
                   <div className="py-12 text-center">
-                    <p className="text-sm mb-4" style={{ color: tokens.color.textSubtle }}>Keine Ausgaben in diesem Monat.</p>
+                    <p className="text-sm mb-4" style={{ color: "#9CA3AF" }}>Keine Ausgaben in diesem Monat.</p>
                     <DarkButton variant="primary" onClick={() => setShowAddExpense(true)}>
                       Ausgabe erfassen
                     </DarkButton>
@@ -702,15 +704,15 @@ export default function FinanzenHub({
                       <div
                         key={e.id}
                         className="px-5 py-3.5 flex items-center justify-between transition-colors"
-                        style={{ borderBottom: "1px solid rgba(16,20,24,0.04)" }}
+                        style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}
                         onMouseEnter={(el) => (el.currentTarget.style.background = "#F8F7F4")}
                         onMouseLeave={(el) => (el.currentTarget.style.background = "transparent")}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: info.color }} />
                           <div>
-                            <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{e.title}</p>
-                            <p className="text-[11px] mt-0.5" style={{ color: tokens.color.textSubtle }}>
+                            <p className="text-sm font-semibold" style={{ color: "#101418" }}>{e.title}</p>
+                            <p className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>
                               {fmtDateLocale(e.date)}{prop ? " · " + prop.name : ""}
                             </p>
                           </div>
@@ -736,10 +738,10 @@ export default function FinanzenHub({
                 >
                   <Warning size={18} color="#FF4444" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
+                    <p className="text-sm font-semibold" style={{ color: "#101418" }}>
                       {criticals.length} Zinsbindung{criticals.length > 1 ? "en laufen" : " lauft"} bald aus oder ist bereits abgelaufen.
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: "#666" }}>
+                    <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>
                       Handle jetzt um schlechte Konditionen zu vermeiden.
                     </p>
                   </div>
@@ -752,14 +754,14 @@ export default function FinanzenHub({
                     animate={prefersReduced ? {} : { y: [0, -6, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
-                    style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                    style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
                   >
-                    <Bank size={24} color={tokens.color.textSubtle} />
+                    <Bank size={24} color={"#9CA3AF"} />
                   </motion.div>
-                  <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>
+                  <p className="text-base font-semibold mt-5" style={{ color: "#101418" }}>
                     Keine Zinsbindungen erfasst
                   </p>
-                  <p className="text-sm mt-2 max-w-[280px]" style={{ color: tokens.color.textMuted }}>
+                  <p className="text-sm mt-2 max-w-[280px]" style={{ color: "#6B7280" }}>
                     Erfasse deine Darlehen mit Zinsbindungsende um Ablaufdaten zu tracken.
                   </p>
                   <div className="mt-5">
@@ -777,19 +779,19 @@ export default function FinanzenHub({
                     return (
                       <FadeIn key={f.id} delay={i * 0.06}>
                         <div
-                          className="rounded-[16px] overflow-hidden"
-                          style={{ background: tokens.color.surface, border: `1px solid ${URGENCY_BORDER[f.urgency]}` }}
+                          className="rounded-[14px] overflow-hidden"
+                          style={{ background: "#FFFFFF", border: `1px solid ${URGENCY_BORDER[f.urgency]}` }}
                         >
                           <div className="px-6 py-5 flex items-start justify-between">
                             <div>
                               <span
                                 className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase mb-2 inline-block"
-                                style={{ background: tokens.color.bgSubtle, color: tokens.color.textMuted }}
+                                style={{ background: "#F5F5F5", color: "#6B7280" }}
                               >
                                 {f.propertyType}
                               </span>
-                              <p className="text-base font-semibold" style={{ color: tokens.color.text }}>{f.propertyName}</p>
-                              <p className="text-xs mt-0.5" style={{ color: tokens.color.textMuted }}>{f.bank || "Bank nicht angegeben"}</p>
+                              <p className="text-base font-semibold" style={{ color: "#101418" }}>{f.propertyName}</p>
+                              <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{f.bank || "Bank nicht angegeben"}</p>
                             </div>
                             <span
                               className="text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0"
@@ -801,7 +803,7 @@ export default function FinanzenHub({
 
                           <div
                             className="px-6 py-4 grid grid-cols-5 gap-4"
-                            style={{ borderTop: "1px solid rgba(16,20,24,0.05)" }}
+                            style={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
                           >
                             {[
                               { label: "DARLEHEN",   value: formatCurrency(f.loan_amount) },
@@ -819,15 +821,15 @@ export default function FinanzenHub({
                               },
                             ].map(({ label, value, sub }) => (
                               <div key={label}>
-                                <p className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                                <p className="text-sm font-semibold mt-1" style={{ color: tokens.color.text }}>{value}</p>
+                                <p className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: "#9CA3AF" }}>{label}</p>
+                                <p className="text-sm font-semibold mt-1" style={{ color: "#101418" }}>{value}</p>
                                 {sub && <p className="text-[10px] mt-0.5" style={{ color: sub.color }}>{sub.text}</p>}
                               </div>
                             ))}
                           </div>
 
                           {f.fixed_until && (
-                            <div style={{ background: "#F0EDE4", height: 3 }}>
+                            <div style={{ background: "#F5F5F5", height: 3 }}>
                               <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${pct}%` }}
@@ -839,9 +841,9 @@ export default function FinanzenHub({
 
                           <div
                             className="px-6 py-3 flex items-center justify-between"
-                            style={{ borderTop: "1px solid rgba(16,20,24,0.05)" }}
+                            style={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
                           >
-                            <span className="text-xs" style={{ color: tokens.color.textSubtle }}>
+                            <span className="text-xs" style={{ color: "#9CA3AF" }}>
                               {f.fixed_until && f.urgency !== "expired" ? "Zinsbindungsende: " + fmtDateLong(f.fixed_until) : ""}
                             </span>
                             <DarkButton
@@ -878,11 +880,11 @@ export default function FinanzenHub({
                   ].map(({ label, value }) => (
                     <div
                       key={label}
-                      className="rounded-[12px] px-4 py-3.5"
-                      style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                      className="rounded-[14px] px-4 py-3.5"
+                      style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
                     >
-                      <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                      <p className="text-xl font-semibold" style={{ color: tokens.color.text }}>{value}</p>
+                      <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#9CA3AF" }}>{label}</p>
+                      <p className="text-xl font-semibold" style={{ color: "#101418" }}>{value}</p>
                     </div>
                   ))}
                 </div>
@@ -894,15 +896,15 @@ export default function FinanzenHub({
                     animate={prefersReduced ? {} : { y: [0, -8, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     className="w-20 h-20 rounded-[20px] flex items-center justify-center mx-auto"
-                    style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                    style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
                   >
-                    <Bank size={36} color={tokens.color.textSubtle} />
+                    <Bank size={36} color={"#9CA3AF"} />
                   </motion.div>
 
-                  <h2 className="text-[24px] font-semibold tracking-[-0.02em] mt-8" style={{ color: tokens.color.text }}>
+                  <h2 className="text-[24px] font-semibold tracking-[-0.02em] mt-8" style={{ color: "#101418" }}>
                     Keine Darlehen erfasst
                   </h2>
-                  <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: tokens.color.textMuted }}>
+                  <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: "#6B7280" }}>
                     Hinterlege deine Finanzierungen und behalte Zinsbindungen, Tilgung und Restschuld im Blick.
                   </p>
 
@@ -922,19 +924,19 @@ export default function FinanzenHub({
                         key={f.name}
                         className="rounded-[14px] px-5 py-4 flex items-center justify-between"
                         style={{
-                          background: tokens.color.surface,
-                          border: "1px solid rgba(16,20,24,0.07)",
+                          background: "#FFFFFF",
+                          border: "1px solid rgba(0,0,0,0.07)",
                           opacity: i === 0 ? 0.35 : 0.2,
                           filter: "blur(1.5px)",
                         }}
                       >
                         <div className="text-left">
-                          <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{f.name}</p>
-                          <p className="text-xs mt-0.5" style={{ color: tokens.color.textSubtle }}>{f.bank}</p>
+                          <p className="text-sm font-semibold" style={{ color: "#101418" }}>{f.name}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>{f.bank}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{f.rate}</p>
-                          <p className="text-xs mt-0.5" style={{ color: tokens.color.textSubtle }}>Restschuld {f.debt}</p>
+                          <p className="text-sm font-semibold" style={{ color: "#101418" }}>{f.rate}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>Restschuld {f.debt}</p>
                         </div>
                       </div>
                     ))}
@@ -946,11 +948,11 @@ export default function FinanzenHub({
                     <FadeIn key={f.id} delay={i * 0.05}>
                       <div
                         className="rounded-[14px] px-5 py-4 flex items-center justify-between"
-                        style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                        style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
                       >
                         <div className="min-w-[160px]">
-                          <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{f.propertyName}</p>
-                          <p className="text-[11px] mt-0.5" style={{ color: tokens.color.textMuted }}>{f.bank || "Bank nicht angegeben"}</p>
+                          <p className="text-sm font-semibold" style={{ color: "#101418" }}>{f.propertyName}</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: "#6B7280" }}>{f.bank || "Bank nicht angegeben"}</p>
                         </div>
                         <div className="flex gap-6 flex-1 justify-center">
                           {[
@@ -960,14 +962,14 @@ export default function FinanzenHub({
                             { label: "RESTSCHULD", value: formatCurrency(f.current_debt ?? f.loan_amount) },
                           ].map(({ label, value }) => (
                             <div key={label}>
-                              <p className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: tokens.color.textSubtle }}>{label}</p>
-                              <p className="text-sm font-semibold mt-0.5" style={{ color: tokens.color.text }}>{value}</p>
+                              <p className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: "#9CA3AF" }}>{label}</p>
+                              <p className="text-sm font-semibold mt-0.5" style={{ color: "#101418" }}>{value}</p>
                             </div>
                           ))}
                         </div>
-                        <button style={{ color: tokens.color.textSubtle }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = tokens.color.textMuted)}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}>
+                        <button style={{ color: "#9CA3AF" }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#6B7280")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}>
                           <DotsThree size={20} weight="bold" />
                         </button>
                       </div>
@@ -1120,17 +1122,17 @@ export default function FinanzenHub({
               exit={{ opacity: 0, y: 8, scale: 0.97 }}
               transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               className="w-full max-w-[440px] rounded-[20px] overflow-hidden"
-              style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)", boxShadow: "0 24px 80px rgba(16,20,24,0.12)" }}
+              style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.12)" }}
             >
-              <div className="px-6 py-5 flex justify-between items-start" style={{ borderBottom: "1px solid rgba(16,20,24,0.06)" }}>
+              <div className="px-6 py-5 flex justify-between items-start" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                 <div>
-                  <p className="text-base font-semibold" style={{ color: tokens.color.text }}>Anschlussfinanzierung</p>
-                  <p className="text-xs mt-0.5" style={{ color: tokens.color.textMuted }}>{selectedFinancing.propertyName}</p>
+                  <p className="text-base font-semibold" style={{ color: "#101418" }}>Anschlussfinanzierung</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{selectedFinancing.propertyName}</p>
                 </div>
                 <button onClick={() => { setShowAnschluss(false); setSelectedFinancing(null); }}
-                  style={{ color: "#666" }}
+                  style={{ color: "#6B7280" }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = "#101418")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}>
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}>
                   <X size={18} />
                 </button>
               </div>
@@ -1138,7 +1140,7 @@ export default function FinanzenHub({
               <div className="px-6 py-5 flex flex-col gap-4">
                 <div
                   className="rounded-[12px] p-4 grid grid-cols-3 gap-4"
-                  style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
+                  style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                 >
                   {[
                     { label: "RESTSCHULD",      value: formatCurrency(anschlussDebt) },
@@ -1146,8 +1148,8 @@ export default function FinanzenHub({
                     { label: "ZINSBINDUNG BIS", value: selectedFinancing.fixed_until ? fmtDateShort(selectedFinancing.fixed_until) : "–" },
                   ].map(({ label, value }) => (
                     <div key={label}>
-                      <p className="text-[10px] uppercase tracking-wide" style={{ color: tokens.color.textMuted }}>{label}</p>
-                      <p className="text-sm font-semibold mt-1" style={{ color: tokens.color.text }}>{value}</p>
+                      <p className="text-[10px] uppercase tracking-wide" style={{ color: "#6B7280" }}>{label}</p>
+                      <p className="text-sm font-semibold mt-1" style={{ color: "#101418" }}>{value}</p>
                     </div>
                   ))}
                 </div>
@@ -1174,11 +1176,11 @@ export default function FinanzenHub({
                     className="rounded-[12px] p-4"
                     style={{ background: "rgba(160,120,48,0.06)", border: "1px solid rgba(160,120,48,0.15)" }}
                   >
-                    <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: tokens.color.textMuted }}>NEUE RATE / MONAT</p>
+                    <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: "#6B7280" }}>NEUE RATE / MONAT</p>
                     <p className="text-2xl font-semibold" style={{ color: "#A07830" }}>
                       {formatCurrency(newMonthlyRate)}
                     </p>
-                    <div className="flex justify-between text-xs mt-3" style={{ color: tokens.color.textMuted }}>
+                    <div className="flex justify-between text-xs mt-3" style={{ color: "#6B7280" }}>
                       <span>Aktuell: {formatCurrency(selectedFinancing.rate_monthly)}</span>
                       <span style={{ color: newMonthlyRate - selectedFinancing.rate_monthly > 0 ? "#FF4444" : "#A07830" }}>
                         {formatCurrencySigned(newMonthlyRate - selectedFinancing.rate_monthly)}
@@ -1188,7 +1190,7 @@ export default function FinanzenHub({
                 )}
               </div>
 
-              <div className="px-6 py-4 flex justify-end" style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}>
+              <div className="px-6 py-4 flex justify-end" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
                 <DarkButton variant="secondary" onClick={() => { setShowAnschluss(false); setSelectedFinancing(null); }}>
                   Schliessen
                 </DarkButton>

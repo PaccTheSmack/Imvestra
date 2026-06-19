@@ -197,7 +197,7 @@ export default function NeuesObjektPage() {
       <div className="flex items-center gap-4 mb-8 w-full">
         <button
           onClick={() => step > 1 ? setStep((step - 1) as Step) : router.push("/portfolio")}
-          className="w-9 h-9 bg-white border border-[rgba(16,20,24,0.08)] rounded-[8px] flex items-center justify-center hover:bg-[#1A1A1A] transition-all cursor-pointer flex-shrink-0"
+          className="w-9 h-9 bg-white border border-[rgba(16,20,24,0.08)] rounded-[8px] flex items-center justify-center hover:bg-[#F0EDE4] transition-all cursor-pointer flex-shrink-0"
         >
           <ArrowLeft size={16} color="#6A5A3A" />
         </button>

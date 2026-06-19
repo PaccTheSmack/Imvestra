@@ -255,7 +255,7 @@ function ConnectModal({ onClose, onConnect }: { onClose: () => void; onConnect: 
           <button
             onClick={onClose}
             className="p-1.5 rounded-[6px] transition-colors hover:bg-[#F0EDE4]"
-            style={{ color: "#666" }}
+            style={{ color: "#6B7280" }}
           >
             <X size={16} />
           </button>
@@ -451,7 +451,7 @@ export default function BankAccountTab({ bankAccounts, transactions }: BankAccou
         >
           <div
             className="w-14 h-14 rounded-[16px] flex items-center justify-center mx-auto mb-4"
-            style={{ background: "rgba(0,224,215,0.08)", border: `1px solid ${tokens.color.borderAccent}` }}
+            style={{ background: tokens.color.accentMuted, border: `1px solid ${tokens.color.borderAccent}` }}
           >
             <Bank size={24} color={tokens.color.accent} />
           </div>

@@ -255,12 +255,12 @@ export interface Expense {
 
 export const EXPENSE_CATEGORIES = {
   maintenance: { label: "Instandhaltung", color: "#FFB800" },
-  management:  { label: "Verwaltung",      color: "#00E0D7" },
+  management:  { label: "Verwaltung",      color: "#A07830" },
   insurance:   { label: "Versicherung",    color: "#4B9EFF" },
   tax:         { label: "Steuern/Abgaben", color: "#FF4444" },
   utilities:   { label: "Nebenkosten",     color: "#A855F7" },
   renovation:  { label: "Renovierung",     color: "#FF8C00" },
-  other:       { label: "Sonstiges",       color: "#666"    },
+  other:       { label: "Sonstiges",       color: "#6B7280" },
 } as const;
 
 export interface PlanConfig {

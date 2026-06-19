@@ -170,7 +170,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
               <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>
                 {criticals.length} Zinsbindung{criticals.length > 1 ? "en laufen" : " lauft"} bald aus oder ist bereits abgelaufen.
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#666" }}>
+              <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>
                 Handle jetzt um schlechte Konditionen zu vermeiden.
               </p>
             </div>
