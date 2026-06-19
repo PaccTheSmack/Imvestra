@@ -199,7 +199,7 @@ function MonthSelector({ value, onChange }: { value: string; onChange: (m: strin
         onClick={() => onChange(shiftMonth(value, -1))}
         className="p-1.5 rounded-[6px] transition-colors"
         style={{ color: "#9CA3AF" }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#6A5A3A")}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#6B7280")}
         onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
       >
         <CaretLeft size={16} />
@@ -214,7 +214,7 @@ function MonthSelector({ value, onChange }: { value: string; onChange: (m: strin
         onClick={() => { if (!isFuture) onChange(shiftMonth(value, 1)); }}
         className="p-1.5 rounded-[6px] transition-colors"
         style={{ color: isFuture ? "#E0D9CC" : "#9CA3AF" }}
-        onMouseEnter={(e) => { if (!isFuture) e.currentTarget.style.color = "#6A5A3A"; }}
+        onMouseEnter={(e) => { if (!isFuture) e.currentTarget.style.color = "#6B7280"; }}
         onMouseLeave={(e) => (e.currentTarget.style.color = isFuture ? "#E0D9CC" : "#9CA3AF")}
       >
         <CaretRight size={16} />
@@ -466,7 +466,7 @@ export default function FinanzenHub({
             onClick={() => setActiveTab(id)}
             className="px-1 mr-6 pb-3 text-sm font-medium cursor-pointer transition-colors relative flex items-center gap-2 flex-shrink-0"
             style={{ color: activeTab === id ? "#A07830" : "#9CA3AF" }}
-            onMouseEnter={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#6A5A3A"; }}
+            onMouseEnter={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#6B7280"; }}
             onMouseLeave={(e) => { if (activeTab !== id) e.currentTarget.style.color = "#9CA3AF"; }}
           >
             {label}
@@ -1139,7 +1139,7 @@ export default function FinanzenHub({
 
               <div className="px-6 py-5 flex flex-col gap-4">
                 <div
-                  className="rounded-[12px] p-4 grid grid-cols-3 gap-4"
+                  className="rounded-[14px] p-4 grid grid-cols-3 gap-4"
                   style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                 >
                   {[

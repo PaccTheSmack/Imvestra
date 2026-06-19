@@ -129,26 +129,26 @@ export default function OnboardingPage() {
     <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: "#F8F7F4" }}>
       {/* Card */}
       <div
-        className="w-full max-w-[480px] rounded-[20px] overflow-hidden"
+        className="w-full max-w-[480px] rounded-[14px] overflow-hidden"
         style={{
           background: "#FFFFFF",
-          border: "1px solid rgba(16,20,24,0.08)",
-          boxShadow: "0 8px 32px rgba(16,20,24,0.08)",
+          border: "1px solid rgba(0,0,0,0.07)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
         }}
       >
         {/* Header */}
         <div
           className="px-6 pt-6 pb-4 flex items-center justify-between"
-          style={{ borderBottom: "1px solid rgba(16,20,24,0.06)" }}
+          style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}
         >
           <Image src="/logo.svg" alt="Imvestra" width={90} height={24} style={{ filter: "brightness(0) saturate(100%) invert(55%) sepia(50%) saturate(600%) hue-rotate(350deg) brightness(85%)" }} />
-          <span className="text-[11px] font-medium" style={{ color: "#6A5A3A" }}>
+          <span className="text-[11px] font-medium" style={{ color: "#6B7280" }}>
             Schritt {step} von 3
           </span>
         </div>
 
         {/* Progress bar */}
-        <div className="h-0.5" style={{ background: "rgba(16,20,24,0.08)" }}>
+        <div className="h-0.5" style={{ background: "rgba(0,0,0,0.07)" }}>
           <motion.div
             className="h-full rounded-full"
             style={{ background: "#A07830" }}
@@ -173,33 +173,33 @@ export default function OnboardingPage() {
                 >
                   Willkommen bei Imvestra.
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#6A5A3A" }}>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#6B7280" }}>
                   Lass uns kurz dein Profil einrichten - damit Imvestra zu dir passt.
                 </p>
 
                 {/* Name */}
                 <div className="mt-8">
-                  <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: "#6A5A3A" }}>
+                  <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>
                     Wie heisst du?
                   </label>
                   <input
-                    className="w-full rounded-[10px] px-4 py-3 text-sm text-[#101418] placeholder:text-[#A89A7A] focus:outline-none transition-all duration-150"
+                    className="w-full rounded-[10px] px-4 py-3 text-sm text-[#101418] placeholder:text-[#9CA3AF] focus:outline-none transition-all duration-150"
                     style={{
-                      background: "#F0EDE4",
-                      border: "1px solid rgba(16,20,24,0.1)",
+                      background: "#F5F5F5",
+                      border: "1px solid rgba(0,0,0,0.1)",
                     }}
                     placeholder="Dein Vorname"
                     value={data.name}
                     onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
                     onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(160,120,48,0.4)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(16,20,24,0.1)")}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
                     autoFocus
                   />
                 </div>
 
                 {/* Experience */}
                 <div className="mt-6">
-                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#6A5A3A" }}>
+                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#6B7280" }}>
                     Wie erfahren bist du mit Immobilien-Investments?
                   </label>
                   <div className="flex flex-col gap-2">
@@ -212,21 +212,21 @@ export default function OnboardingPage() {
                           onClick={() => setData((d) => ({ ...d, experience_level: value }))}
                           className="flex items-center gap-3 rounded-[10px] px-4 py-3 text-left transition-all duration-150"
                           style={{
-                            background:     selected ? "rgba(160,120,48,0.08)" : "#F0EDE4",
-                            border: `1px solid ${selected ? "rgba(160,120,48,0.3)" : "rgba(16,20,24,0.08)"}`,
+                            background:     selected ? "rgba(160,120,48,0.08)" : "#F5F5F5",
+                            border: `1px solid ${selected ? "rgba(160,120,48,0.3)" : "rgba(0,0,0,0.07)"}`,
                           }}
                           onMouseEnter={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(160,120,48,0.2)"; }}
-                          onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(16,20,24,0.08)"; }}
+                          onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)"; }}
                         >
                           <div
                             className="w-8 h-8 rounded-[8px] flex-shrink-0 flex items-center justify-center"
-                            style={{ background: selected ? "rgba(160,120,48,0.12)" : "rgba(16,20,24,0.06)" }}
+                            style={{ background: selected ? "rgba(160,120,48,0.12)" : "rgba(0,0,0,0.05)" }}
                           >
-                            <Icon size={15} color={selected ? "#A07830" : "#A89A7A"} />
+                            <Icon size={15} color={selected ? "#A07830" : "#9CA3AF"} />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-[#101418]">{label}</p>
-                            <p className="text-[11px] mt-0.5" style={{ color: "#6A5A3A" }}>{sub}</p>
+                            <p className="text-[11px] mt-0.5" style={{ color: "#6B7280" }}>{sub}</p>
                           </div>
                         </button>
                       );
@@ -247,7 +247,7 @@ export default function OnboardingPage() {
                 <h1 className="text-[22px] font-semibold text-[#101418] tracking-[-0.02em]">
                   Was ist dein Investment-Ziel?
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#6A5A3A" }}>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#6B7280" }}>
                   Imvestra passt sich deinen Zielen an.
                 </p>
 
@@ -262,20 +262,20 @@ export default function OnboardingPage() {
                         onClick={() => setData((d) => ({ ...d, investment_goal: value }))}
                         className="flex flex-col items-center gap-2 rounded-[10px] p-4 text-center transition-all duration-150"
                         style={{
-                          background:     selected ? "rgba(160,120,48,0.08)" : "#F0EDE4",
-                          border: `1px solid ${selected ? "rgba(160,120,48,0.3)" : "rgba(16,20,24,0.08)"}`,
+                          background:     selected ? "rgba(160,120,48,0.08)" : "#F5F5F5",
+                          border: `1px solid ${selected ? "rgba(160,120,48,0.3)" : "rgba(0,0,0,0.07)"}`,
                         }}
                         onMouseEnter={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(160,120,48,0.2)"; }}
-                        onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(16,20,24,0.08)"; }}
+                        onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)"; }}
                       >
                         <div
                           className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-                          style={{ background: selected ? "rgba(160,120,48,0.12)" : "rgba(16,20,24,0.06)" }}
+                          style={{ background: selected ? "rgba(160,120,48,0.12)" : "rgba(0,0,0,0.05)" }}
                         >
-                          <Icon size={18} color={selected ? "#A07830" : "#A89A7A"} />
+                          <Icon size={18} color={selected ? "#A07830" : "#9CA3AF"} />
                         </div>
                         <p className="text-sm font-medium text-[#101418] mt-1">{label}</p>
-                        <p className="text-[10px]" style={{ color: "#6A5A3A" }}>{sub}</p>
+                        <p className="text-[10px]" style={{ color: "#6B7280" }}>{sub}</p>
                       </button>
                     );
                   })}
@@ -283,7 +283,7 @@ export default function OnboardingPage() {
 
                 {/* Portfolio size */}
                 <div className="mt-6">
-                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#6A5A3A" }}>
+                  <label className="block text-[11px] uppercase tracking-wider mb-3" style={{ color: "#6B7280" }}>
                     Wie viele Objekte hast du aktuell?
                   </label>
                   <div className="flex gap-2 flex-wrap">
@@ -300,12 +300,12 @@ export default function OnboardingPage() {
                             color: "#FFFFFF",
                             border: "1px solid transparent",
                           } : {
-                            background: "#F0EDE4",
-                            color: "#6A5A3A",
-                            border: "1px solid rgba(16,20,24,0.08)",
+                            background: "#F5F5F5",
+                            color: "#6B7280",
+                            border: "1px solid rgba(0,0,0,0.07)",
                           }}
                           onMouseEnter={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(160,120,48,0.2)"; }}
-                          onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(16,20,24,0.08)"; }}
+                          onMouseLeave={(e) => { if (!selected) e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)"; }}
                         >
                           {label}
                         </button>
@@ -342,7 +342,7 @@ export default function OnboardingPage() {
                 <h1 className="text-[22px] font-semibold text-[#101418] tracking-[-0.02em] mt-6">
                   Alles bereit.
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed max-w-[320px] mx-auto" style={{ color: "#6A5A3A" }}>
+                <p className="mt-2 text-sm leading-relaxed max-w-[320px] mx-auto" style={{ color: "#6B7280" }}>
                   Dein Profil ist eingerichtet. Starte jetzt mit deiner ersten Renditeberechnung.
                 </p>
 
@@ -366,11 +366,11 @@ export default function OnboardingPage() {
                       key={label}
                       className="rounded-[8px] px-4 py-2.5 flex items-center justify-between"
                       style={{
-                        background: "#F0EDE4",
-                        border: "1px solid rgba(16,20,24,0.08)",
+                        background: "#F5F5F5",
+                        border: "1px solid rgba(0,0,0,0.07)",
                       }}
                     >
-                      <span className="text-xs" style={{ color: "#6A5A3A" }}>{label}</span>
+                      <span className="text-xs" style={{ color: "#6B7280" }}>{label}</span>
                       <span className="text-xs font-medium text-[#101418]">{value}</span>
                     </div>
                   ))}
@@ -383,7 +383,7 @@ export default function OnboardingPage() {
         {/* Footer */}
         <div
           className="px-6 pb-6 pt-4 flex items-center justify-between"
-          style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}
+          style={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
         >
           <div>
             {step > 1 && (
@@ -391,9 +391,9 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={() => setStep(step - 1)}
                 className="text-sm transition-colors duration-150"
-                style={{ color: "#6A5A3A" }}
+                style={{ color: "#6B7280" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#101418")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#6A5A3A")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}
               >
                 Zuruck
               </button>
@@ -426,9 +426,9 @@ export default function OnboardingPage() {
         type="button"
         onClick={handleSkip}
         className="mt-4 text-xs transition-colors duration-150"
-        style={{ color: "#A89A7A" }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#6A5A3A")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#A89A7A")}
+        style={{ color: "#9CA3AF" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#6B7280")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
       >
         Uberspringen
       </button>

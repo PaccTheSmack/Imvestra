@@ -34,7 +34,6 @@ import {
 import { formatCurrency, formatPercent, formatCurrencySigned } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 import { canAccess } from "@/lib/gates";
-import { tokens } from "@/lib/tokens";
 import DownloadButton from "@/components/pdf/DownloadButton";
 import type { DownloadData } from "@/components/pdf/DownloadButton";
 import type {
@@ -63,10 +62,10 @@ const AFA_TYPE_LABELS: Record<AfAResult["afa_type"], string> = {
 };
 
 const INPUT =
-  "w-full bg-white border border-[rgba(16,20,24,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#A89A7A] focus:outline-none focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:border-[rgba(160,120,48,0.3)] transition-all duration-150";
-const LABEL = "block text-xs font-medium text-[#6A5A3A] mb-1.5";
+  "w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:border-[rgba(160,120,48,0.3)] transition-all duration-150";
+const LABEL = "block text-xs font-medium text-[#6B7280] mb-1.5";
 const SECTION_LABEL =
-  "text-[10px] font-semibold text-[#A89A7A] uppercase tracking-widest mb-4";
+  "text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-widest mb-4";
 
 type TabId =
   | "Übersicht"
@@ -79,9 +78,9 @@ type TabId =
 
 // ─── helpers ──────────────────────────────────────────────────
 function getYieldColor(v: number, hi: number, mid: number) {
-  if (v >= hi) return tokens.color.positive;
-  if (v >= mid) return tokens.color.warning;
-  return tokens.color.danger;
+  if (v >= hi) return "#2D6A2D";
+  if (v >= mid) return "#92400E";
+  return "#B91C1C";
 }
 
 function MetricValue({
@@ -120,7 +119,7 @@ function SuffixInput({ suffix, children }: { suffix: string; children: React.Rea
       {children}
       <span
         className="absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none"
-        style={{ color: tokens.color.textSubtle }}
+        style={{ color: "#9CA3AF" }}
       >
         {suffix}
       </span>
@@ -143,19 +142,19 @@ function Row({
     <div
       className={`flex justify-between items-center py-3 last:border-0 ${highlighted ? "-mx-5 px-5" : ""}`}
       style={{
-        borderBottom: `1px solid ${tokens.color.border}`,
-        background: highlighted ? tokens.color.surfaceHover : "transparent",
+        borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}`,
+        background: highlighted ? "#F8F7F4" : "transparent",
       }}
     >
       <span
         className="text-sm"
-        style={{ color: highlighted ? tokens.color.text : tokens.color.textMuted, fontWeight: highlighted ? 600 : 400 }}
+        style={{ color: highlighted ? "#101418" : "#6B7280", fontWeight: highlighted ? 600 : 400 }}
       >
         {label}
       </span>
       <span
         className="text-sm font-semibold tabular-nums"
-        style={{ color: color ?? tokens.color.text }}
+        style={{ color: color ?? "#101418" }}
       >
         {value}
       </span>
@@ -193,7 +192,7 @@ function TilgungsChart({
             <g key={row.year}>
               <motion.rect
                 x={x} y={H - tilgungH} width={BAR_W} height={tilgungH} rx={1}
-                fill={tokens.color.accent} fillOpacity={0.7}
+                fill={"#A07830"} fillOpacity={0.7}
                 initial={prefersReduced ? {} : { scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 style={{ transformBox: "fill-box", transformOrigin: "50% 100%" } as React.CSSProperties}
@@ -201,14 +200,14 @@ function TilgungsChart({
               />
               <motion.rect
                 x={x} y={H - tilgungH - zinsenH} width={BAR_W} height={zinsenH} rx={1}
-                fill={tokens.color.danger} fillOpacity={0.6}
+                fill={"#B91C1C"} fillOpacity={0.6}
                 initial={prefersReduced ? {} : { scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 style={{ transformBox: "fill-box", transformOrigin: "50% 100%" } as React.CSSProperties}
                 transition={{ duration: prefersReduced ? 0 : 0.5, ease: "easeOut", delay: prefersReduced ? 0 : i * 0.02 }}
               />
               {row.year % 5 === 0 && (
-                <text x={x + BAR_W / 2} y={H + 13} textAnchor="middle" fontSize={7} fill={tokens.color.textSubtle}>
+                <text x={x + BAR_W / 2} y={H + 13} textAnchor="middle" fontSize={7} fill={"#9CA3AF"}>
                   {row.year}J
                 </text>
               )}
@@ -217,11 +216,11 @@ function TilgungsChart({
         })}
       </svg>
       <div className="flex items-center gap-4 mt-1">
-        <div className="flex items-center gap-1.5 text-xs" style={{ color: tokens.color.textMuted }}>
-          <div className="w-2.5 h-2.5 rounded-sm" style={{ background: tokens.color.accent, opacity: 0.7 }} />Tilgung
+        <div className="flex items-center gap-1.5 text-xs" style={{ color: "#6B7280" }}>
+          <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#A07830", opacity: 0.7 }} />Tilgung
         </div>
-        <div className="flex items-center gap-1.5 text-xs" style={{ color: tokens.color.textMuted }}>
-          <div className="w-2.5 h-2.5 rounded-sm" style={{ background: tokens.color.danger, opacity: 0.6 }} />Zinsen
+        <div className="flex items-center gap-1.5 text-xs" style={{ color: "#6B7280" }}>
+          <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#B91C1C", opacity: 0.6 }} />Zinsen
         </div>
       </div>
     </div>
@@ -243,19 +242,19 @@ function PriceIndicatorBar({
         <div
           className="absolute inset-0 rounded-full"
           style={{
-            background: `linear-gradient(to right, ${tokens.color.positive} 0%, ${tokens.color.positive} 50%, ${tokens.color.accent} 50%, ${tokens.color.accent} 62.5%, ${tokens.color.warning} 62.5%, ${tokens.color.warning} 75%, ${tokens.color.danger} 75%, ${tokens.color.danger} 100%)`,
+            background: `linear-gradient(to right, #2D6A2D 0%, #2D6A2D 50%, #A07830 50%, #A07830 62.5%, #92400E 62.5%, #92400E 75%, #B91C1C 75%, #B91C1C 100%)`,
             opacity: 0.4,
           }}
         />
         <motion.div
           className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2"
-          style={{ backgroundColor: tokens.color.text, borderColor: tokens.color.bg, boxShadow: tokens.shadow.sm }}
+          style={{ backgroundColor: "#101418", borderColor: "#F8F7F4", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
           initial={prefersReduced ? {} : { left: "0%" }}
           animate={{ left: `${pct}%` }}
           transition={{ duration: prefersReduced ? 0 : 0.8, ease: "easeOut" }}
         />
       </div>
-      <div className="flex justify-between mt-1.5" style={{ fontSize: 9, color: tokens.color.textSubtle }}>
+      <div className="flex justify-between mt-1.5" style={{ fontSize: 9, color: "#9CA3AF" }}>
         <span>günstig ≤20x</span>
         <span>fair 25x</span>
         <span>sehr teuer &gt;30x</span>
@@ -385,7 +384,7 @@ export default function CalculatorPage() {
         (result.ltv < 0.8 ? 20 : 0)
       )))
     : 0;
-  const scoreColor = qualityScore > 70 ? tokens.color.positive : qualityScore > 40 ? tokens.color.warning : tokens.color.danger;
+  const scoreColor = qualityScore > 70 ? "#2D6A2D" : qualityScore > 40 ? "#92400E" : "#B91C1C";
   const scoreLabel = qualityScore > 70 ? "Stark" : qualityScore > 40 ? "Solide" : "Schwach";
 
   // tilgungsplan
@@ -554,7 +553,7 @@ export default function CalculatorPage() {
 
   // ─── render ───────────────────────────────────────────────────
   return (
-    <div className="min-h-screen" style={{ background: tokens.color.bg }}>
+    <div className="min-h-screen" style={{ background: "#F8F7F4" }}>
       <div className="p-6 w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -564,7 +563,7 @@ export default function CalculatorPage() {
           </div>
           <div>
             <p className="text-[20px] font-semibold text-[#101418] tracking-[-0.02em] leading-tight">Renditerechner</p>
-            <p className="text-xs text-[#6A5A3A] mt-0.5">Objekt analysieren und Rendite berechnen</p>
+            <p className="text-xs text-[#6B7280] mt-0.5">Objekt analysieren und Rendite berechnen</p>
           </div>
         </div>
 
@@ -584,9 +583,9 @@ export default function CalculatorPage() {
                       `&sqm=${Number(sqm) || 0}`
                     )}
                     className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all border"
-                    style={{ borderColor: tokens.color.border, color: tokens.color.textMuted, background: "transparent" }}
+                    style={{ borderColor: "rgba(0,0,0,0.07)", color: "#6B7280", background: "transparent" }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(160,120,48,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#A07830" }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = tokens.color.border; (e.currentTarget as HTMLButtonElement).style.color = tokens.color.textMuted }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,0,0,0.07)"; (e.currentTarget as HTMLButtonElement).style.color = "#6B7280" }}
                   >
                     <MapPin size={13} />
                     Standort prüfen
@@ -600,13 +599,13 @@ export default function CalculatorPage() {
                   whileTap={prefersReduced ? {} : { scale: 0.98 }}
                   className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-[8px] transition-all disabled:opacity-60"
                   style={saved ? {
-                    background: tokens.color.positiveBg,
+                    background: "rgba(45,106,45,0.08)",
                     border: `1px solid rgba(45,106,45,0.2)`,
-                    color: tokens.color.positive,
+                    color: "#2D6A2D",
                   } : {
-                    background: tokens.color.surfaceHover,
-                    border: `1px solid ${tokens.color.borderStrong}`,
-                    color: tokens.color.text,
+                    background: "#F8F7F4",
+                    border: `1px solid ${"rgba(0,0,0,0.12)"}`,
+                    color: "#101418",
                   }}
                 >
                   {saved ? <CheckCircle size={14} /> : <FloppyDisk size={14} />}
@@ -616,7 +615,7 @@ export default function CalculatorPage() {
                 <button
                   onClick={() => router.push("/settings")}
                   className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all"
-                  style={{ border: `1px solid ${tokens.color.border}`, color: tokens.color.textMuted, background: "transparent" }}
+                  style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}`, color: "#6B7280", background: "transparent" }}
                 >
                   <Lock size={14} />Speichern (Pro)
                 </button>
@@ -639,7 +638,7 @@ export default function CalculatorPage() {
               initial={prefersReduced ? {} : { opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-xs flex items-center gap-1.5"
-              style={{ color: tokens.color.danger }}
+              style={{ color: "#B91C1C" }}
             >
               <WarningCircle size={13} />{saveError}
             </motion.p>
@@ -653,7 +652,7 @@ export default function CalculatorPage() {
         {/* Left: Inputs */}
         <div
           className="rounded-[14px] p-6 flex flex-col gap-6"
-          style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+          style={{ background: "#FFFFFF", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
         >
 
             {/* Section 1 – Objekt */}
@@ -691,7 +690,7 @@ export default function CalculatorPage() {
               </div>
             </div>
 
-            <div style={{ borderTop: `1px solid ${tokens.color.border}` }} />
+            <div style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }} />
 
             {/* Section 2 – Finanzen */}
             <div>
@@ -719,19 +718,19 @@ export default function CalculatorPage() {
                       onChange={(e) => setMonthlyRateInput(e.target.value)}
                     />
                   </SuffixInput>
-                  <p className="text-[10px] mt-1" style={{ color: tokens.color.textSubtle }}>Geplante Darlehensrate</p>
+                  <p className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>Geplante Darlehensrate</p>
                 </div>
               </div>
             </div>
 
-            <div style={{ borderTop: `1px solid ${tokens.color.border}` }} />
+            <div style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }} />
 
             {/* Section 3 – Finanzierung */}
             <div>
               <button type="button" onClick={() => setShowFinancing(!showFinancing)} className="flex items-center justify-between w-full cursor-pointer py-1">
                 <p className={`${SECTION_LABEL} mb-0`}>Finanzierung (optional)</p>
                 <motion.div animate={prefersReduced ? {} : { rotate: showFinancing ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <CaretDown size={14} color={tokens.color.textSubtle} />
+                  <CaretDown size={14} color={"#9CA3AF"} />
                 </motion.div>
               </button>
               <AnimatePresence initial={false}>
@@ -769,14 +768,14 @@ export default function CalculatorPage() {
               </AnimatePresence>
             </div>
 
-            <div style={{ borderTop: `1px solid ${tokens.color.border}` }} />
+            <div style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }} />
 
             {/* Section 4 – Steuer & Förderung */}
             <div>
               <button type="button" onClick={() => setShowSteuer(!showSteuer)} className="flex items-center justify-between w-full cursor-pointer py-1">
                 <p className={`${SECTION_LABEL} mb-0`}>Steuer & Förderung (optional)</p>
                 <motion.div animate={prefersReduced ? {} : { rotate: showSteuer ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <CaretDown size={14} color={tokens.color.textSubtle} />
+                  <CaretDown size={14} color={"#9CA3AF"} />
                 </motion.div>
               </button>
               <AnimatePresence initial={false}>
@@ -793,7 +792,7 @@ export default function CalculatorPage() {
                           value={steuerForm.kaufdatum}
                           onChange={(e) => setSteuerForm((f) => ({ ...f, kaufdatum: e.target.value }))}
                         />
-                        <p className="text-[10px] mt-1" style={{ color: tokens.color.textSubtle }}>Für Spekulationsfrist-Berechnung</p>
+                        <p className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>Für Spekulationsfrist-Berechnung</p>
                       </div>
                       <div>
                         <label className={LABEL}>Steuersatz</label>
@@ -804,7 +803,7 @@ export default function CalculatorPage() {
                             onChange={(e) => setSteuerForm((f) => ({ ...f, steuersatz: e.target.value }))}
                           />
                         </SuffixInput>
-                        <p className="text-[10px] mt-1" style={{ color: tokens.color.textSubtle }}>Persönlicher Grenzsteuersatz</p>
+                        <p className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>Persönlicher Grenzsteuersatz</p>
                       </div>
                       <div>
                         <label className={LABEL}>Grundstücksanteil</label>
@@ -815,7 +814,7 @@ export default function CalculatorPage() {
                             onChange={(e) => setSteuerForm((f) => ({ ...f, grundstueck_anteil: e.target.value }))}
                           />
                         </SuffixInput>
-                        <p className="text-[10px] mt-1" style={{ color: tokens.color.textSubtle }}>Nicht abschreibbar</p>
+                        <p className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>Nicht abschreibbar</p>
                       </div>
                       <div className="col-span-2">
                         <label className={LABEL}>Energieeffizienzklasse</label>
@@ -830,7 +829,7 @@ export default function CalculatorPage() {
                         </select>
                       </div>
                       <div className="col-span-2 flex gap-6">
-                        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: tokens.color.text }}>
+                        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "#101418" }}>
                           <input
                             type="checkbox" checked={steuerForm.is_denkmal}
                             onChange={(e) => setSteuerForm((f) => ({ ...f, is_denkmal: e.target.checked }))}
@@ -838,7 +837,7 @@ export default function CalculatorPage() {
                           />
                           Denkmalschutz-Objekt
                         </label>
-                        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: tokens.color.text }}>
+                        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "#101418" }}>
                           <input
                             type="checkbox" checked={steuerForm.is_sanierung}
                             onChange={(e) => setSteuerForm((f) => ({ ...f, is_sanierung: e.target.checked }))}
@@ -870,27 +869,27 @@ export default function CalculatorPage() {
                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                   className="w-20 h-20 rounded-[20px] flex items-center justify-center"
                   style={{
-                    background: tokens.color.surface,
-                    border: `1px solid ${tokens.color.border}`,
-                    boxShadow: tokens.shadow.md,
+                    background: "#FFFFFF",
+                    border: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
                   }}
                 >
-                  <Calculator size={32} color={tokens.color.textSubtle} />
+                  <Calculator size={32} color={"#9CA3AF"} />
                 </motion.div>
-                <p className="text-base font-semibold mt-5 text-center" style={{ color: tokens.color.text }}>Ergebnis erscheint sofort</p>
-                <p className="text-sm mt-2 text-center" style={{ color: tokens.color.textSubtle }}>Kaufpreis und Miete eingeben.</p>
+                <p className="text-base font-semibold mt-5 text-center" style={{ color: "#101418" }}>Ergebnis erscheint sofort</p>
+                <p className="text-sm mt-2 text-center" style={{ color: "#9CA3AF" }}>Kaufpreis und Miete eingeben.</p>
                 <div className="flex gap-2 justify-center mt-6 flex-wrap">
                   {["Kaufpreis eingeben", "Miete eingeben", "Baujahr eingeben"].map((hint) => (
                     <span
                       key={hint}
                       className="rounded-full px-3 py-1.5 text-xs flex items-center gap-1.5"
                       style={{
-                        background: tokens.color.surface,
-                        border: `1px solid ${tokens.color.border}`,
-                        color: tokens.color.textMuted,
+                        background: "#FFFFFF",
+                        border: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                        color: "#6B7280",
                       }}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: tokens.color.border }} />{hint}
+                      <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: "rgba(0,0,0,0.07)" }} />{hint}
                     </span>
                   ))}
                 </div>
@@ -907,12 +906,12 @@ export default function CalculatorPage() {
                 {/* Tab card */}
                 <div
                   className="rounded-[14px] overflow-hidden mb-4"
-                  style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                  style={{ background: "#FFFFFF", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                 >
                   {/* Tab bar */}
                   <div
                     className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                    style={{ borderBottom: `1px solid ${tokens.color.border}` }}
+                    style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                   >
                     {TABS.map((tab) => (
                       <button
@@ -920,11 +919,11 @@ export default function CalculatorPage() {
                         onClick={() => setActiveTab(tab)}
                         className="flex-shrink-0 py-3 px-4 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
                         style={activeTab === tab ? {
-                          color: tokens.color.accent,
-                          borderBottom: `2px solid ${tokens.color.accent}`,
+                          color: "#A07830",
+                          borderBottom: `2px solid ${"#A07830"}`,
                           marginBottom: -1,
                         } : {
-                          color: tokens.color.textSubtle,
+                          color: "#9CA3AF",
                         }}
                       >
                         {tab}
@@ -950,20 +949,20 @@ export default function CalculatorPage() {
                             {[
                               { label: "BRUTTORENDITE",    value: result!.gross_yield,      formatter: formatPercent,                                        color: getYieldColor(result!.gross_yield, 0.05, 0.03),  sub: "Kaufpreis-basiert" },
                               { label: "NETTOMIETRENDITE", value: result!.net_yield,         formatter: formatPercent,                                        color: getYieldColor(result!.net_yield, 0.04, 0.02),    sub: "Gesamtinvestition" },
-                              { label: "CASHFLOW / MO.",   value: result!.cashflow_monthly,  formatter: (v: number) => formatCurrencySigned(Math.round(v)),   color: result!.cashflow_monthly >= 0 ? tokens.color.positive : tokens.color.danger, sub: "Nach Rate & Kosten" },
-                              { label: "ROE",              value: result!.roe,               formatter: formatPercent,                                        color: tokens.color.text, sub: "Eigenkapitalrendite" },
+                              { label: "CASHFLOW / MO.",   value: result!.cashflow_monthly,  formatter: (v: number) => formatCurrencySigned(Math.round(v)),   color: result!.cashflow_monthly >= 0 ? "#2D6A2D" : "#B91C1C", sub: "Nach Rate & Kosten" },
+                              { label: "ROE",              value: result!.roe,               formatter: formatPercent,                                        color: "#101418", sub: "Eigenkapitalrendite" },
                             ].map(({ label, value, formatter, color, sub }) => (
                               <div
                                 key={label}
                                 className="rounded-[12px] p-4"
-                                style={{ border: `1px solid ${tokens.color.border}`, background: tokens.color.bgSubtle }}
+                                style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}`, background: "#F5F5F5" }}
                               >
                                 <div className="flex items-center justify-between mb-2">
-                                  <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                                  <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "#9CA3AF" }}>{label}</p>
                                   <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
                                 </div>
                                 <MetricValue value={value} formatter={formatter} className="text-[26px] font-semibold tracking-[-0.03em] leading-none" style={{ color }} />
-                                <p className="text-[10px] mt-1.5" style={{ color: tokens.color.textSubtle }}>{sub}</p>
+                                <p className="text-[10px] mt-1.5" style={{ color: "#9CA3AF" }}>{sub}</p>
                               </div>
                             ))}
                           </div>
@@ -971,12 +970,12 @@ export default function CalculatorPage() {
                           {/* Quality bar */}
                           <div
                             className="rounded-[12px] px-4 py-3 flex items-center gap-3 mb-4"
-                            style={{ border: `1px solid ${tokens.color.border}`, background: tokens.color.bgSubtle }}
+                            style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}`, background: "#F5F5F5" }}
                           >
-                            <p className="text-xs font-semibold whitespace-nowrap" style={{ color: tokens.color.textMuted }}>Objektqualität</p>
+                            <p className="text-xs font-semibold whitespace-nowrap" style={{ color: "#6B7280" }}>Objektqualität</p>
                             <div
                               className="flex-1 rounded-full h-1.5 overflow-hidden"
-                              style={{ background: tokens.color.surfaceActive }}
+                              style={{ background: "#F5F5F5" }}
                             >
                               <motion.div
                                 className="h-full rounded-full"
@@ -993,22 +992,22 @@ export default function CalculatorPage() {
                           {loan > 0 && result!.dscr > 0 && (
                             <div
                               className="flex justify-between items-center py-3"
-                              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+                              style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                             >
                               <span
                                 className="text-sm cursor-help underline decoration-dotted"
-                                style={{ color: tokens.color.textMuted }}
+                                style={{ color: "#6B7280" }}
                                 title="Debt Service Coverage Ratio: NOI / Jahresschuldendienst. Banken erwarten mind. 1,2"
                               >
                                 DSCR
                               </span>
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold" style={{ color: result!.dscr >= 1.5 ? tokens.color.positive : result!.dscr >= 1.2 ? tokens.color.warning : tokens.color.danger }}>
+                                <span className="text-sm font-semibold" style={{ color: result!.dscr >= 1.5 ? "#2D6A2D" : result!.dscr >= 1.2 ? "#92400E" : "#B91C1C" }}>
                                   {result!.dscr >= 1.5 ? "Sehr gut" : result!.dscr >= 1.2 ? "Ausreichend" : "Kritisch"}
                                 </span>
                                 <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{
-                                  color: result!.dscr >= 1.5 ? tokens.color.positive : result!.dscr >= 1.2 ? tokens.color.warning : tokens.color.danger,
-                                  background: result!.dscr >= 1.5 ? tokens.color.positiveBg : result!.dscr >= 1.2 ? tokens.color.warningBg : tokens.color.dangerBg,
+                                  color: result!.dscr >= 1.5 ? "#2D6A2D" : result!.dscr >= 1.2 ? "#92400E" : "#B91C1C",
+                                  background: result!.dscr >= 1.5 ? "rgba(45,106,45,0.08)" : result!.dscr >= 1.2 ? "rgba(146,64,14,0.08)" : "rgba(185,28,28,0.08)",
                                 }}>
                                   {result!.dscr.toFixed(2)}
                                 </span>
@@ -1019,23 +1018,23 @@ export default function CalculatorPage() {
                           {/* Kaufpreis-Indikator */}
                           <div
                             className="rounded-[12px] p-4 mt-3"
-                            style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
+                            style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                           >
                             <div className="flex justify-between items-center mb-3">
-                              <p className="text-xs font-semibold" style={{ color: tokens.color.textMuted }}>Kaufpreis-Indikator</p>
+                              <p className="text-xs font-semibold" style={{ color: "#6B7280" }}>Kaufpreis-Indikator</p>
                               <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{
-                                background: result!.price_indicator === "günstig" ? tokens.color.positiveBg : result!.price_indicator === "fair" ? tokens.color.accentMuted : result!.price_indicator === "teuer" ? tokens.color.warningBg : tokens.color.dangerBg,
-                                color:      result!.price_indicator === "günstig" ? tokens.color.positive : result!.price_indicator === "fair" ? tokens.color.accent : result!.price_indicator === "teuer" ? tokens.color.warning : tokens.color.danger,
+                                background: result!.price_indicator === "günstig" ? "rgba(45,106,45,0.08)" : result!.price_indicator === "fair" ? "rgba(160,120,48,0.08)" : result!.price_indicator === "teuer" ? "rgba(146,64,14,0.08)" : "rgba(185,28,28,0.08)",
+                                color:      result!.price_indicator === "günstig" ? "#2D6A2D" : result!.price_indicator === "fair" ? "#A07830" : result!.price_indicator === "teuer" ? "#92400E" : "#B91C1C",
                               }}>
                                 {result!.price_indicator}
                               </span>
                             </div>
 
                             <div className="flex justify-between text-sm mb-1">
-                              <span style={{ color: tokens.color.textMuted }}>Kaufpreisfaktor (Jahresmiete)</span>
-                              <span className="font-semibold" style={{ color: tokens.color.text }}>{result!.price_multiplier.toFixed(1)}x</span>
+                              <span style={{ color: "#6B7280" }}>Kaufpreisfaktor (Jahresmiete)</span>
+                              <span className="font-semibold" style={{ color: "#101418" }}>{result!.price_multiplier.toFixed(1)}x</span>
                             </div>
-                            <div className="flex justify-between text-xs mb-1" style={{ color: tokens.color.textSubtle }}>
+                            <div className="flex justify-between text-xs mb-1" style={{ color: "#9CA3AF" }}>
                               <span>Fairer Wertbereich (20–25x)</span>
                               <span>{formatCurrency(result!.fair_value_min)} – {formatCurrency(result!.fair_value_max)}</span>
                             </div>
@@ -1043,25 +1042,25 @@ export default function CalculatorPage() {
                             {/* 150er Regel */}
                             <div
                               className="flex justify-between items-center py-2 mt-2"
-                              style={{ borderTop: `1px solid ${tokens.color.border}` }}
+                              style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                             >
                               <span
                                 className="text-sm cursor-help underline decoration-dotted"
-                                style={{ color: tokens.color.textMuted }}
+                                style={{ color: "#6B7280" }}
                                 title="Klassische Faustformel: Kaufpreis ÷ Monatsmiete. Sollte ≤ 150 sein."
                               >
                                 150er Regel
                               </span>
                               <span
                                 className="text-sm font-semibold tabular-nums"
-                                style={{ color: faktor150 <= 150 ? tokens.color.positive : faktor150 <= 200 ? tokens.color.warning : tokens.color.danger }}
+                                style={{ color: faktor150 <= 150 ? "#2D6A2D" : faktor150 <= 200 ? "#92400E" : "#B91C1C" }}
                               >
                                 {faktor150.toFixed(0)}x
                               </span>
                             </div>
                             <div className="flex justify-between items-center pb-3">
-                              <span className="text-xs" style={{ color: tokens.color.textSubtle }}>Fairer Kaufpreis (150x)</span>
-                              <span className="text-xs font-medium" style={{ color: tokens.color.text }}>{formatCurrency(rent * 150)}</span>
+                              <span className="text-xs" style={{ color: "#9CA3AF" }}>Fairer Kaufpreis (150x)</span>
+                              <span className="text-xs font-medium" style={{ color: "#101418" }}>{formatCurrency(rent * 150)}</span>
                             </div>
 
                             <PriceIndicatorBar multiplier={result!.price_multiplier} prefersReduced={prefersReduced} />
@@ -1077,7 +1076,7 @@ export default function CalculatorPage() {
                           <Row label="Gesamtinvestition" value={formatCurrency(result!.total_investment)} highlighted />
                           <Row label="Instandhaltung / Jahr" value={formatCurrency(result!.maintenance_yearly)} />
                           <Row label="Verwaltung / Jahr" value={formatCurrency(result!.management_yearly)} />
-                          <Row label="Leerstandsverlust" value={formatCurrency(result!.vacancy_loss)} color={tokens.color.danger} />
+                          <Row label="Leerstandsverlust" value={formatCurrency(result!.vacancy_loss)} color={"#B91C1C"} />
                         </div>
                       )}
 
@@ -1085,13 +1084,13 @@ export default function CalculatorPage() {
                       {activeTab === "Erträge" && (
                         <div>
                           <Row label="Kaltmiete / Jahr" value={formatCurrency(rent * 12)} />
-                          <Row label="Leerstandsabzug (3 %)" value={"−" + formatCurrency(result!.vacancy_loss)} color={tokens.color.danger} />
+                          <Row label="Leerstandsabzug (3 %)" value={"−" + formatCurrency(result!.vacancy_loss)} color={"#B91C1C"} />
                           <Row label="Eff. Jahresmiete" value={formatCurrency(result!.effective_rent_yearly)} />
                           <Row label="NOI" value={formatCurrency(result!.noi)} highlighted />
                           {computedMonthlyRate > 0 && (
-                            <Row label="Darlehensrate / Jahr" value={formatCurrency(computedMonthlyRate * 12)} color={tokens.color.danger} />
+                            <Row label="Darlehensrate / Jahr" value={formatCurrency(computedMonthlyRate * 12)} color={"#B91C1C"} />
                           )}
-                          <Row label="Cashflow / Jahr" value={formatCurrencySigned(result!.cashflow_yearly)} color={result!.cashflow_yearly >= 0 ? tokens.color.positive : tokens.color.danger} highlighted />
+                          <Row label="Cashflow / Jahr" value={formatCurrencySigned(result!.cashflow_yearly)} color={result!.cashflow_yearly >= 0 ? "#2D6A2D" : "#B91C1C"} highlighted />
                         </div>
                       )}
 
@@ -1101,7 +1100,7 @@ export default function CalculatorPage() {
                           {loan > 0 && interestRate > 0 ? (
                             <>
                               <div className="flex justify-between items-center mb-4">
-                                <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: tokens.color.textMuted }}>Tilgungsplan</p>
+                                <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6B7280" }}>Tilgungsplan</p>
                                 <div className="flex items-center gap-1.5">
                                   {([10, 20, 30] as const).map((y) => (
                                     <button
@@ -1109,11 +1108,11 @@ export default function CalculatorPage() {
                                       onClick={() => setTilgungYears(y)}
                                       className="text-xs px-2.5 py-1 rounded-[6px] transition-all"
                                       style={tilgungYears === y ? {
-                                        background: tokens.color.accent,
-                                        color: tokens.color.bg,
+                                        background: "#A07830",
+                                        color: "#F8F7F4",
                                       } : {
-                                        background: tokens.color.surfaceHover,
-                                        color: tokens.color.textMuted,
+                                        background: "#F8F7F4",
+                                        color: "#6B7280",
                                       }}
                                     >{y}J</button>
                                   ))}
@@ -1121,16 +1120,16 @@ export default function CalculatorPage() {
                               </div>
                               <div className="grid grid-cols-3 gap-2 mb-4">
                                 {[
-                                  { label: "Gesamtzinsen",   value: formatCurrency(totalZinsen),                  color: totalZinsen > loan * 0.3 ? tokens.color.danger : tokens.color.text },
-                                  { label: "Gesamttilgung",  value: formatCurrency(totalTilgung),                 color: tokens.color.text },
-                                  { label: `Restschuld ${tilgungYears}J.`, value: formatCurrency(lastRow?.restschuld_end ?? 0), color: (lastRow?.restschuld_end ?? 0) === 0 ? tokens.color.positive : tokens.color.warning },
+                                  { label: "Gesamtzinsen",   value: formatCurrency(totalZinsen),                  color: totalZinsen > loan * 0.3 ? "#B91C1C" : "#101418" },
+                                  { label: "Gesamttilgung",  value: formatCurrency(totalTilgung),                 color: "#101418" },
+                                  { label: `Restschuld ${tilgungYears}J.`, value: formatCurrency(lastRow?.restschuld_end ?? 0), color: (lastRow?.restschuld_end ?? 0) === 0 ? "#2D6A2D" : "#92400E" },
                                 ].map(({ label, value, color }) => (
                                   <div
                                     key={label}
                                     className="rounded-[10px] p-3"
-                                    style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
+                                    style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                                   >
-                                    <p className="text-[9px] mb-1.5 leading-tight" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                                    <p className="text-[9px] mb-1.5 leading-tight" style={{ color: "#9CA3AF" }}>{label}</p>
                                     <p className="text-xs font-semibold" style={{ color }}>{value}</p>
                                   </div>
                                 ))}
@@ -1141,9 +1140,9 @@ export default function CalculatorPage() {
                               <div className="max-h-[240px] overflow-y-auto [scrollbar-width:thin]">
                                 <table className="w-full">
                                   <thead>
-                                    <tr style={{ borderBottom: `1px solid ${tokens.color.border}` }}>
+                                    <tr style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}>
                                       {["Jahr", "Restschuld", "Zinsen", "Tilgung", "Rate/Jahr"].map((h) => (
-                                        <th key={h} className="text-left text-[9px] uppercase tracking-wide pb-2 font-semibold" style={{ color: tokens.color.textSubtle }}>{h}</th>
+                                        <th key={h} className="text-left text-[9px] uppercase tracking-wide pb-2 font-semibold" style={{ color: "#9CA3AF" }}>{h}</th>
                                       ))}
                                     </tr>
                                   </thead>
@@ -1152,15 +1151,15 @@ export default function CalculatorPage() {
                                       <tr
                                         key={row.year}
                                         style={{
-                                          background: row.year % 5 === 0 ? tokens.color.bgSubtle : "transparent",
-                                          borderBottom: `1px solid ${tokens.color.border}`,
+                                          background: row.year % 5 === 0 ? "#F5F5F5" : "transparent",
+                                          borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}`,
                                         }}
                                       >
-                                        <td className="text-xs font-medium py-1.5 tabular-nums" style={{ color: tokens.color.textMuted }}>{row.year}</td>
-                                        <td className="text-xs tabular-nums" style={{ color: tokens.color.text }}>{formatCurrency(row.restschuld_end)}</td>
-                                        <td className="text-xs tabular-nums" style={{ color: tokens.color.danger }}>{formatCurrency(row.zinsen)}</td>
-                                        <td className="text-xs tabular-nums" style={{ color: tokens.color.accent }}>{formatCurrency(row.tilgung)}</td>
-                                        <td className="text-xs font-medium tabular-nums" style={{ color: tokens.color.text }}>{formatCurrency(row.rate_jahres)}</td>
+                                        <td className="text-xs font-medium py-1.5 tabular-nums" style={{ color: "#6B7280" }}>{row.year}</td>
+                                        <td className="text-xs tabular-nums" style={{ color: "#101418" }}>{formatCurrency(row.restschuld_end)}</td>
+                                        <td className="text-xs tabular-nums" style={{ color: "#B91C1C" }}>{formatCurrency(row.zinsen)}</td>
+                                        <td className="text-xs tabular-nums" style={{ color: "#A07830" }}>{formatCurrency(row.tilgung)}</td>
+                                        <td className="text-xs font-medium tabular-nums" style={{ color: "#101418" }}>{formatCurrency(row.rate_jahres)}</td>
                                       </tr>
                                     ))}
                                   </tbody>
@@ -1169,8 +1168,8 @@ export default function CalculatorPage() {
                             </>
                           ) : (
                             <div className="flex flex-col items-center py-10 text-center">
-                              <p className="text-sm" style={{ color: tokens.color.textMuted }}>Finanzierungsdaten eingeben</p>
-                              <p className="text-xs mt-1" style={{ color: tokens.color.textSubtle }}>Darlehensbetrag und Zinssatz im linken Panel angeben.</p>
+                              <p className="text-sm" style={{ color: "#6B7280" }}>Finanzierungsdaten eingeben</p>
+                              <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>Darlehensbetrag und Zinssatz im linken Panel angeben.</p>
                             </div>
                           )}
                         </div>
@@ -1180,12 +1179,12 @@ export default function CalculatorPage() {
                       {activeTab === "Szenarien" && (
                         <div>
                           <div className="flex justify-between items-center mb-4">
-                            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: tokens.color.textMuted }}>Szenario-Vergleich</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6B7280" }}>Szenario-Vergleich</p>
                             {szenarien.length < 3 && (
                               <button
                                 onClick={addSzenario}
                                 className="flex items-center gap-1.5 text-xs font-medium transition-colors"
-                                style={{ color: tokens.color.accent }}
+                                style={{ color: "#A07830" }}
                               >
                                 <Plus size={13} />Szenario hinzufügen
                               </button>
@@ -1193,21 +1192,21 @@ export default function CalculatorPage() {
                           </div>
                           <div className="flex flex-col gap-3">
                             {szenarioResults.map(({ s, r }) => {
-                              const cfColor = r && r.cashflow_monthly >= 0 ? tokens.color.positive : tokens.color.danger;
+                              const cfColor = r && r.cashflow_monthly >= 0 ? "#2D6A2D" : "#B91C1C";
                               const isBase = s.id === "base";
                               return (
                                 <div
                                   key={s.id}
                                   className="rounded-[12px] overflow-hidden"
                                   style={{
-                                    border: `1px solid ${isBase ? tokens.color.borderAccent : tokens.color.border}`,
+                                    border: `1px solid ${isBase ? "rgba(160,120,48,0.3)" : "rgba(0,0,0,0.07)"}`,
                                   }}
                                 >
                                   <div
                                     className="px-4 py-3 flex items-center justify-between"
                                     style={{
-                                      background: tokens.color.bgSubtle,
-                                      borderBottom: `1px solid ${tokens.color.border}`,
+                                      background: "#F5F5F5",
+                                      borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}`,
                                     }}
                                   >
                                     <div className="flex items-center gap-2">
@@ -1215,13 +1214,13 @@ export default function CalculatorPage() {
                                         value={s.label}
                                         onChange={(e) => updateSzenario(s.id, "label", e.target.value)}
                                         className="text-xs font-semibold bg-transparent border-none outline-none w-28"
-                                        style={{ color: tokens.color.text }}
+                                        style={{ color: "#101418" }}
                                       />
                                       {!isBase && (
                                         <button
                                           onClick={() => removeSzenario(s.id)}
                                           className="text-[10px] flex items-center gap-0.5 transition-colors"
-                                          style={{ color: tokens.color.danger }}
+                                          style={{ color: "#B91C1C" }}
                                         >
                                           <Trash size={10} />Entfernen
                                         </button>
@@ -1232,7 +1231,7 @@ export default function CalculatorPage() {
                                         className="text-xs font-semibold px-2 py-0.5 rounded-full"
                                         style={{
                                           color: cfColor,
-                                          background: r.cashflow_monthly >= 0 ? tokens.color.positiveBg : tokens.color.dangerBg,
+                                          background: r.cashflow_monthly >= 0 ? "rgba(45,106,45,0.08)" : "rgba(185,28,28,0.08)",
                                         }}
                                       >
                                         {formatCurrencySigned(r.cashflow_monthly)}/Mo.
@@ -1241,7 +1240,7 @@ export default function CalculatorPage() {
                                   </div>
                                   <div
                                     className="px-4 py-3 grid grid-cols-2 gap-x-4 gap-y-2"
-                                    style={{ background: tokens.color.surface }}
+                                    style={{ background: "#FFFFFF" }}
                                   >
                                     {[
                                       { label: "Kaufpreis (€)", field: "kaufpreis" as keyof Szenario, val: s.kaufpreis },
@@ -1250,7 +1249,7 @@ export default function CalculatorPage() {
                                       { label: "Tilgung (%)",   field: "tilgung" as keyof Szenario, val: s.tilgung },
                                     ].map(({ label, field, val }) => (
                                       <div key={field}>
-                                        <p className="text-[9px] mb-1" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                                        <p className="text-[9px] mb-1" style={{ color: "#9CA3AF" }}>{label}</p>
                                         <input
                                           type="number"
                                           step={field === "zinssatz" || field === "tilgung" ? 0.1 : 1}
@@ -1259,12 +1258,12 @@ export default function CalculatorPage() {
                                           onChange={(e) => updateSzenario(s.id, field, Number(e.target.value))}
                                           className="rounded-[6px] px-2 py-1.5 text-xs w-full focus:outline-none transition-colors"
                                           style={{
-                                            background: tokens.color.surfaceHover,
-                                            border: `1px solid ${tokens.color.border}`,
-                                            color: isBase ? tokens.color.textMuted : tokens.color.text,
+                                            background: "#F8F7F4",
+                                            border: `1px solid ${"rgba(0,0,0,0.07)"}`,
+                                            color: isBase ? "#6B7280" : "#101418",
                                           }}
                                           onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(160,120,48,0.4)")}
-                                          onBlur={(e) => (e.currentTarget.style.borderColor = tokens.color.border)}
+                                          onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)")}
                                         />
                                       </div>
                                     ))}
@@ -1272,16 +1271,16 @@ export default function CalculatorPage() {
                                   {r && (
                                     <div
                                       className="px-4 py-3 grid grid-cols-4 gap-2"
-                                      style={{ borderTop: `1px solid ${tokens.color.border}`, background: tokens.color.surface }}
+                                      style={{ borderTop: `1px solid ${"rgba(0,0,0,0.07)"}`, background: "#FFFFFF" }}
                                     >
                                       {[
                                         { label: "BRUTTO", value: formatPercent(r.gross_yield),             color: getYieldColor(r.gross_yield, 0.05, 0.03) },
                                         { label: "NETTO",  value: formatPercent(r.net_yield),               color: getYieldColor(r.net_yield, 0.04, 0.02) },
                                         { label: "CF/MO.", value: formatCurrencySigned(r.cashflow_monthly), color: cfColor },
-                                        { label: "ROE",    value: formatPercent(r.roe),                     color: tokens.color.text },
+                                        { label: "ROE",    value: formatPercent(r.roe),                     color: "#101418" },
                                       ].map(({ label, value, color }) => (
                                         <div key={label}>
-                                          <p className="text-[9px] mb-0.5" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                                          <p className="text-[9px] mb-0.5" style={{ color: "#9CA3AF" }}>{label}</p>
                                           <p className="text-xs font-semibold" style={{ color }}>{value}</p>
                                         </div>
                                       ))}
@@ -1294,21 +1293,21 @@ export default function CalculatorPage() {
                           {szenarien.length > 1 && (
                             <div
                               className="mt-4 rounded-[12px] overflow-hidden"
-                              style={{ border: `1px solid ${tokens.color.border}` }}
+                              style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                             >
                               <div
                                 className="px-4 py-2"
-                                style={{ background: tokens.color.bgSubtle, borderBottom: `1px solid ${tokens.color.border}` }}
+                                style={{ background: "#F5F5F5", borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                               >
-                                <p className="text-[9px] uppercase tracking-widest font-semibold" style={{ color: tokens.color.textSubtle }}>Kennzahlen im Vergleich</p>
+                                <p className="text-[9px] uppercase tracking-widest font-semibold" style={{ color: "#9CA3AF" }}>Kennzahlen im Vergleich</p>
                               </div>
                               <div className="overflow-x-auto">
                                 <table className="w-full text-xs tabular-nums">
                                   <thead>
-                                    <tr style={{ borderBottom: `1px solid ${tokens.color.border}` }}>
-                                      <th className="text-left font-medium px-4 py-2" style={{ color: tokens.color.textSubtle }}>Kennzahl</th>
+                                    <tr style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}>
+                                      <th className="text-left font-medium px-4 py-2" style={{ color: "#9CA3AF" }}>Kennzahl</th>
                                       {szenarien.map((s) => (
-                                        <th key={s.id} className="text-right font-semibold px-4 py-2" style={{ color: tokens.color.text }}>{s.label}</th>
+                                        <th key={s.id} className="text-right font-semibold px-4 py-2" style={{ color: "#101418" }}>{s.label}</th>
                                       ))}
                                     </tr>
                                   </thead>
@@ -1323,15 +1322,15 @@ export default function CalculatorPage() {
                                     ].map(({ label, field, vals }) => {
                                       const best = bestIdx(field);
                                       return (
-                                        <tr key={label} style={{ borderBottom: `1px solid ${tokens.color.border}` }}>
-                                          <td className="px-4 py-2.5" style={{ color: tokens.color.textMuted }}>{label}</td>
+                                        <tr key={label} style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}>
+                                          <td className="px-4 py-2.5" style={{ color: "#6B7280" }}>{label}</td>
                                           {vals.map((v, ci) => (
                                             <td
                                               key={ci}
                                               className="text-right px-4 py-2.5 font-medium"
                                               style={{
-                                                color: ci === best ? tokens.color.positive : tokens.color.text,
-                                                background: ci === best ? tokens.color.positiveBg : "transparent",
+                                                color: ci === best ? "#2D6A2D" : "#101418",
+                                                background: ci === best ? "rgba(45,106,45,0.08)" : "transparent",
                                                 fontWeight: ci === best ? 600 : 500,
                                               }}
                                             >{v}</td>
@@ -1352,30 +1351,30 @@ export default function CalculatorPage() {
                         <div>
                           {!pp || !builtYear ? (
                             <div className="flex flex-col items-center py-10 text-center">
-                              <p className="text-sm" style={{ color: tokens.color.textMuted }}>Kaufpreis und Baujahr eingeben</p>
-                              <p className="text-xs mt-1" style={{ color: tokens.color.textSubtle }}>um die AfA-Berechnung zu starten.</p>
+                              <p className="text-sm" style={{ color: "#6B7280" }}>Kaufpreis und Baujahr eingeben</p>
+                              <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>um die AfA-Berechnung zu starten.</p>
                             </div>
                           ) : afaResult && (
                             <>
                               <div
                                 className="inline-flex items-center gap-2 mb-5 text-xs font-medium px-3 py-1.5 rounded-full"
-                                style={{ background: tokens.color.accentMuted, color: tokens.color.accent }}
+                                style={{ background: "rgba(160,120,48,0.08)", color: "#A07830" }}
                               >
                                 {AFA_TYPE_LABELS[afaResult.afa_type]}
                               </div>
 
                               <div className="grid grid-cols-3 gap-3 mb-5">
                                 {[
-                                  { label: "AfA / JAHR",             value: formatCurrency(afaResult.afa_yearly),             color: tokens.color.text },
-                                  { label: "AfA / MONAT",            value: formatCurrency(afaResult.afa_monthly),            color: tokens.color.text },
-                                  { label: "STEUERSPARNIS / JAHR",   value: formatCurrency(afaResult.steuerersparnis_yearly), color: tokens.color.positive },
+                                  { label: "AfA / JAHR",             value: formatCurrency(afaResult.afa_yearly),             color: "#101418" },
+                                  { label: "AfA / MONAT",            value: formatCurrency(afaResult.afa_monthly),            color: "#101418" },
+                                  { label: "STEUERSPARNIS / JAHR",   value: formatCurrency(afaResult.steuerersparnis_yearly), color: "#2D6A2D" },
                                 ].map(({ label, value, color }) => (
                                   <div
                                     key={label}
                                     className="rounded-[10px] p-3"
-                                    style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
+                                    style={{ background: "#F5F5F5", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                                   >
-                                    <p className="text-[9px] uppercase tracking-wide mb-1.5" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                                    <p className="text-[9px] uppercase tracking-wide mb-1.5" style={{ color: "#9CA3AF" }}>{label}</p>
                                     <p className="text-lg font-semibold mt-1.5 tabular-nums" style={{ color }}>{value}</p>
                                   </div>
                                 ))}
@@ -1383,7 +1382,7 @@ export default function CalculatorPage() {
 
                               <div
                                 className="flex flex-col rounded-[12px] overflow-hidden mb-4"
-                                style={{ border: `1px solid ${tokens.color.border}` }}
+                                style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                               >
                                 {[
                                   { label: "AfA-Satz",          value: `${(afaResult.afa_rate * 100).toFixed(1)} %` },
@@ -1395,10 +1394,10 @@ export default function CalculatorPage() {
                                   <div
                                     key={label}
                                     className="flex justify-between px-4 py-3"
-                                    style={{ borderBottom: `1px solid ${tokens.color.border}` }}
+                                    style={{ borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                                   >
-                                    <span className="text-sm" style={{ color: tokens.color.textMuted }}>{label}</span>
-                                    <span className="text-sm font-semibold" style={{ color: tokens.color.text }}>{value}</span>
+                                    <span className="text-sm" style={{ color: "#6B7280" }}>{label}</span>
+                                    <span className="text-sm font-semibold" style={{ color: "#101418" }}>{value}</span>
                                   </div>
                                 ))}
                               </div>
@@ -1406,17 +1405,17 @@ export default function CalculatorPage() {
                               {/* Steuerersparnis callout */}
                               <div
                                 className="rounded-[12px] px-4 py-4 flex items-start gap-3"
-                                style={{ background: tokens.color.positiveBg, border: `1px solid rgba(45,106,45,0.15)` }}
+                                style={{ background: "rgba(45,106,45,0.08)", border: `1px solid rgba(45,106,45,0.15)` }}
                               >
-                                <PiggyBank size={18} color={tokens.color.positive} className="mt-0.5 flex-shrink-0" />
+                                <PiggyBank size={18} color={"#2D6A2D"} className="mt-0.5 flex-shrink-0" />
                                 <div>
-                                  <p className="text-sm" style={{ color: tokens.color.text }}>
+                                  <p className="text-sm" style={{ color: "#101418" }}>
                                     Durch AfA reduzierst du dein zu versteuerndes Einkommen um{" "}
                                     <span className="font-semibold">{formatCurrency(afaResult.afa_yearly)}</span> pro Jahr.
                                   </p>
-                                  <p className="text-xs mt-1" style={{ color: tokens.color.textMuted }}>
+                                  <p className="text-xs mt-1" style={{ color: "#6B7280" }}>
                                     Das entspricht einer Steuerersparnis von{" "}
-                                    <span className="font-medium" style={{ color: tokens.color.positive }}>{formatCurrency(afaResult.steuerersparnis_yearly)}/Jahr</span>{" "}
+                                    <span className="font-medium" style={{ color: "#2D6A2D" }}>{formatCurrency(afaResult.steuerersparnis_yearly)}/Jahr</span>{" "}
                                     bei {steuerForm.steuersatz || "42"} % Steuersatz.
                                   </p>
                                 </div>
@@ -1426,17 +1425,17 @@ export default function CalculatorPage() {
                               {steuerForm.kaufdatum && spekuResult && (
                                 <div
                                   className="mt-4 rounded-[12px] overflow-hidden"
-                                  style={{ border: `1px solid ${tokens.color.border}` }}
+                                  style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                                 >
                                   <div
                                     className="px-4 py-3 flex items-center justify-between"
-                                    style={{ background: tokens.color.bgSubtle, borderBottom: `1px solid ${tokens.color.border}` }}
+                                    style={{ background: "#F5F5F5", borderBottom: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                                   >
-                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: tokens.color.textMuted }}>Spekulationsfrist</p>
+                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6B7280" }}>Spekulationsfrist</p>
                                     {spekuResult.ist_spekulationsfrei && (
                                       <span
                                         className="text-[10px] font-semibold px-2 py-1 rounded-full"
-                                        style={{ color: tokens.color.positive, background: tokens.color.positiveBg }}
+                                        style={{ color: "#2D6A2D", background: "rgba(45,106,45,0.08)" }}
                                       >
                                         Steuerfrei
                                       </span>
@@ -1444,33 +1443,33 @@ export default function CalculatorPage() {
                                   </div>
                                   <div className="px-4 py-4">
                                     {spekuResult.ist_spekulationsfrei ? (
-                                      <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: tokens.color.positive }}>
+                                      <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "#2D6A2D" }}>
                                         <CheckCircle size={16} weight="fill" />
                                         Spekulationsfrei! Verkauf ohne Steuer möglich.
                                       </div>
                                     ) : (
                                       <>
-                                        <p className="text-xs" style={{ color: tokens.color.textSubtle }}>Spekulationsfrei ab:</p>
-                                        <p className="text-base font-semibold mt-1" style={{ color: tokens.color.text }}>{spekuResult.speku_frei_ab}</p>
+                                        <p className="text-xs" style={{ color: "#9CA3AF" }}>Spekulationsfrei ab:</p>
+                                        <p className="text-base font-semibold mt-1" style={{ color: "#101418" }}>{spekuResult.speku_frei_ab}</p>
                                         <div className="mt-3">
                                           <div
                                             className="rounded-full h-1.5 overflow-hidden"
-                                            style={{ background: tokens.color.surfaceActive }}
+                                            style={{ background: "#F5F5F5" }}
                                           >
                                             <motion.div
                                               className="h-full rounded-full"
-                                              style={{ background: tokens.color.accent }}
+                                              style={{ background: "#A07830" }}
                                               initial={{ width: "0%" }}
                                               animate={{ width: `${Math.min(100, ((10 - spekuResult.jahre_verbleibend) / 10) * 100)}%` }}
                                               transition={{ duration: prefersReduced ? 0 : 0.8, ease: "easeOut" }}
                                             />
                                           </div>
-                                          <div className="flex justify-between text-[10px] mt-1.5" style={{ color: tokens.color.textSubtle }}>
+                                          <div className="flex justify-between text-[10px] mt-1.5" style={{ color: "#9CA3AF" }}>
                                             <span>Kaufdatum</span>
                                             <span>Steuerfrei</span>
                                           </div>
                                         </div>
-                                        <p className="mt-3 text-sm font-medium" style={{ color: tokens.color.warning }}>
+                                        <p className="mt-3 text-sm font-medium" style={{ color: "#92400E" }}>
                                           {spekuResult.tage_verbleibend > 365
                                             ? `${spekuResult.jahre_verbleibend.toFixed(1)} Jahre verbleibend`
                                             : `${spekuResult.tage_verbleibend} Tage verbleibend`}
@@ -1489,8 +1488,8 @@ export default function CalculatorPage() {
                       {activeTab === "Förderung" && (
                         <div>
                           <div className="mb-4">
-                            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: tokens.color.textMuted }}>KfW-Förderprogramme</p>
-                            <p className="text-[10px] mt-0.5" style={{ color: tokens.color.textSubtle }}>Mögliche Förderungen für dieses Objekt</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#6B7280" }}>KfW-Förderprogramme</p>
+                            <p className="text-[10px] mt-0.5" style={{ color: "#9CA3AF" }}>Mögliche Förderungen für dieses Objekt</p>
                           </div>
 
                           <div className="flex flex-col gap-3">
@@ -1498,36 +1497,36 @@ export default function CalculatorPage() {
                               <div
                                 key={prog.id}
                                 className="rounded-[12px] overflow-hidden"
-                                style={{ border: `1px solid ${tokens.color.border}` }}
+                                style={{ border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                               >
                                 <div className="px-4 py-3 flex items-start justify-between">
                                   <div>
-                                    <p className="text-sm font-semibold" style={{ color: tokens.color.text }}>{prog.name}</p>
-                                    <p className="text-[10px] mt-0.5" style={{ color: tokens.color.textSubtle }}>KfW {prog.id}</p>
+                                    <p className="text-sm font-semibold" style={{ color: "#101418" }}>{prog.name}</p>
+                                    <p className="text-[10px] mt-0.5" style={{ color: "#9CA3AF" }}>KfW {prog.id}</p>
                                   </div>
                                   <span
                                     className="text-[10px] font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-3"
                                     style={prog.applicable ? {
-                                      background: tokens.color.positiveBg,
-                                      color: tokens.color.positive,
+                                      background: "rgba(45,106,45,0.08)",
+                                      color: "#2D6A2D",
                                     } : {
-                                      background: tokens.color.surfaceHover,
-                                      color: tokens.color.textSubtle,
+                                      background: "#F8F7F4",
+                                      color: "#9CA3AF",
                                     }}
                                   >
                                     {prog.applicable ? "Möglich" : "Nicht anwendbar"}
                                   </span>
                                 </div>
                                 <div className="px-4 pb-4">
-                                  <p className="text-xs leading-relaxed" style={{ color: tokens.color.textMuted }}>{prog.beschreibung}</p>
+                                  <p className="text-xs leading-relaxed" style={{ color: "#6B7280" }}>{prog.beschreibung}</p>
                                   <div
                                     className="mt-2 flex items-center gap-1.5 text-xs"
-                                    style={{ color: prog.applicable ? tokens.color.positive : tokens.color.textSubtle, fontWeight: prog.applicable ? 500 : 400 }}
+                                    style={{ color: prog.applicable ? "#2D6A2D" : "#9CA3AF", fontWeight: prog.applicable ? 500 : 400 }}
                                   >
                                     <CurrencyEur size={12} />{prog.max_betrag}
                                   </div>
                                   {!prog.applicable && prog.reason && (
-                                    <p className="mt-1.5 text-[10px] italic" style={{ color: tokens.color.textSubtle }}>{prog.reason}</p>
+                                    <p className="mt-1.5 text-[10px] italic" style={{ color: "#9CA3AF" }}>{prog.reason}</p>
                                   )}
                                 </div>
                               </div>
@@ -1536,11 +1535,11 @@ export default function CalculatorPage() {
 
                           <div
                             className="mt-4 rounded-[10px] px-4 py-3 flex items-start gap-2"
-                            style={{ background: tokens.color.warningBg, border: `1px solid rgba(146,64,14,0.2)` }}
+                            style={{ background: "rgba(146,64,14,0.08)", border: `1px solid rgba(146,64,14,0.2)` }}
                           >
-                            <Warning size={14} color={tokens.color.warning} className="mt-0.5 flex-shrink-0" />
+                            <Warning size={14} color={"#92400E"} className="mt-0.5 flex-shrink-0" />
                             <div>
-                              <p className="text-[10px] leading-relaxed" style={{ color: tokens.color.textMuted }}>
+                              <p className="text-[10px] leading-relaxed" style={{ color: "#6B7280" }}>
                                 Förderangaben ohne Gewähr. Aktuelle Konditionen und Voraussetzungen bei der KfW Bank prüfen.
                               </p>
                               <a
@@ -1548,7 +1547,7 @@ export default function CalculatorPage() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="mt-1.5 block text-[10px] font-medium hover:underline"
-                                style={{ color: tokens.color.accent }}
+                                style={{ color: "#A07830" }}
                               >
                                 Zur KfW Förderberatung →
                               </a>
@@ -1565,22 +1564,22 @@ export default function CalculatorPage() {
                 {activeTab === "Übersicht" && result!.ltv > 0 && (
                   <div
                     className="mt-4 rounded-[14px] px-5 py-4 flex items-center gap-4"
-                    style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                    style={{ background: "#FFFFFF", border: `1px solid ${"rgba(0,0,0,0.07)"}` }}
                   >
-                    <p className="text-xs font-semibold whitespace-nowrap" style={{ color: tokens.color.textMuted }}>LTV</p>
+                    <p className="text-xs font-semibold whitespace-nowrap" style={{ color: "#6B7280" }}>LTV</p>
                     <div
                       className="flex-1 h-2 rounded-full overflow-hidden"
-                      style={{ background: tokens.color.surfaceActive }}
+                      style={{ background: "#F5F5F5" }}
                     >
                       <motion.div
                         className="h-full rounded-full"
-                        style={{ backgroundColor: result!.ltv < 0.6 ? tokens.color.positive : result!.ltv < 0.8 ? tokens.color.warning : tokens.color.danger }}
+                        style={{ backgroundColor: result!.ltv < 0.6 ? "#2D6A2D" : result!.ltv < 0.8 ? "#92400E" : "#B91C1C" }}
                         initial={{ width: "0%" }}
                         animate={{ width: `${Math.min(100, result!.ltv * 100)}%` }}
                         transition={{ duration: prefersReduced ? 0 : 0.8, ease: "easeOut" }}
                       />
                     </div>
-                    <p className="text-sm font-semibold whitespace-nowrap" style={{ color: tokens.color.text }}>{formatPercent(result!.ltv, 0)}</p>
+                    <p className="text-sm font-semibold whitespace-nowrap" style={{ color: "#101418" }}>{formatPercent(result!.ltv, 0)}</p>
                   </div>
                 )}
               </motion.div>

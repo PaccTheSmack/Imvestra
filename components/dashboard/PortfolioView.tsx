@@ -310,7 +310,7 @@ function EmptyState() {
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="w-20 h-20 bg-[#F5F5F5] border border-[rgba(0,0,0,0.07)] rounded-[20px] flex items-center justify-center mx-auto"
+        className="w-20 h-20 bg-[rgba(160,120,48,0.08)] border border-[rgba(160,120,48,0.15)] rounded-[14px] flex items-center justify-center mx-auto"
       >
         <Buildings size={36} color="#9CA3AF" />
       </motion.div>
@@ -331,7 +331,7 @@ function EmptyState() {
 
       <div className="mt-10 grid grid-cols-3 gap-4 max-w-[500px] opacity-40 select-none pointer-events-none">
         {["Portfoliowert", "Eigenkapital", "Cashflow/Mo"].map(label => (
-          <div key={label} className="bg-white border border-[rgba(0,0,0,0.07)] rounded-[12px] p-4 blur-[2px]">
+          <div key={label} className="bg-white border border-[rgba(0,0,0,0.07)] rounded-[14px] p-4 blur-[2px]">
             <p className="text-[9px] text-[#9CA3AF] uppercase tracking-widest">{label}</p>
             <p className="text-[18px] font-semibold text-[#101418] mt-1">—</p>
           </div>
@@ -435,15 +435,15 @@ export default function PortfolioView({ properties, financings, payments, expens
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-white border border-[rgba(0,0,0,0.07)] rounded-[8px] p-1 gap-0.5">
+            <div className="flex bg-[#F5F5F5] border border-[rgba(0,0,0,0.06)] rounded-[10px] p-1 gap-0.5">
               {TAB_VIEWS.map(v => (
                 <motion.button
                   key={v.id}
                   onClick={() => setViewMode(v.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-medium cursor-pointer transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-medium cursor-pointer transition-all"
                   style={viewMode === v.id
-                    ? { background: "#F5F5F5", color: "#101418" }
-                    : { color: "#9CA3AF" }}
+                    ? { background: "white", color: "#101418", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }
+                    : { color: "#6B7280" }}
                   whileTap={prefersReduced ? {} : { scale: 0.93 }}
                   transition={{ duration: 0.1 }}
                 >
@@ -464,29 +464,33 @@ export default function PortfolioView({ properties, financings, payments, expens
       </div>
 
       {/* ── Hero Metrics Bar ─────────────────────────────────────────────────── */}
-      <div className="bg-[#F8F7F4] border-b border-[rgba(0,0,0,0.06)] px-6 py-5">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+      <div className="px-6 py-4">
+        <div className="bg-[#A07830] rounded-[14px] shadow-[0_4px_24px_rgba(160,120,48,0.25)] px-6 py-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
 
           {/* 1 – Portfoliowert */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Portfoliowert</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">Portfoliowert</span>
               <Tooltip text="Geschätzter Gesamtmarktwert aller Immobilien. Berechnet aus Ertragswert und Vergleichswert." />
             </div>
-            <p className="text-[22px] font-semibold tracking-[-0.02em] text-[#101418] mt-1.5">{formatCurrency(summary.total_marktwert)}</p>
-            <p className="text-[11px] text-[#9CA3AF] mt-0.5">Gesamtwert</p>
+            <p className="text-[22px] font-bold tracking-[-0.02em] text-white mt-1.5">{formatCurrency(summary.total_marktwert)}</p>
+            <p className="text-[11px] text-white/70 mt-0.5">Gesamtwert</p>
           </div>
+
+          {/* Divider */}
+          <div className="hidden lg:block w-px bg-white/15 self-stretch" />
 
           {/* 2 – Eigenkapital */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Eigenkapital</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">Eigenkapital</span>
               <Tooltip text="Aktueller Eigenkapitalwert = Marktwert minus Restschulden. Was dir nach Verkauf und Schuldenrückzahlung bliebe." />
             </div>
-            <p className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5" style={{ color: "#A07830" }}>
+            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
               {formatCurrency(summary.total_eigenkapital_aktuell)}
             </p>
-            <p className="text-[11px] mt-0.5" style={{ color: "#A07830" }}>
+            <p className="text-[11px] mt-0.5 text-white/70">
               {formatCurrencySigned(summary.total_eigenkapital_gewinn)} Gewinn
             </p>
           </div>
@@ -494,24 +498,21 @@ export default function PortfolioView({ properties, financings, payments, expens
           {/* 3 – Wertsteigerung */}
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Wertsteigerung</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">Wertsteigerung</span>
               <Tooltip text="Differenz zwischen aktuellem Marktwert und ursprünglichem Kaufpreis aller Objekte." />
               <button
                 onClick={() => setValueDisplay(v => v === "eur" ? "pct" : "eur")}
-                className="text-[9px] px-1.5 py-0.5 rounded-full border border-[rgba(0,0,0,0.08)] text-[#9CA3AF] hover:text-[#101418] cursor-pointer transition-colors"
+                className="text-[9px] px-1.5 py-0.5 rounded-full border border-white/30 text-white/70 hover:text-white cursor-pointer transition-colors"
               >
                 {valueDisplay === "eur" ? "%" : "€"}
               </button>
             </div>
-            <p
-              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
-              style={{ color: summary.total_wertentwicklung_eur >= 0 ? "#A07830" : "#B91C1C" }}
-            >
+            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
               {valueDisplay === "eur"
                 ? formatCurrencySigned(summary.total_wertentwicklung_eur)
                 : formatPercent(summary.total_wertentwicklung_pct)}
             </p>
-            <p className="text-[11px] text-[#9CA3AF] mt-0.5">
+            <p className="text-[11px] text-white/70 mt-0.5">
               {valueDisplay === "eur"
                 ? formatPercent(summary.total_wertentwicklung_pct)
                 : formatCurrency(summary.total_wertentwicklung_eur)}
@@ -521,70 +522,53 @@ export default function PortfolioView({ properties, financings, payments, expens
           {/* 4 – Cashflow */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Cashflow / Mo.</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">Cashflow / Mo.</span>
               <Tooltip text="Monatlicher Netto-Cashflow nach Abzug aller Kosten (Zinsen, Tilgung, Hausgeld, Instandhaltung)." />
             </div>
-            <p
-              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
-              style={{ color: summary.total_cashflow_monthly >= 0 ? "#A07830" : "#B91C1C" }}
-            >
+            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
               {formatCurrencySigned(summary.total_cashflow_monthly)}
             </p>
-            <p className="text-[11px] text-[#9CA3AF] mt-0.5">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
+            <p className="text-[11px] text-white/70 mt-0.5">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
           </div>
 
           {/* 5 – ROE */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">EK-Rendite</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">EK-Rendite</span>
               <Tooltip text="ROE: Jährlicher Cashflow geteilt durch eingesetztes Eigenkapital. Zeigt wie effizient dein Kapital arbeitet." />
             </div>
-            <p
-              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
-              style={{ color: colorByValue(summary.portfolio_roe, 0.03, 0.06) }}
-            >
+            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
               {formatPercent(summary.portfolio_roe)}
             </p>
-            <p className="text-[11px] text-[#9CA3AF] mt-0.5">ROE p.a.</p>
+            <p className="text-[11px] text-white/70 mt-0.5">ROE p.a.</p>
           </div>
 
           {/* 6 – Gesamtrendite */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Gesamtrendite</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">Gesamtrendite</span>
               <Tooltip text="Cashflow + Wertsteigerung geteilt durch eingesetztes Eigenkapital. Die wahre Rendite deines Investments." />
             </div>
-            <p
-              className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5"
-              style={{ color: colorByValue(summary.portfolio_gesamtrendite, 0.05, 0.10) }}
-            >
+            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
               {formatPercent(summary.portfolio_gesamtrendite)}
             </p>
-            <p className="text-[11px] text-[#9CA3AF] mt-0.5">inkl. Wertsteigerung</p>
+            <p className="text-[11px] text-white/70 mt-0.5">inkl. Wertsteigerung</p>
           </div>
 
           {/* 7 – Restschuld */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Restschuld</span>
+              <span className="text-[10px] text-white/70 uppercase tracking-widest">Restschuld</span>
               <Tooltip text="Gesamte noch ausstehende Darlehensschulden über alle Objekte. Wird monatlich durch Tilgung reduziert." />
             </div>
-            <p className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5 text-[#B91C1C]">
+            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
               {formatCurrency(summary.total_restschuld)}
             </p>
-            <p
-              className="text-[11px] mt-0.5"
-              style={{
-                color: summary.total_fremdkapital_quote > 0.8
-                  ? "#B91C1C"
-                  : summary.total_fremdkapital_quote > 0.6
-                  ? "#92400E"
-                  : "#9CA3AF",
-              }}
-            >
+            <p className="text-[11px] mt-0.5 text-white/70">
               {formatPercent(summary.total_fremdkapital_quote)} des Portfoliowerts
             </p>
           </div>
+        </div>
         </div>
       </div>
 
@@ -606,7 +590,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 {/* LEFT */}
                 <div>
                   {/* Kapitalstruktur */}
-                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5 mb-5">
+                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5 mb-5">
                     <div className="flex justify-between items-center mb-5">
                       <div className="flex items-center">
                         <span className="text-sm font-semibold text-[#101418]">Kapitalstruktur</span>
@@ -674,7 +658,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                   </div>
 
                   {/* Cashflow Waterfall */}
-                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5">
+                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5">
                     <div className="flex items-center mb-5">
                       <span className="text-sm font-semibold text-[#101418]">Cashflow-Analyse / Monat</span>
                       <Tooltip text="Zeigt wohin deine Mieteinnahmen fließen und was als Netto-Cashflow verbleibt." />
@@ -734,7 +718,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 {/* RIGHT */}
                 <div>
                   {/* Kennzahlen */}
-                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5 mb-4">
+                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5 mb-4">
                     <p className="text-sm font-semibold text-[#101418] mb-4">Kennzahlen</p>
                     {[
                       {
@@ -803,7 +787,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                   </div>
 
                   {/* Allokation */}
-                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5">
+                  <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5">
                     <p className="text-sm font-semibold text-[#101418] mb-4">Allokation nach Objekttyp</p>
                     {Object.entries(typeGroups).map(([type, group]) => {
                       const tc = TYPE_COLORS[type] ?? TYPE_COLORS["Sonstige"]
@@ -852,15 +836,15 @@ export default function PortfolioView({ properties, financings, payments, expens
                       </button>
                     ))}
                   </div>
-                  <div className="flex gap-1 bg-white border border-[rgba(0,0,0,0.07)] rounded-[8px] p-1">
+                  <div className="flex gap-1 bg-[#F5F5F5] border border-[rgba(0,0,0,0.06)] rounded-[10px] p-1">
                     {(["1J", "3J", "5J", "Alle"] as TimeRange[]).map(r => (
                       <button
                         key={r}
                         onClick={() => setTimeRange(r)}
-                        className="text-xs px-3 py-1.5 rounded-[6px] cursor-pointer transition-all"
+                        className="text-xs px-3 py-1.5 rounded-[8px] cursor-pointer transition-all"
                         style={timeRange === r
-                          ? { background: "#F5F5F5", color: "#101418" }
-                          : { color: "#9CA3AF" }}
+                          ? { background: "#A07830", color: "white" }
+                          : { color: "#6B7280" }}
                       >
                         {r}
                       </button>
@@ -869,7 +853,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Main chart */}
-                <div className="bg-white border border-[rgba(0,0,0,0.07)] rounded-[16px] p-5 mb-4">
+                <div className="bg-white border border-[rgba(0,0,0,0.07)] rounded-[14px] p-5 mb-4">
                   <LineChart data={summary.wert_verlauf} metric={chartMetric} timeRange={timeRange} />
                   <div className="flex gap-6 mt-4 text-xs text-[#9CA3AF]">
                     <span style={{ color: "#A07830" }}>─── {chartMetric === "wert" ? "Portfoliowert" : "Eigenkapital"}</span>
@@ -976,7 +960,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                     >
                       <motion.div
                         onClick={() => setSelectedProperty(isOpen ? null : p.id)}
-                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-white border border-[rgba(0,0,0,0.07)] rounded-[12px] mb-2 px-4 py-3.5 hover:border-[rgba(160,120,48,0.18)] hover:bg-[#F8F7F4] transition-colors cursor-pointer items-center"
+                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-white border border-[rgba(0,0,0,0.07)] rounded-[14px] mb-2 px-4 py-3.5 hover:border-[rgba(160,120,48,0.2)] transition-all cursor-pointer items-center"
                         style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
                         whileHover={prefersReduced ? {} : { y: -2 }}
                         whileTap={prefersReduced ? {} : { scale: 0.995 }}
@@ -1005,7 +989,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                           <p className="text-sm font-semibold" style={{ color: m.wertentwicklung_eur >= 0 ? "#A07830" : "#B91C1C" }}>
                             {formatCurrencySigned(m.wertentwicklung_eur)}
                           </p>
-                          <p className="text-[10px] text-[#6A5A3A]">{formatPercent(m.wertentwicklung_pct)}</p>
+                          <p className="text-[10px] text-[#6B7280]">{formatPercent(m.wertentwicklung_pct)}</p>
                         </div>
                         <p className="text-sm font-semibold" style={{ color: m.cashflow_monthly >= 0 ? "#A07830" : "#B91C1C" }}>
                           {formatCurrencySigned(m.cashflow_monthly)}
@@ -1036,7 +1020,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                             style={{ overflow: "hidden" }}
                             className="mb-2"
                           >
-                            <div className="bg-[#F8F7F4] border-x border-b border-[rgba(0,0,0,0.07)] rounded-b-[12px] px-4 py-4">
+                            <div className="bg-[#F8F7F4] border-x border-b border-[rgba(0,0,0,0.07)] rounded-b-[14px] px-4 py-4">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                                 {[
                                   { label: "Gesamtinvestition", tip: "Kaufpreis + Nebenkosten", value: formatCurrency(m.gesamtinvestition), color: "#101418" },
@@ -1060,7 +1044,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => router.push(`/calculator?property=${p.id}`)}
-                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6A5A3A] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
                                 >
                                   <ArrowUpRight size={12} /> Im Rechner öffnen
                                 </button>
@@ -1074,7 +1058,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 })}
 
                 {/* Totals row */}
-                <div className="sticky bottom-0 bg-[#F5F5F5] border border-[rgba(0,0,0,0.08)] rounded-[12px] px-4 py-3 grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 items-center mt-2">
+                <div className="sticky bottom-0 bg-[#F8F7F4] border border-[rgba(0,0,0,0.07)] rounded-[14px] px-4 py-3 grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 items-center mt-2">
                   <p className="text-xs font-bold text-[#101418]">Gesamt</p>
                   <p className="text-sm font-bold text-[#101418]">{formatCurrency(summary.total_marktwert)}</p>
                   <p className="text-sm font-bold" style={{ color: summary.total_wertentwicklung_eur >= 0 ? "#A07830" : "#B91C1C" }}>
@@ -1097,7 +1081,7 @@ export default function PortfolioView({ properties, financings, payments, expens
               <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {/* Rendite-Analyse */}
-                <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5">
+                <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5">
                   <p className="text-sm font-semibold text-[#101418] mb-5">Rendite-Analyse</p>
                   <div className="space-y-4">
                     {[
@@ -1136,7 +1120,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Risiko-Analyse */}
-                <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5">
+                <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5">
                   <p className="text-sm font-semibold text-[#101418] mb-5">Risikoprofil</p>
                   <div className="space-y-0">
                     {[
@@ -1186,7 +1170,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Performance Ranking */}
-                <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[16px] p-5">
+                <div className="bg-white border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] rounded-[14px] p-5">
                   <p className="text-sm font-semibold text-[#101418] mb-1">Performance Ranking</p>
                   <p className="text-xs text-[#9CA3AF] mb-5">Objekte nach Eigenkapitalrendite</p>
                   <div className="space-y-0">

@@ -9,7 +9,6 @@ import {
   FilePdf,
   Warning,
 } from "@phosphor-icons/react";
-import { tokens } from "@/lib/tokens";
 import { formatCurrency, formatCurrencySigned, formatPercent } from "@/lib/format";
 import type { Property, RentPayment, Expense, Financing } from "@/types";
 import { EXPENSE_CATEGORIES } from "@/types";
@@ -31,18 +30,18 @@ function AnlageVRow({ label, value, highlight, color }: { label: string; value: 
     <div
       className="flex justify-between items-center py-2.5"
       style={{
-        borderBottom: `1px solid ${tokens.color.border}`,
-        background: highlight ? tokens.color.bgSubtle : "transparent",
+        borderBottom: `1px solid rgba(0,0,0,0.07)`,
+        background: highlight ? "#F5F5F5" : "transparent",
         marginLeft: highlight ? -20 : 0,
         marginRight: highlight ? -20 : 0,
         paddingLeft: highlight ? 20 : 0,
         paddingRight: highlight ? 20 : 0,
       }}
     >
-      <span className="text-xs" style={{ color: highlight ? tokens.color.text : tokens.color.textMuted, fontWeight: highlight ? 600 : 400 }}>
+      <span className="text-xs" style={{ color: highlight ? "#101418" : "#6B7280", fontWeight: highlight ? 600 : 400 }}>
         {label}
       </span>
-      <span className="text-sm font-semibold tabular-nums" style={{ color: color ?? (highlight ? tokens.color.text : tokens.color.text) }}>
+      <span className="text-sm font-semibold tabular-nums" style={{ color: color ?? (highlight ? "#101418" : "#101418") }}>
         {value}
       </span>
     </div>
@@ -159,7 +158,7 @@ export default function SteuernView({ properties, payments, expenses, financings
   const totalExpenses = expenseByCategory.reduce((s, c) => s + c.amount, 0) || 1;
 
   return (
-    <div className="min-h-screen" style={{ background: tokens.color.bg }}>
+    <div className="min-h-screen" style={{ background: "#F8F7F4" }}>
       <div className="p-6 w-full">
 
         {/* Header */}
@@ -172,15 +171,15 @@ export default function SteuernView({ properties, payments, expenses, financings
               <Receipt size={18} color="#A07830" />
             </div>
             <div className="flex items-center gap-2">
-              <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>
+              <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: "#101418" }}>
                 Steuerübersicht
               </h1>
               <span
                 className="text-[11px] px-2.5 py-1 rounded-full"
                 style={{
-                  background: tokens.color.surfaceHover,
-                  border: `1px solid ${tokens.color.border}`,
-                  color: tokens.color.textSubtle,
+                  background: "#F8F7F4",
+                  border: `1px solid rgba(0,0,0,0.07)`,
+                  color: "#9CA3AF",
                 }}
               >
                 {selectedYear}
@@ -193,8 +192,8 @@ export default function SteuernView({ properties, payments, expenses, financings
               <button
                 onClick={() => setSelectedYear(y => y - 1)}
                 className="w-8 h-8 flex items-center justify-center rounded-[6px] transition-colors"
-                style={{ color: tokens.color.textSubtle }}
-                onMouseEnter={e => (e.currentTarget.style.background = tokens.color.surfaceHover)}
+                style={{ color: "#9CA3AF" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#F8F7F4")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <CaretLeft size={16} />
@@ -203,8 +202,8 @@ export default function SteuernView({ properties, payments, expenses, financings
                 onClick={() => setSelectedYear(y => y + 1)}
                 disabled={selectedYear >= currentYear}
                 className="w-8 h-8 flex items-center justify-center rounded-[6px] transition-colors disabled:opacity-30"
-                style={{ color: tokens.color.textSubtle }}
-                onMouseEnter={e => { if (selectedYear < currentYear) (e.currentTarget.style.background = tokens.color.surfaceHover); }}
+                style={{ color: "#9CA3AF" }}
+                onMouseEnter={e => { if (selectedYear < currentYear) (e.currentTarget.style.background = "#F8F7F4"); }}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <CaretRight size={16} />
@@ -215,9 +214,9 @@ export default function SteuernView({ properties, payments, expenses, financings
               disabled={pdfLoading}
               className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] transition-all active:scale-[0.98] disabled:opacity-60"
               style={{
-                background: tokens.color.surfaceHover,
-                border: `1px solid ${tokens.color.borderStrong}`,
-                color: tokens.color.text,
+                background: "#F8F7F4",
+                border: `1px solid rgba(0,0,0,0.12)`,
+                color: "#101418",
               }}
             >
               <FilePdf size={14} color="#FF4444" />
@@ -237,38 +236,38 @@ export default function SteuernView({ properties, payments, expenses, financings
             >
               <Receipt size={36} color="#A07830" />
             </motion.div>
-            <p className="text-[24px] font-semibold tracking-[-0.02em] mb-2" style={{ color: tokens.color.text }}>
+            <p className="text-[24px] font-semibold tracking-[-0.02em] mb-2" style={{ color: "#101418" }}>
               Noch keine Steuerdaten
             </p>
-            <p className="text-sm text-center max-w-[340px] leading-relaxed mb-10" style={{ color: tokens.color.textMuted }}>
+            <p className="text-sm text-center max-w-[340px] leading-relaxed mb-10" style={{ color: "#6B7280" }}>
               Erfasse Objekte im Portfolio, um Mieteinnahmen, Werbungskosten und AfA automatisch auszuwerten.
             </p>
             {/* Ghost Anlage V rows */}
             <div
               className="w-full max-w-[480px] rounded-[14px] overflow-hidden select-none pointer-events-none"
-              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+              style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
             >
-              <div className="px-5 py-3" style={{ background: tokens.color.bgSubtle, borderBottom: `1px solid ${tokens.color.border}` }}>
-                <div className="h-2.5 w-40 rounded-full" style={{ background: "rgba(16,20,24,0.08)", filter: "blur(1.5px)", opacity: 0.4 }} />
+              <div className="px-5 py-3" style={{ background: "#F5F5F5", borderBottom: `1px solid rgba(0,0,0,0.07)` }}>
+                <div className="h-2.5 w-40 rounded-full" style={{ background: "rgba(0,0,0,0.08)", filter: "blur(1.5px)", opacity: 0.4 }} />
               </div>
               <div className="px-5 py-4 flex flex-col gap-3" style={{ filter: "blur(1.5px)", opacity: 0.35 }}>
                 {[["Mieteinnahmen (Zeile 9)", "8.400 €"], ["Schuldzinsen (Zeile 35)", "3.120 €"], ["AfA (Zeile 33)", "2.760 €"], ["Überschuss / Verlust (Zeile 53)", "2.520 €"]].map(([label, val]) => (
                   <div key={label} className="flex justify-between items-center py-1.5" style={{ borderBottom: "1px solid rgba(16,20,24,0.05)" }}>
-                    <span className="text-xs" style={{ color: tokens.color.textMuted }}>{label}</span>
-                    <span className="text-xs font-medium tabular-nums" style={{ color: tokens.color.text }}>{val}</span>
+                    <span className="text-xs" style={{ color: "#6B7280" }}>{label}</span>
+                    <span className="text-xs font-medium tabular-nums" style={{ color: "#101418" }}>{val}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div
               className="w-full max-w-[480px] rounded-[14px] mt-3 select-none pointer-events-none"
-              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}`, filter: "blur(1.5px)", opacity: 0.2 }}
+              style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)`, filter: "blur(1.5px)", opacity: 0.2 }}
             >
               <div className="px-5 py-4 flex flex-col gap-3">
                 {[["AfA / Jahr", "2.760 €"], ["Steuerersparnis (42 %)", "1.159 €"]].map(([label, val]) => (
                   <div key={label} className="flex justify-between items-center py-1" style={{ borderBottom: "1px solid rgba(16,20,24,0.05)" }}>
-                    <span className="text-xs" style={{ color: tokens.color.textMuted }}>{label}</span>
-                    <span className="text-xs font-medium tabular-nums" style={{ color: tokens.color.text }}>{val}</span>
+                    <span className="text-xs" style={{ color: "#6B7280" }}>{label}</span>
+                    <span className="text-xs font-medium tabular-nums" style={{ color: "#101418" }}>{val}</span>
                   </div>
                 ))}
               </div>
@@ -292,9 +291,9 @@ export default function SteuernView({ properties, payments, expenses, financings
             <div
               key={label}
               className="rounded-[12px] p-4"
-              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+              style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
             >
-              <p className="text-[9px] font-semibold uppercase tracking-widest mb-2" style={{ color: tokens.color.textSubtle }}>
+              <p className="text-[9px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#9CA3AF" }}>
                 {label}
               </p>
               <p className="text-[22px] font-semibold tracking-[-0.03em] leading-none tabular-nums" style={{ color }}>
@@ -308,12 +307,12 @@ export default function SteuernView({ properties, payments, expenses, financings
 
         <div
           className="rounded-[14px] overflow-hidden"
-          style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+          style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
         >
           {/* Tab bar */}
           <div
             className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            style={{ borderBottom: `1px solid ${tokens.color.border}` }}
+            style={{ borderBottom: `1px solid rgba(0,0,0,0.07)` }}
           >
             {TABS.map(({ id, label }) => (
               <button
@@ -321,11 +320,11 @@ export default function SteuernView({ properties, payments, expenses, financings
                 onClick={() => setActiveTab(id)}
                 className="flex-shrink-0 py-3 px-5 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
                 style={activeTab === id ? {
-                  color: tokens.color.accent,
-                  borderBottom: `2px solid ${tokens.color.accent}`,
+                  color: "#A07830",
+                  borderBottom: `2px solid #A07830`,
                   marginBottom: -1,
                 } : {
-                  color: tokens.color.textSubtle,
+                  color: "#9CA3AF",
                 }}
               >
                 {label}
@@ -351,19 +350,19 @@ export default function SteuernView({ properties, payments, expenses, financings
                   {/* Anlage V Vorbereitung */}
                   <div
                     className="rounded-[14px] overflow-hidden"
-                    style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                    style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
                   >
                     <div
                       className="px-5 py-3"
-                      style={{ background: tokens.color.bg, borderBottom: `1px solid ${tokens.color.border}` }}
+                      style={{ background: "#F8F7F4", borderBottom: `1px solid rgba(0,0,0,0.07)` }}
                     >
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textMuted }}>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: "#6B7280" }}>
                         Anlage V – Vorbereitung {selectedYear}
                       </p>
                     </div>
 
                     <div className="px-5 py-4">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] pt-3 pb-2" style={{ color: tokens.color.textSubtle }}>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] pt-3 pb-2" style={{ color: "#9CA3AF" }}>
                         Einnahmen aus Vermietung
                       </p>
                       <AnlageVRow
@@ -373,7 +372,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                         highlight
                       />
 
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] pt-4 pb-2" style={{ color: tokens.color.textSubtle }}>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] pt-4 pb-2" style={{ color: "#9CA3AF" }}>
                         Werbungskosten
                       </p>
                       <AnlageVRow label="Schuldzinsen (Zeile 35)"                  value={formatCurrency(zinsen)} />
@@ -395,9 +394,9 @@ export default function SteuernView({ properties, payments, expenses, financings
 
                     <div
                       className="px-5 py-3"
-                      style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}
+                      style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}
                     >
-                      <p className="text-[10px] leading-relaxed" style={{ color: tokens.color.textSubtle }}>
+                      <p className="text-[10px] leading-relaxed" style={{ color: "#9CA3AF" }}>
                         * Näherungswerte. Zeilen beziehen sich auf Anlage V (2024). Bitte mit Steuerberater abstimmen.
                       </p>
                     </div>
@@ -406,14 +405,14 @@ export default function SteuernView({ properties, payments, expenses, financings
                   {/* AfA Steuerersparnis */}
                   <div
                     className="rounded-[14px] p-5"
-                    style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                    style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
                   >
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: tokens.color.textMuted }}>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] mb-4" style={{ color: "#6B7280" }}>
                       Steuerersparnis durch AfA
                     </p>
 
                     {properties.length === 0 ? (
-                      <p className="text-sm text-center py-8" style={{ color: tokens.color.textSubtle }}>
+                      <p className="text-sm text-center py-8" style={{ color: "#9CA3AF" }}>
                         Keine Objekte vorhanden.
                       </p>
                     ) : (
@@ -424,14 +423,14 @@ export default function SteuernView({ properties, payments, expenses, financings
                           const ersparnis = afa * 0.42;
                           return (
                             <div key={p.id}>
-                              {i > 0 && <div className="mb-4" style={{ borderTop: `1px solid ${tokens.color.border}` }} />}
-                              <p className="text-sm font-semibold mb-2" style={{ color: tokens.color.text }}>{p.name}</p>
+                              {i > 0 && <div className="mb-4" style={{ borderTop: `1px solid rgba(0,0,0,0.07)` }} />}
+                              <p className="text-sm font-semibold mb-2" style={{ color: "#101418" }}>{p.name}</p>
                               <div className="flex justify-between text-xs mb-1">
-                                <span style={{ color: tokens.color.textMuted }}>AfA / Jahr</span>
-                                <span style={{ color: tokens.color.text }}>{formatCurrency(afa)}</span>
+                                <span style={{ color: "#6B7280" }}>AfA / Jahr</span>
+                                <span style={{ color: "#101418" }}>{formatCurrency(afa)}</span>
                               </div>
                               <div className="flex justify-between text-xs">
-                                <span style={{ color: tokens.color.textMuted }}>Ersparnis (42% Steuersatz)</span>
+                                <span style={{ color: "#6B7280" }}>Ersparnis (42% Steuersatz)</span>
                                 <span className="font-medium" style={{ color: "#A07830" }}>{formatCurrency(ersparnis)}</span>
                               </div>
                             </div>
@@ -443,11 +442,11 @@ export default function SteuernView({ properties, payments, expenses, financings
                     {properties.length > 0 && (
                       <div
                         className="mt-4 pt-4 flex flex-col gap-1.5"
-                        style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}
+                        style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}
                       >
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-semibold" style={{ color: tokens.color.text }}>Gesamt AfA</span>
-                          <span className="text-sm font-semibold" style={{ color: tokens.color.text }}>{formatCurrency(afa_gesamt)}</span>
+                          <span className="text-sm font-semibold" style={{ color: "#101418" }}>Gesamt AfA</span>
+                          <span className="text-sm font-semibold" style={{ color: "#101418" }}>{formatCurrency(afa_gesamt)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-semibold" style={{ color: "#A07830" }}>Steuerersparnis (42%)</span>
@@ -456,7 +455,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                       </div>
                     )}
 
-                    <p className="mt-4 text-[10px] leading-relaxed" style={{ color: tokens.color.textSubtle }}>
+                    <p className="mt-4 text-[10px] leading-relaxed" style={{ color: "#9CA3AF" }}>
                       Schätzwert bei 42% Grenzsteuersatz, 80% Gebäudeanteil, 2% AfA.
                     </p>
                   </div>
@@ -474,16 +473,16 @@ export default function SteuernView({ properties, payments, expenses, financings
                         <div
                           key={month}
                           className="rounded-[12px] p-4"
-                          style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                          style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
                         >
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: tokens.color.textMuted }}>{month}</p>
-                          <p className="text-lg font-semibold mt-2 tabular-nums" style={{ color: amount > 0 ? tokens.color.accent : tokens.color.textSubtle }}>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: "#6B7280" }}>{month}</p>
+                          <p className="text-lg font-semibold mt-2 tabular-nums" style={{ color: amount > 0 ? "#A07830" : "#9CA3AF" }}>
                             {formatCurrency(amount)}
                           </p>
-                          <p className="text-[10px] mt-1" style={{ color: tokens.color.textSubtle }}>
+                          <p className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>
                             {count} Zahlung{count !== 1 ? "en" : ""}
                           </p>
-                          <div className="mt-2 rounded-full h-1 overflow-hidden" style={{ background: "#F0EDE4" }}>
+                          <div className="mt-2 rounded-full h-1 overflow-hidden" style={{ background: "#F5F5F5" }}>
                             <div
                               className="h-full rounded-full"
                               style={{ width: `${(amount / maxMonthAmount) * 100}%`, background: "#A07830" }}
@@ -497,13 +496,13 @@ export default function SteuernView({ properties, payments, expenses, financings
                   {properties.length > 0 && (
                     <div
                       className="rounded-[12px] overflow-hidden"
-                      style={{ border: `1px solid ${tokens.color.border}` }}
+                      style={{ border: `1px solid rgba(0,0,0,0.07)` }}
                     >
                       <div
                         className="px-4 py-2.5"
-                        style={{ background: tokens.color.bgSubtle, borderBottom: `1px solid ${tokens.color.border}` }}
+                        style={{ background: "#F5F5F5", borderBottom: `1px solid rgba(0,0,0,0.07)` }}
                       >
-                        <p className="text-[10px] uppercase tracking-widest" style={{ color: tokens.color.textSubtle }}>
+                        <p className="text-[10px] uppercase tracking-widest" style={{ color: "#9CA3AF" }}>
                           Einnahmen je Objekt
                         </p>
                       </div>
@@ -515,10 +514,10 @@ export default function SteuernView({ properties, payments, expenses, financings
                           <div
                             key={p.id}
                             className="flex justify-between items-center px-4 py-3"
-                            style={{ borderBottom: `1px solid ${tokens.color.border}` }}
+                            style={{ borderBottom: `1px solid rgba(0,0,0,0.07)` }}
                           >
-                            <span className="text-sm" style={{ color: tokens.color.textMuted }}>{p.name}</span>
-                            <span className="text-sm font-semibold tabular-nums" style={{ color: tokens.color.text }}>
+                            <span className="text-sm" style={{ color: "#6B7280" }}>{p.name}</span>
+                            <span className="text-sm font-semibold tabular-nums" style={{ color: "#101418" }}>
                               {formatCurrency(total)}
                             </span>
                           </div>
@@ -528,7 +527,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                   )}
 
                   {yearPayments.length === 0 && (
-                    <p className="text-center text-sm py-8" style={{ color: tokens.color.textSubtle }}>
+                    <p className="text-center text-sm py-8" style={{ color: "#9CA3AF" }}>
                       Keine Zahlungen für {selectedYear} vorhanden.
                     </p>
                   )}
@@ -541,7 +540,7 @@ export default function SteuernView({ properties, payments, expenses, financings
                   {expenseByCategory.length > 0 ? (
                     <>
                       {/* Stacked bar */}
-                      <div className="mb-3 rounded-full h-3 overflow-hidden flex" style={{ background: "#F0EDE4" }}>
+                      <div className="mb-3 rounded-full h-3 overflow-hidden flex" style={{ background: "#F5F5F5" }}>
                         {expenseByCategory.map(c => (
                           <div
                             key={c.key}
@@ -553,8 +552,8 @@ export default function SteuernView({ properties, payments, expenses, financings
                         {expenseByCategory.map(c => (
                           <div key={c.key} className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: c.color }} />
-                            <span className="text-xs" style={{ color: tokens.color.textMuted }}>{c.label}</span>
-                            <span className="text-xs font-semibold" style={{ color: tokens.color.text }}>{formatCurrency(c.amount)}</span>
+                            <span className="text-xs" style={{ color: "#6B7280" }}>{c.label}</span>
+                            <span className="text-xs font-semibold" style={{ color: "#101418" }}>{formatCurrency(c.amount)}</span>
                           </div>
                         ))}
                       </div>
@@ -562,33 +561,33 @@ export default function SteuernView({ properties, payments, expenses, financings
                       {/* Expense rows */}
                       <div
                         className="rounded-[12px] overflow-hidden"
-                        style={{ border: `1px solid ${tokens.color.border}` }}
+                        style={{ border: `1px solid rgba(0,0,0,0.07)` }}
                       >
                         {expenseByCategory.map(c => (
                           <div
                             key={c.key}
                             className="flex justify-between items-center px-4 py-3"
-                            style={{ borderBottom: `1px solid ${tokens.color.border}` }}
+                            style={{ borderBottom: `1px solid rgba(0,0,0,0.07)` }}
                           >
                             <div className="flex items-center gap-2.5">
                               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: c.color }} />
-                              <span className="text-sm" style={{ color: tokens.color.textMuted }}>{c.label}</span>
+                              <span className="text-sm" style={{ color: "#6B7280" }}>{c.label}</span>
                             </div>
-                            <span className="text-sm font-semibold tabular-nums" style={{ color: tokens.color.text }}>
+                            <span className="text-sm font-semibold tabular-nums" style={{ color: "#101418" }}>
                               {formatCurrency(c.amount)}
                             </span>
                           </div>
                         ))}
-                        <div className="flex justify-between items-center px-4 py-3" style={{ background: tokens.color.bgSubtle }}>
-                          <span className="text-sm font-semibold" style={{ color: tokens.color.text }}>Gesamt</span>
-                          <span className="text-sm font-semibold tabular-nums" style={{ color: tokens.color.text }}>
+                        <div className="flex justify-between items-center px-4 py-3" style={{ background: "#F5F5F5" }}>
+                          <span className="text-sm font-semibold" style={{ color: "#101418" }}>Gesamt</span>
+                          <span className="text-sm font-semibold tabular-nums" style={{ color: "#101418" }}>
                             {formatCurrency(totalExpenses)}
                           </span>
                         </div>
                       </div>
                     </>
                   ) : (
-                    <p className="text-center text-sm py-8" style={{ color: tokens.color.textSubtle }}>
+                    <p className="text-center text-sm py-8" style={{ color: "#9CA3AF" }}>
                       Keine Ausgaben für {selectedYear} vorhanden.
                     </p>
                   )}
@@ -599,7 +598,7 @@ export default function SteuernView({ properties, payments, expenses, financings
               {activeTab === "afa" && (
                 <div>
                   {properties.length === 0 ? (
-                    <p className="text-center text-sm py-8" style={{ color: tokens.color.textSubtle }}>
+                    <p className="text-center text-sm py-8" style={{ color: "#9CA3AF" }}>
                       Keine Objekte vorhanden.
                     </p>
                   ) : (
@@ -614,10 +613,10 @@ export default function SteuernView({ properties, payments, expenses, financings
                         <div
                           key={p.id}
                           className="rounded-[14px] p-5 mb-4 last:mb-0"
-                          style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
+                          style={{ background: "#FFFFFF", border: `1px solid rgba(0,0,0,0.07)` }}
                         >
                           <div className="flex justify-between items-center mb-4">
-                            <p className="text-base font-semibold" style={{ color: tokens.color.text }}>{p.name}</p>
+                            <p className="text-base font-semibold" style={{ color: "#101418" }}>{p.name}</p>
                             <span
                               className="text-xs px-2.5 py-1 rounded-full"
                               style={{ background: "rgba(160,120,48,0.08)", color: "#A07830" }}
@@ -628,34 +627,34 @@ export default function SteuernView({ properties, payments, expenses, financings
 
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {[
-                              { label: "Gebäudewert (80%)", value: formatCurrency(gebaeude),          color: tokens.color.text },
+                              { label: "Gebäudewert (80%)", value: formatCurrency(gebaeude),          color: "#101418" },
                               { label: "AfA / Jahr",        value: formatCurrency(afa_yearly),        color: "#A07830" },
-                              { label: "AfA / Monat",       value: formatCurrency(afa_yearly / 12),   color: tokens.color.text },
-                              { label: "Restlaufzeit",      value: `${remaining_years} Jahre`,        color: tokens.color.text },
+                              { label: "AfA / Monat",       value: formatCurrency(afa_yearly / 12),   color: "#101418" },
+                              { label: "Restlaufzeit",      value: `${remaining_years} Jahre`,        color: "#101418" },
                             ].map(({ label, value, color }) => (
                               <div
                                 key={label}
                                 className="rounded-[10px] p-3"
-                                style={{ background: tokens.color.bg }}
+                                style={{ background: "#F8F7F4" }}
                               >
-                                <p className="text-[10px] font-medium uppercase tracking-[0.08em] mb-1.5" style={{ color: tokens.color.textSubtle }}>{label}</p>
+                                <p className="text-[10px] font-medium uppercase tracking-[0.08em] mb-1.5" style={{ color: "#9CA3AF" }}>{label}</p>
                                 <p className="text-sm font-semibold" style={{ color }}>{value}</p>
                               </div>
                             ))}
                           </div>
 
                           <div className="mt-4">
-                            <div className="flex justify-between text-[10px] mb-1.5" style={{ color: tokens.color.textSubtle }}>
+                            <div className="flex justify-between text-[10px] mb-1.5" style={{ color: "#9CA3AF" }}>
                               <span>Abgeschrieben</span>
                               <span>Verbleibend</span>
                             </div>
-                            <div className="rounded-full h-1.5 overflow-hidden" style={{ background: "#F0EDE4" }}>
+                            <div className="rounded-full h-1.5 overflow-hidden" style={{ background: "#F5F5F5" }}>
                               <div
                                 className="h-full rounded-full"
                                 style={{ width: `${abgeschrieben_pct}%`, background: "#A07830" }}
                               />
                             </div>
-                            <div className="flex justify-between text-[10px] mt-1" style={{ color: tokens.color.textSubtle }}>
+                            <div className="flex justify-between text-[10px] mt-1" style={{ color: "#9CA3AF" }}>
                               <span>{formatPercent(abgeschrieben_pct / 100, 0)}</span>
                               <span>{formatPercent(remaining_years / 50, 0)}</span>
                             </div>
@@ -668,10 +667,10 @@ export default function SteuernView({ properties, payments, expenses, financings
                   {/* Disclaimer */}
                   <div
                     className="mt-4 rounded-[10px] px-4 py-3 flex items-start gap-2"
-                    style={{ background: tokens.color.warningBg, border: "1px solid rgba(255,184,0,0.2)" }}
+                    style={{ background: "rgba(146,64,14,0.08)", border: "1px solid rgba(255,184,0,0.2)" }}
                   >
-                    <Warning size={14} color={tokens.color.warning} className="mt-0.5 flex-shrink-0" />
-                    <p className="text-[10px] leading-relaxed" style={{ color: tokens.color.textMuted }}>
+                    <Warning size={14} color={"#92400E"} className="mt-0.5 flex-shrink-0" />
+                    <p className="text-[10px] leading-relaxed" style={{ color: "#6B7280" }}>
                       AfA-Berechnung basiert auf Standardwerten (80% Gebäudeanteil, 2% linearer AfA). Tatsächliche AfA kann abweichen. Bitte mit Steuerberater abstimmen.
                     </p>
                   </div>

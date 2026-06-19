@@ -192,23 +192,23 @@ export default function NeuesObjektPage() {
   }
 
   return (
-    <div className="min-h-screen p-6" style={{ background: "#F8F7F4" }}>
+    <div className="min-h-screen px-8 py-7" style={{ background: "#F8F7F4" }}>
       {/* Header */}
       <div className="flex items-center gap-4 mb-8 w-full">
         <button
           onClick={() => step > 1 ? setStep((step - 1) as Step) : router.push("/portfolio")}
-          className="w-9 h-9 bg-white border border-[rgba(16,20,24,0.08)] rounded-[8px] flex items-center justify-center hover:bg-[#F0EDE4] transition-all cursor-pointer flex-shrink-0"
+          className="w-9 h-9 bg-white border border-[rgba(0,0,0,0.07)] rounded-[8px] flex items-center justify-center hover:bg-[#F5F5F5] transition-all cursor-pointer flex-shrink-0"
         >
-          <ArrowLeft size={16} color="#6A5A3A" />
+          <ArrowLeft size={16} color="#6B7280" />
         </button>
         <div>
           <p className="text-[20px] font-semibold text-[#101418]">Objekt anlegen</p>
-          <p className="text-xs text-[#A89A7A] mt-0.5">Schritt {step} von 3</p>
+          <p className="text-xs text-[#9CA3AF] mt-0.5">Schritt {step} von 3</p>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1 rounded-full mb-8 w-full" style={{ background: "rgba(16,20,24,0.08)" }}>
+      <div className="h-1 rounded-full mb-8 w-full" style={{ background: "rgba(0,0,0,0.08)" }}>
         <motion.div
           className="h-full rounded-full bg-[#A07830]"
           animate={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
@@ -221,8 +221,8 @@ export default function NeuesObjektPage() {
         {/* LEFT – Form card */}
         <div
           ref={formRef}
-          className="rounded-[16px] overflow-hidden flex flex-col"
-          style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
+          className="rounded-[14px] overflow-hidden flex flex-col"
+          style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -236,11 +236,11 @@ export default function NeuesObjektPage() {
               {/* ─── STEP 1 ─── */}
               {step === 1 && (
                 <>
-                  <p className="text-xs font-semibold text-[#A89A7A] uppercase tracking-widest mb-5">Grunddaten</p>
+                  <p className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-widest mb-5">Grunddaten</p>
 
                   {/* Objekttyp */}
                   <div className="mb-5">
-                    <label className="block text-[11px] text-[#6A5A3A] uppercase tracking-wider mb-2">
+                    <label className="block text-[11px] text-[#6B7280] uppercase tracking-wider mb-2">
                       Objekttyp <span className="text-[#FF4444] ml-0.5">*</span>
                     </label>
                     <div
@@ -254,10 +254,10 @@ export default function NeuesObjektPage() {
                           className="px-4 py-2 rounded-[8px] text-sm cursor-pointer transition-all"
                           style={form.type === t
                             ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 }
-                            : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }
+                            : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6B7280" }
                           }
                           onMouseEnter={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#101418"; }}
-                          onMouseLeave={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#6A5A3A"; }}
+                          onMouseLeave={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; }}
                         >
                           {t}
                         </button>
@@ -266,7 +266,7 @@ export default function NeuesObjektPage() {
                     {errors.type && <p className="text-xs text-[#B91C1C] mt-1">{errors.type}</p>}
                   </div>
 
-                  <p className="text-[10px] text-[#A89A7A] mb-4">
+                  <p className="text-[10px] text-[#9CA3AF] mb-4">
                     <span className="text-[#B91C1C]">*</span> Pflichtfelder · Alle anderen Felder sind optional
                   </p>
 
@@ -305,7 +305,7 @@ export default function NeuesObjektPage() {
                       placeholder="wird automatisch erkannt"
                       value={form.city}
                       readOnly
-                      className="bg-[#F0EDE4] cursor-not-allowed"
+                      className="bg-[#F5F5F5] cursor-not-allowed"
                     />
                     <DarkInput
                       label="Baujahr"
@@ -359,7 +359,7 @@ export default function NeuesObjektPage() {
               {/* ─── STEP 2 ─── */}
               {step === 2 && (
                 <>
-                  <p className="text-xs font-semibold text-[#A89A7A] uppercase tracking-widest mb-5">Technische Details</p>
+                  <p className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-widest mb-5">Technische Details</p>
 
                   <div className="grid grid-cols-2 gap-4">
                     <DarkSelect
@@ -419,14 +419,14 @@ export default function NeuesObjektPage() {
                           className="flex items-center gap-3 px-4 py-3 rounded-[10px] cursor-pointer transition-all text-left"
                           style={checked
                             ? { background: "rgba(160,120,48,0.06)", border: "1px solid rgba(160,120,48,0.25)" }
-                            : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)" }
+                            : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)" }
                           }
                         >
                           <div
                             className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
                             style={checked
                               ? { background: "#A07830", borderColor: "#A07830" }
-                              : { background: "transparent", borderColor: "rgba(16,20,24,0.2)" }
+                              : { background: "transparent", borderColor: "rgba(0,0,0,0.2)" }
                             }
                           >
                             {checked && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -439,13 +439,13 @@ export default function NeuesObjektPage() {
 
                   {/* Notes textarea */}
                   <div className="mt-5 flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-[#6A5A3A] uppercase tracking-wide">Notizen</label>
+                    <label className="text-xs font-medium text-[#6B7280] uppercase tracking-wide">Notizen</label>
                     <textarea
                       placeholder="Interne Anmerkungen..."
                       value={form.notes}
                       onChange={e => setField("notes", e.target.value)}
                       style={{ minHeight: 80 }}
-                      className="w-full bg-white border border-[rgba(16,20,24,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#A89A7A] focus:outline-none focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:border-[rgba(160,120,48,0.3)] transition-all duration-150 resize-none"
+                      className="w-full bg-[#F5F5F5] border border-transparent rounded-[10px] px-3.5 py-2.5 text-sm text-[#101418] placeholder:text-[#9CA3AF] focus:outline-none focus:bg-white focus:border-[rgba(160,120,48,0.3)] focus:ring-1 focus:ring-[rgba(160,120,48,0.1)] transition-all duration-150 resize-none"
                     />
                   </div>
                 </>
@@ -454,9 +454,9 @@ export default function NeuesObjektPage() {
               {/* ─── STEP 3 ─── */}
               {step === 3 && (
                 <>
-                  <p className="text-xs font-semibold text-[#A89A7A] uppercase tracking-widest mb-5">Mieteinnahmen & Finanzierung</p>
+                  <p className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-widest mb-5">Mieteinnahmen & Finanzierung</p>
 
-                  <p className="text-[10px] text-[#A89A7A] mb-4">
+                  <p className="text-[10px] text-[#9CA3AF] mb-4">
                     <span className="text-[#B91C1C]">*</span> Pflichtfelder · Alle anderen Felder sind optional
                   </p>
 
@@ -486,17 +486,17 @@ export default function NeuesObjektPage() {
                       onClick={() => setField("has_financing", !form.has_financing)}
                       className="w-full flex items-center justify-between px-4 py-3 rounded-[10px] cursor-pointer transition-all"
                       style={form.has_financing
-                        ? { background: "#F0EDE4", border: "1px solid rgba(160,120,48,0.2)" }
-                        : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)" }
+                        ? { background: "#F5F5F5", border: "1px solid rgba(160,120,48,0.2)" }
+                        : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)" }
                       }
                     >
                       <div className="text-left">
                         <p className="text-sm font-medium text-[#101418]">Finanzierung hinterlegen</p>
-                        <p className="text-xs text-[#A89A7A] mt-0.5">Optional – für Zinsanalyse und DSCR</p>
+                        <p className="text-xs text-[#9CA3AF] mt-0.5">Optional – für Zinsanalyse und DSCR</p>
                       </div>
                       <div
                         className="w-10 h-6 rounded-full flex items-center px-1 transition-all flex-shrink-0 ml-4"
-                        style={{ background: form.has_financing ? "#A07830" : "rgba(16,20,24,0.1)" }}
+                        style={{ background: form.has_financing ? "#A07830" : "rgba(0,0,0,0.1)" }}
                       >
                         <motion.div
                           className="w-4 h-4 bg-white rounded-full shadow"
@@ -573,11 +573,11 @@ export default function NeuesObjektPage() {
           {/* Action bar */}
           <div
             className="px-6 py-4 flex items-center justify-between"
-            style={{ borderTop: "1px solid rgba(16,20,24,0.06)", background: "#F8F7F4" }}
+            style={{ borderTop: "1px solid rgba(0,0,0,0.05)", background: "#F8F7F4" }}
           >
             <button
               onClick={() => router.push("/portfolio")}
-              className="text-sm text-[#A89A7A] hover:text-[#101418] transition-colors cursor-pointer"
+              className="text-sm text-[#9CA3AF] hover:text-[#101418] transition-colors cursor-pointer"
             >
               Abbrechen
             </button>
@@ -607,13 +607,13 @@ export default function NeuesObjektPage() {
           {/* Preview card */}
           <div
             className="rounded-[14px] overflow-hidden"
-            style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
+            style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
           >
             <div
               className="px-5 py-4"
-              style={{ background: "#F0EDE4", borderBottom: "1px solid rgba(16,20,24,0.06)" }}
+              style={{ background: "#F5F5F5", borderBottom: "1px solid rgba(0,0,0,0.05)" }}
             >
-              <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest">Vorschau</p>
+              <p className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Vorschau</p>
             </div>
             <div className="px-5 py-4">
               {form.type && (
@@ -625,12 +625,12 @@ export default function NeuesObjektPage() {
                 {form.name || "Objektname"}
               </p>
               {(form.address || form.city) && (
-                <p className="text-xs text-[#A89A7A] mt-0.5">
+                <p className="text-xs text-[#9CA3AF] mt-0.5">
                   {[form.address, [form.plz, form.city].filter(Boolean).join(" ")].filter(Boolean).join(", ")}
                 </p>
               )}
               {(form.build_year || form.sqm) && (
-                <p className="text-xs text-[#A89A7A] mt-0.5">
+                <p className="text-xs text-[#9CA3AF] mt-0.5">
                   {[
                     form.build_year ? `Baujahr ${form.build_year}` : "",
                     form.sqm ? `${form.sqm} m²` : "",
@@ -646,8 +646,8 @@ export default function NeuesObjektPage() {
                     { label: "CF/MONAT",      value: formatCurrencySigned(cashflowMonthly),   color: cashflowMonthly >= 0 ? "#2D6A2D" : "#B91C1C" },
                     { label: "GESAMTINVEST.", value: formatCurrency(totalInvestment),         color: "#101418" },
                   ].map(({ label, value, color }) => (
-                    <div key={label} className="rounded-[8px] px-3 py-2" style={{ background: "#F0EDE4" }}>
-                      <p className="text-[9px] text-[#A89A7A]">{label}</p>
+                    <div key={label} className="rounded-[8px] px-3 py-2" style={{ background: "#F5F5F5" }}>
+                      <p className="text-[9px] text-[#9CA3AF]">{label}</p>
                       <p className="text-xs font-semibold mt-0.5" style={{ color }}>{value}</p>
                     </div>
                   ))}
@@ -660,17 +660,17 @@ export default function NeuesObjektPage() {
           {wert && (
             <div
               className="rounded-[14px] overflow-hidden"
-              style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
+              style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
             >
               <div
                 className="px-5 py-3 flex items-center gap-2"
-                style={{ background: "#F0EDE4", borderBottom: "1px solid rgba(16,20,24,0.06)" }}
+                style={{ background: "#F5F5F5", borderBottom: "1px solid rgba(0,0,0,0.05)" }}
               >
                 <ChartLine size={13} color="#A07830" />
-                <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest">Wertermittlung</p>
+                <p className="text-[10px] text-[#9CA3AF] uppercase tracking-widest">Wertermittlung</p>
               </div>
               <div className="px-5 py-4">
-                <p className="text-[10px] text-[#A89A7A] mb-1">Geschätzter Marktwert</p>
+                <p className="text-[10px] text-[#9CA3AF] mb-1">Geschätzter Marktwert</p>
                 <p className="text-[22px] font-semibold text-[#101418] tracking-[-0.02em]">
                   {formatCurrency(wert.geschaetzter_marktwert)}
                 </p>
@@ -678,7 +678,7 @@ export default function NeuesObjektPage() {
                 {form.kaufdatum && wert.wertentwicklung_eur !== 0 && (
                   <>
                     <div className="mt-3 flex items-center justify-between">
-                      <span className="text-xs text-[#A89A7A]">Seit Kauf</span>
+                      <span className="text-xs text-[#9CA3AF]">Seit Kauf</span>
                       <div className="flex items-center gap-1.5">
                         <span
                           className="text-sm font-semibold"
@@ -695,15 +695,15 @@ export default function NeuesObjektPage() {
                       </div>
                     </div>
                     <div className="flex justify-between text-xs mt-1.5">
-                      <span className="text-[#A89A7A]">Jährl. Steigerung</span>
-                      <span style={{ color: "#A89A7A" }}>{formatPercent(wert.wertentwicklung_pa)}</span>
+                      <span className="text-[#9CA3AF]">Jährl. Steigerung</span>
+                      <span style={{ color: "#9CA3AF" }}>{formatPercent(wert.wertentwicklung_pa)}</span>
                     </div>
                   </>
                 )}
 
                 <div
                   className="mt-3 pt-3"
-                  style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}
+                  style={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
                 >
                   <span
                     className="text-[10px] flex items-center gap-1.5"
@@ -718,7 +718,7 @@ export default function NeuesObjektPage() {
                      : wert.vertrauen === "mittel" ? "Mittlere Datenqualität"
                      : "Begrenzte Datenqualität"}
                   </span>
-                  <p className="mt-2 text-[10px] text-[#A89A7A] leading-relaxed">{wert.hinweis}</p>
+                  <p className="mt-2 text-[10px] text-[#9CA3AF] leading-relaxed">{wert.hinweis}</p>
                 </div>
               </div>
             </div>

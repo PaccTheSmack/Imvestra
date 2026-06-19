@@ -267,10 +267,10 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                 className="px-3 py-1.5 rounded-full text-xs cursor-pointer transition-all"
                 style={active
                   ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 }
-                  : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6A5A3A" }
+                  : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6B7280" }
                 }
                 onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = "#101418"; }}
-                onMouseLeave={(e) => { if (!active) e.currentTarget.style.color = "#6A5A3A"; }}
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.color = "#6B7280"; }}
               >
                 {labels[f]}
               </button>
@@ -280,7 +280,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
             value={selectedProp}
             onChange={(e) => setSelectedProp(e.target.value)}
             className="px-3 py-1.5 rounded-[8px] text-xs cursor-pointer outline-none"
-            style={{ background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6A5A3A" }}
+            style={{ background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6B7280" }}
           >
             <option value="all">Alle Objekte</option>
             {properties.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -290,7 +290,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortKind)}
           className="px-3 py-1.5 rounded-[8px] text-xs cursor-pointer outline-none"
-          style={{ background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6A5A3A" }}
+          style={{ background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6B7280" }}
         >
           <option value="due_date">Fälligkeit</option>
           <option value="priority">Priorität</option>

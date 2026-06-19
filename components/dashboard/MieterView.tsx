@@ -245,10 +245,10 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 className="px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-150"
                 style={active
                   ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 }
-                  : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6A5A3A" }
+                  : { background: "#F5F5F5", border: "1px solid rgba(0,0,0,0.07)", color: "#6B7280" }
                 }
                 onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.color = "#101418"; }}
-                onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.color = "#6A5A3A"; }}
+                onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; }}
               >
                 {name}
               </button>
