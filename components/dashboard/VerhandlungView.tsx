@@ -10,9 +10,9 @@ import type { Property } from "@/types";
 
 const INPUT =
   "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#777777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
-const LABEL = "block text-xs font-medium text-[#888888] mb-1.5";
+const LABEL = "block text-xs font-medium text-[#777777] mb-1.5";
 const SECTION_LABEL =
-  "text-[10px] font-semibold text-[#777777] uppercase tracking-widest mb-4";
+  "text-[11px] font-semibold text-[#777777] uppercase tracking-[0.08em] mb-4";
 
 function SuffixInput({ suffix, children }: { suffix: string; children: React.ReactNode }) {
   return (
@@ -123,7 +123,7 @@ export default function VerhandlungView({ properties }: VerhandlungViewProps) {
             >
               Kaufpreis-Verhandlung
             </h1>
-            <p className="text-sm mt-0.5" style={{ color: "#777" }}>
+            <p className="text-sm mt-0.5" style={{ color: tokens.color.textMuted }}>
               Was darf die Immobilie maximal kosten?
             </p>
           </div>

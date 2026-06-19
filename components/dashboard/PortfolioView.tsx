@@ -35,8 +35,8 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   MFH:     { bg: "rgba(255,184,0,0.1)",   text: "#FFB800" },
   EFH:     { bg: "rgba(168,85,247,0.1)",  text: "#A855F7" },
   DHH:     { bg: "rgba(59,130,246,0.1)",  text: "#3B82F6" },
-  Gewerbe: { bg: "rgba(255,255,255,0.06)", text: "#888" },
-  Sonstige:{ bg: "rgba(255,255,255,0.06)", text: "#888" },
+  Gewerbe: { bg: "rgba(255,255,255,0.06)", text: "#777" },
+  Sonstige:{ bg: "rgba(255,255,255,0.06)", text: "#777" },
 }
 
 // ─── props ───────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ function LineChart({
     ? data.filter(d => new Date(d.date) >= cutoff)
     : data
 
-  if (filtered.length < 2) return <div className="h-[280px] flex items-center justify-center text-xs text-[#444]">Nicht genug Daten</div>
+  if (filtered.length < 2) return <div className="h-[280px] flex items-center justify-center text-xs text-[#666]">Nicht genug Daten</div>
 
   const pad = { t: 20, r: 60, b: 40, l: 20 }
   const W = dims.w, H = dims.h
@@ -268,10 +268,10 @@ function LineChart({
       {/* Hover tooltip */}
       {hover && hd && (
         <div
-          className="absolute pointer-events-none bg-[#1A1A1A] border border-[rgba(255,255,255,0.12)] rounded-[8px] px-3 py-2 text-xs shadow-[0_8px_24px_rgba(0,0,0,0.6)] -translate-x-1/2"
+          className="absolute pointer-events-none bg-[#141414] border border-[rgba(255,255,255,0.12)] rounded-[8px] px-3 py-2 text-xs shadow-[0_8px_24px_rgba(0,0,0,0.6)] -translate-x-1/2"
           style={{ left: hover.x, top: hover.y - 60 }}
         >
-          <p className="text-[#555] mb-1">{new Date(hd.date).toLocaleDateString("de-DE", { month: "short", year: "numeric" })}</p>
+          <p className="text-[#666] mb-1">{new Date(hd.date).toLocaleDateString("de-DE", { month: "short", year: "numeric" })}</p>
           <p className="text-white font-semibold">{formatCurrency(hd[metric === "wert" ? "wert" : "eigenkapital"])}</p>
           {metric === "wert" && <p className="text-[#FFB800]">EK: {formatCurrency(hd.eigenkapital)}</p>}
         </div>
@@ -310,15 +310,15 @@ function EmptyState() {
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="w-20 h-20 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[20px] flex items-center justify-center mx-auto"
+        className="w-20 h-20 bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[20px] flex items-center justify-center mx-auto"
       >
-        <Buildings size={36} color="#333" />
+        <Buildings size={36} color="#666" />
       </motion.div>
 
       <h2 className="text-[28px] font-semibold text-white tracking-[-0.02em] mt-8">
         Dein Portfolio wartet
       </h2>
-      <p className="text-sm text-[#555] mt-3 max-w-[360px]">
+      <p className="text-sm text-[#666] mt-3 max-w-[360px]">
         Lege dein erstes Objekt an und Imvestra berechnet automatisch alle Kennzahlen.
       </p>
 
@@ -331,8 +331,8 @@ function EmptyState() {
 
       <div className="mt-10 grid grid-cols-3 gap-4 max-w-[500px] opacity-40 select-none pointer-events-none">
         {["Portfoliowert", "Eigenkapital", "Cashflow/Mo"].map(label => (
-          <div key={label} className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-[12px] p-4 blur-[2px]">
-            <p className="text-[9px] text-[#555] uppercase tracking-widest">{label}</p>
+          <div key={label} className="bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[12px] p-4 blur-[2px]">
+            <p className="text-[9px] text-[#666] uppercase tracking-widest">{label}</p>
             <p className="text-[18px] font-semibold text-white mt-1">—</p>
           </div>
         ))}
@@ -430,12 +430,12 @@ export default function PortfolioView({ properties, financings, payments, expens
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[20px] font-semibold text-white">Portfolio</p>
-            <p className="text-xs text-[#555] mt-0.5">
+            <p className="text-xs text-[#666] mt-0.5">
               {summary.anzahl_objekte} Objekte · {summary.gesamt_flaeche.toFixed(0)} m²
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1 gap-0.5">
+            <div className="flex bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1 gap-0.5">
               {TAB_VIEWS.map(v => (
                 <button
                   key={v.id}
@@ -468,17 +468,17 @@ export default function PortfolioView({ properties, financings, payments, expens
           {/* 1 – Portfoliowert */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">Portfoliowert</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">Portfoliowert</span>
               <Tooltip text="Geschätzter Gesamtmarktwert aller Immobilien. Berechnet aus Ertragswert und Vergleichswert." />
             </div>
             <p className="text-[22px] font-semibold tracking-[-0.02em] text-white mt-1.5">{formatCurrency(summary.total_marktwert)}</p>
-            <p className="text-[11px] text-[#444] mt-0.5">Gesamtwert</p>
+            <p className="text-[11px] text-[#666] mt-0.5">Gesamtwert</p>
           </div>
 
           {/* 2 – Eigenkapital */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">Eigenkapital</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">Eigenkapital</span>
               <Tooltip text="Aktueller Eigenkapitalwert = Marktwert minus Restschulden. Was dir nach Verkauf und Schuldenrückzahlung bliebe." />
             </div>
             <p className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5" style={{ color: "#00E0D7" }}>
@@ -492,11 +492,11 @@ export default function PortfolioView({ properties, financings, payments, expens
           {/* 3 – Wertsteigerung */}
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">Wertsteigerung</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">Wertsteigerung</span>
               <Tooltip text="Differenz zwischen aktuellem Marktwert und ursprünglichem Kaufpreis aller Objekte." />
               <button
                 onClick={() => setValueDisplay(v => v === "eur" ? "pct" : "eur")}
-                className="text-[9px] px-1.5 py-0.5 rounded-full border border-[rgba(255,255,255,0.1)] text-[#555] hover:text-white cursor-pointer transition-colors"
+                className="text-[9px] px-1.5 py-0.5 rounded-full border border-[rgba(255,255,255,0.1)] text-[#666] hover:text-white cursor-pointer transition-colors"
               >
                 {valueDisplay === "eur" ? "%" : "€"}
               </button>
@@ -509,7 +509,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 ? formatCurrencySigned(summary.total_wertentwicklung_eur)
                 : formatPercent(summary.total_wertentwicklung_pct)}
             </p>
-            <p className="text-[11px] text-[#444] mt-0.5">
+            <p className="text-[11px] text-[#666] mt-0.5">
               {valueDisplay === "eur"
                 ? formatPercent(summary.total_wertentwicklung_pct)
                 : formatCurrency(summary.total_wertentwicklung_eur)}
@@ -519,7 +519,7 @@ export default function PortfolioView({ properties, financings, payments, expens
           {/* 4 – Cashflow */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">Cashflow / Mo.</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">Cashflow / Mo.</span>
               <Tooltip text="Monatlicher Netto-Cashflow nach Abzug aller Kosten (Zinsen, Tilgung, Hausgeld, Instandhaltung)." />
             </div>
             <p
@@ -528,13 +528,13 @@ export default function PortfolioView({ properties, financings, payments, expens
             >
               {formatCurrencySigned(summary.total_cashflow_monthly)}
             </p>
-            <p className="text-[11px] text-[#444] mt-0.5">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
+            <p className="text-[11px] text-[#666] mt-0.5">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
           </div>
 
           {/* 5 – ROE */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">EK-Rendite</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">EK-Rendite</span>
               <Tooltip text="ROE: Jährlicher Cashflow geteilt durch eingesetztes Eigenkapital. Zeigt wie effizient dein Kapital arbeitet." />
             </div>
             <p
@@ -543,13 +543,13 @@ export default function PortfolioView({ properties, financings, payments, expens
             >
               {formatPercent(summary.portfolio_roe)}
             </p>
-            <p className="text-[11px] text-[#444] mt-0.5">ROE p.a.</p>
+            <p className="text-[11px] text-[#666] mt-0.5">ROE p.a.</p>
           </div>
 
           {/* 6 – Gesamtrendite */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">Gesamtrendite</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">Gesamtrendite</span>
               <Tooltip text="Cashflow + Wertsteigerung geteilt durch eingesetztes Eigenkapital. Die wahre Rendite deines Investments." />
             </div>
             <p
@@ -558,13 +558,13 @@ export default function PortfolioView({ properties, financings, payments, expens
             >
               {formatPercent(summary.portfolio_gesamtrendite)}
             </p>
-            <p className="text-[11px] text-[#444] mt-0.5">inkl. Wertsteigerung</p>
+            <p className="text-[11px] text-[#666] mt-0.5">inkl. Wertsteigerung</p>
           </div>
 
           {/* 7 – Restschuld */}
           <div>
             <div className="flex items-center">
-              <span className="text-[10px] text-[#555] uppercase tracking-widest">Restschuld</span>
+              <span className="text-[10px] text-[#666] uppercase tracking-widest">Restschuld</span>
               <Tooltip text="Gesamte noch ausstehende Darlehensschulden über alle Objekte. Wird monatlich durch Tilgung reduziert." />
             </div>
             <p className="text-[22px] font-semibold tracking-[-0.02em] mt-1.5 text-[#FF4444]">
@@ -604,7 +604,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 {/* LEFT */}
                 <div>
                   {/* Kapitalstruktur */}
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-5">
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-5">
                     <div className="flex justify-between items-center mb-5">
                       <div className="flex items-center">
                         <span className="text-sm font-semibold text-white">Kapitalstruktur</span>
@@ -662,7 +662,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         <div key={item.label} className="flex items-center gap-2.5">
                           <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
                           <div className="flex items-center min-w-0">
-                            <span className="text-xs text-[#555] truncate">{item.label}</span>
+                            <span className="text-xs text-[#666] truncate">{item.label}</span>
                             <Tooltip text={item.tip} />
                           </div>
                           <span className="text-xs font-semibold text-white ml-auto whitespace-nowrap">{item.value}</span>
@@ -672,7 +672,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                   </div>
 
                   {/* Cashflow Waterfall */}
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
                     <div className="flex items-center mb-5">
                       <span className="text-sm font-semibold text-white">Cashflow-Analyse / Monat</span>
                       <Tooltip text="Zeigt wohin deine Mieteinnahmen fließen und was als Netto-Cashflow verbleibt." />
@@ -690,7 +690,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         <div>
                           {rows.map(row => (
                             <div key={row.label} className="flex items-center gap-3 py-2.5 border-b border-[rgba(255,255,255,0.04)]">
-                              <span className="text-xs text-[#555] w-[160px] flex-shrink-0">{row.label}</span>
+                              <span className="text-xs text-[#666] w-[160px] flex-shrink-0">{row.label}</span>
                               <div className="flex-1 bg-[#1A1A1A] rounded-full h-1.5 overflow-hidden">
                                 <motion.div
                                   className="h-full rounded-full"
@@ -732,7 +732,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 {/* RIGHT */}
                 <div>
                   {/* Kennzahlen */}
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-4">
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-4">
                     <p className="text-sm font-semibold text-white mb-4">Kennzahlen</p>
                     {[
                       {
@@ -789,19 +789,19 @@ export default function PortfolioView({ properties, financings, payments, expens
                     ].map(row => (
                       <div key={row.label} className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.04)] last:border-0">
                         <div className="flex items-center">
-                          <span className="text-xs text-[#555]">{row.label}</span>
+                          <span className="text-xs text-[#666]">{row.label}</span>
                           <Tooltip text={row.tip} />
                         </div>
                         <div className="text-right">
                           <span className="text-sm font-semibold" style={{ color: row.color }}>{row.value}</span>
-                          {row.sub && <p className="text-[10px] text-[#555]">{row.sub}</p>}
+                          {row.sub && <p className="text-[10px] text-[#666]">{row.sub}</p>}
                         </div>
                       </div>
                     ))}
                   </div>
 
                   {/* Allokation */}
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
                     <p className="text-sm font-semibold text-white mb-4">Allokation nach Objekttyp</p>
                     {Object.entries(typeGroups).map(([type, group]) => {
                       const tc = TYPE_COLORS[type] ?? TYPE_COLORS["Sonstige"]
@@ -812,7 +812,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                             style={{ background: tc.bg, color: tc.text }}>
                             {type}
                           </span>
-                          <span className="text-xs text-[#555] flex-shrink-0">{group.count}x</span>
+                          <span className="text-xs text-[#666] flex-shrink-0">{group.count}x</span>
                           <div className="flex-1 bg-[#1A1A1A] rounded-full h-1 overflow-hidden">
                             <motion.div
                               className="h-full rounded-full"
@@ -850,7 +850,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                       </button>
                     ))}
                   </div>
-                  <div className="flex gap-1 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1">
+                  <div className="flex gap-1 bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-1">
                     {(["1J", "3J", "5J", "Alle"] as TimeRange[]).map(r => (
                       <button
                         key={r}
@@ -858,7 +858,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         className="text-xs px-3 py-1.5 rounded-[6px] cursor-pointer transition-all"
                         style={timeRange === r
                           ? { background: "#1A1A1A", color: "#fff" }
-                          : { color: "#555" }}
+                          : { color: "#666" }}
                       >
                         {r}
                       </button>
@@ -867,9 +867,9 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Main chart */}
-                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-4">
+                <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5 mb-4">
                   <LineChart data={summary.wert_verlauf} metric={chartMetric} timeRange={timeRange} />
-                  <div className="flex gap-6 mt-4 text-xs text-[#555]">
+                  <div className="flex gap-6 mt-4 text-xs text-[#666]">
                     <span style={{ color: "#00E0D7" }}>─── {chartMetric === "wert" ? "Portfoliowert" : "Eigenkapital"}</span>
                     {chartMetric === "wert" && <span style={{ color: "#FFB800" }}>- - - Eigenkapital</span>}
                   </div>
@@ -877,17 +877,17 @@ export default function PortfolioView({ properties, financings, payments, expens
 
                 {/* Secondary charts */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4">
-                    <p className="text-xs text-[#555] mb-3">Cashflow / Monat (simuliert)</p>
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4">
+                    <p className="text-xs text-[#666] mb-3">Cashflow / Monat (simuliert)</p>
                     <MiniBarChart data={summary.wert_verlauf.slice(-12).map((_, i, arr) => {
                       const prog = i / Math.max(arr.length - 1, 1)
                       return summary.total_cashflow_monthly * (0.8 + prog * 0.2)
                     })} />
-                    <p className="text-[10px] text-[#444] mt-2 text-center">letzte 12 Datenpunkte</p>
+                    <p className="text-[10px] text-[#666] mt-2 text-center">letzte 12 Datenpunkte</p>
                   </div>
 
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4">
-                    <p className="text-xs text-[#555] mb-3">Rendite-Breakdown</p>
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4">
+                    <p className="text-xs text-[#666] mb-3">Rendite-Breakdown</p>
                     <div className="space-y-2">
                       {[
                         { label: "Brutto", value: summary.portfolio_brutto_rendite, max: 0.1 },
@@ -895,7 +895,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         { label: "ROE",    value: summary.portfolio_roe,            max: 0.15 },
                       ].map(row => (
                         <div key={row.label} className="flex items-center gap-2">
-                          <span className="text-[10px] text-[#555] w-10">{row.label}</span>
+                          <span className="text-[10px] text-[#666] w-10">{row.label}</span>
                           <div className="flex-1 bg-[#1A1A1A] rounded-full h-1.5">
                             <motion.div
                               className="h-full rounded-full bg-[#00E0D7]"
@@ -910,8 +910,8 @@ export default function PortfolioView({ properties, financings, payments, expens
                     </div>
                   </div>
 
-                  <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 flex flex-col items-center">
-                    <p className="text-xs text-[#555] mb-3 self-start">Kapital-Verteilung</p>
+                  <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 flex flex-col items-center">
+                    <p className="text-xs text-[#666] mb-3 self-start">Kapital-Verteilung</p>
                     <DonutChart summary={summary} />
                     <div className="mt-3 space-y-1 w-full">
                       {[
@@ -920,7 +920,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         { color: "#FFB800",               label: "Getilgt" },
                         { color: "rgba(255,68,68,0.5)",   label: "Restschuld" },
                       ].map(i => (
-                        <div key={i.label} className="flex items-center gap-2 text-[10px] text-[#555]">
+                        <div key={i.label} className="flex items-center gap-2 text-[10px] text-[#666]">
                           <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: i.color }} />
                           {i.label}
                         </div>
@@ -936,7 +936,7 @@ export default function PortfolioView({ properties, financings, payments, expens
               <div className="px-6 py-6">
                 {/* Table header — sortable */}
                 <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 px-4 py-3 border-b border-[rgba(255,255,255,0.06)]">
-                  <span className="text-[10px] text-[#444] uppercase tracking-widest">Objekt</span>
+                  <span className="text-[10px] text-[#666] uppercase tracking-widest">Objekt</span>
                   {([
                     ["marktwert", "Marktwert"],
                     ["ltv",       "Wertsteigerung"],
@@ -948,7 +948,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                       key={label}
                       onClick={() => toggleSort(col)}
                       className="flex items-center gap-1 text-[10px] uppercase tracking-widest transition-colors"
-                      style={{ color: sortCol === col ? "#00E0D7" : "#444" }}
+                      style={{ color: sortCol === col ? "#00E0D7" : "#666" }}
                     >
                       {label}
                       {sortCol === col && (
@@ -969,7 +969,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                     <div key={p.id}>
                       <div
                         onClick={() => setSelectedProperty(isOpen ? null : p.id)}
-                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-[12px] mb-2 px-4 py-3.5 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#141414] transition-all cursor-pointer items-center"
+                        className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-4 bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[12px] mb-2 px-4 py-3.5 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#1A1A1A] transition-all cursor-pointer items-center"
                         style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
                       >
                         <div className="flex items-center gap-3 min-w-0">
@@ -981,7 +981,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-white truncate">{p.name}</p>
-                            <p className="text-xs text-[#555] mt-0.5">
+                            <p className="text-xs text-[#666] mt-0.5">
                               <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold mr-1" style={{ background: tc.bg, color: tc.text }}>{p.type}</span>
                               {p.address?.split(",")[1]?.trim() ?? ""}
                             </p>
@@ -989,27 +989,27 @@ export default function PortfolioView({ properties, financings, payments, expens
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-white">{formatCurrency(m.marktwert)}</p>
-                          <p className="text-[10px] text-[#444]">vs {formatCurrency(m.kaufpreis)}</p>
+                          <p className="text-[10px] text-[#666]">vs {formatCurrency(m.kaufpreis)}</p>
                         </div>
                         <div>
                           <p className="text-sm font-semibold" style={{ color: m.wertentwicklung_eur >= 0 ? "#00E0D7" : "#FF4444" }}>
                             {formatCurrencySigned(m.wertentwicklung_eur)}
                           </p>
-                          <p className="text-[10px] text-[#444]">{formatPercent(m.wertentwicklung_pct)}</p>
+                          <p className="text-[10px] text-[#666]">{formatPercent(m.wertentwicklung_pct)}</p>
                         </div>
                         <p className="text-sm font-semibold" style={{ color: m.cashflow_monthly >= 0 ? "#00E0D7" : "#FF4444" }}>
                           {formatCurrencySigned(m.cashflow_monthly)}
                         </p>
                         <div>
                           <p className="text-sm font-semibold text-white">{formatPercent(m.brutto_rendite)}</p>
-                          <p className="text-[10px] text-[#444]">Brutto</p>
+                          <p className="text-[10px] text-[#666]">Brutto</p>
                         </div>
                         <p className="text-sm font-semibold" style={{ color: colorByValue(m.eigenkapital_rendite, 0.03, 0.06) }}>
                           {formatPercent(m.eigenkapital_rendite)}
                         </p>
                         <button
                           onClick={e => { e.stopPropagation(); setSelectedProperty(isOpen ? null : p.id) }}
-                          className="flex items-center justify-center cursor-pointer text-[#444] hover:text-white transition-colors"
+                          className="flex items-center justify-center cursor-pointer text-[#666] hover:text-white transition-colors"
                         >
                           <DotsThree size={18} weight="bold" />
                         </button>
@@ -1034,13 +1034,13 @@ export default function PortfolioView({ properties, financings, payments, expens
                                   { label: "Restschuld",        tip: "Noch ausstehende Darlehensschulden", value: formatCurrency(m.restschuld), color: "#FF4444" },
                                   { label: "Getilgtes Kapital", tip: "Bereits zurückgezahlte Darlehensbeträge", value: formatCurrency(m.getilgtes_kapital), color: "#FFB800" },
                                   { label: "LTV",               tip: "Restschuld / Marktwert", value: formatPercent(m.ltv), color: colorByValue(1 - m.ltv, 0.2, 0.4) },
-                                  { label: "DSCR",              tip: "NOI / Jahresschuldendienst", value: m.dscr > 0 ? m.dscr.toFixed(2) : "—", color: m.dscr === 0 ? "#555" : colorByValue(m.dscr, 1.2, 1.5) },
+                                  { label: "DSCR",              tip: "NOI / Jahresschuldendienst", value: m.dscr > 0 ? m.dscr.toFixed(2) : "—", color: m.dscr === 0 ? "#666" : colorByValue(m.dscr, 1.2, 1.5) },
                                   { label: "Aktuelles EK",      tip: "Marktwert minus Restschuld", value: formatCurrency(m.eigenkapital_aktuell), color: "#00E0D7" },
                                   { label: "EK-Gewinn",         tip: "Aktuelles EK minus eingesetztes EK", value: formatCurrencySigned(m.eigenkapital_gewinn), color: m.eigenkapital_gewinn >= 0 ? "#00E0D7" : "#FF4444" },
                                 ].map(row => (
                                   <div key={row.label} className="bg-[#141414] rounded-[10px] p-3">
                                     <div className="flex items-center">
-                                      <p className="text-[10px] text-[#555]">{row.label}</p>
+                                      <p className="text-[10px] text-[#666]">{row.label}</p>
                                       <Tooltip text={row.tip} />
                                     </div>
                                     <p className="text-sm font-semibold mt-1" style={{ color: row.color }}>{row.value}</p>
@@ -1087,7 +1087,7 @@ export default function PortfolioView({ properties, financings, payments, expens
               <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {/* Rendite-Analyse */}
-                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
                   <p className="text-sm font-semibold text-white mb-5">Rendite-Analyse</p>
                   <div className="space-y-4">
                     {[
@@ -1098,7 +1098,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                     ].map(row => (
                       <div key={row.label}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span className="text-[#555]">{row.label}</span>
+                          <span className="text-[#666]">{row.label}</span>
                           <span className="font-semibold" style={{ color: colorByValue(row.value, 0.03, 0.06) }}>
                             {formatPercent(row.value)}
                           </span>
@@ -1118,7 +1118,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                         </div>
                       </div>
                     ))}
-                    <div className="flex gap-4 text-[10px] text-[#444] pt-1">
+                    <div className="flex gap-4 text-[10px] text-[#666] pt-1">
                       <span>│ Tagesgeld ~3%</span>
                       <span>│ DAX Ø ~8%</span>
                     </div>
@@ -1126,7 +1126,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Risiko-Analyse */}
-                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
                   <p className="text-sm font-semibold text-white mb-5">Risikoprofil</p>
                   <div className="space-y-0">
                     {[
@@ -1161,7 +1161,7 @@ export default function PortfolioView({ properties, financings, payments, expens
                     ].map(row => (
                       <div key={row.label} className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.04)] last:border-0">
                         <div className="flex items-center">
-                          <span className="text-xs text-[#555]">{row.label}</span>
+                          <span className="text-xs text-[#666]">{row.label}</span>
                           <Tooltip text={row.tip} />
                         </div>
                         <div className="flex items-center gap-2">
@@ -1176,9 +1176,9 @@ export default function PortfolioView({ properties, financings, payments, expens
                 </div>
 
                 {/* Performance Ranking */}
-                <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
+                <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-5">
                   <p className="text-sm font-semibold text-white mb-1">Performance Ranking</p>
-                  <p className="text-xs text-[#555] mb-5">Objekte nach Eigenkapitalrendite</p>
+                  <p className="text-xs text-[#666] mb-5">Objekte nach Eigenkapitalrendite</p>
                   <div className="space-y-0">
                     {[...propertyMetrics]
                       .sort((a, b) => b.eigenkapital_rendite - a.eigenkapital_rendite)
