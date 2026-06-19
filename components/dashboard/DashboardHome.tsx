@@ -159,7 +159,7 @@ export default function DashboardHome({
     : 0;
 
   return (
-    <div className="px-6 py-8 w-full max-w-[1280px]">
+    <div className="px-6 py-8 w-full max-w-[1280px]" style={{ background: tokens.color.bg, minHeight: "100vh" }}>
 
       {/* ── Header ── */}
       <FadeIn delay={0}>

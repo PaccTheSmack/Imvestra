@@ -199,7 +199,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-6 w-full" style={{ minHeight: "100vh" }}>
+    <div className="p-6 w-full" style={{ minHeight: "100vh", background: tokens.color.bg }}>
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-6">

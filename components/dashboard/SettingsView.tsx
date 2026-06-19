@@ -107,7 +107,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
   }
 
   return (
-    <div className="p-8 max-w-[720px] mx-auto">
+    <div className="p-8 max-w-[720px] mx-auto" style={{ background: tokens.color.bg, minHeight: "100vh" }}>
       <FadeIn>
         <div className="mb-8">
           <h1 className="text-[24px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>

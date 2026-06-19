@@ -186,7 +186,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
   }
 
   return (
-    <div className="p-6 w-full">
+    <div className="p-6 w-full" style={{ background: tokens.color.bg, minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

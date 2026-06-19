@@ -387,7 +387,7 @@ export default function BankAccountTab({ bankAccounts, transactions }: BankAccou
   }, [router]);
 
   return (
-    <div>
+    <div style={{ background: tokens.color.bg, minHeight: "100vh" }}>
       {/* Status messages */}
       <AnimatePresence>
         {(error || successMsg) && (
