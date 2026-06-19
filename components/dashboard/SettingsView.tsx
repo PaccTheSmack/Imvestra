@@ -166,7 +166,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
                 placeholder="Dein Name"
                 value={nameValue}
                 onChange={(e) => { setNameValue(e.target.value); setNameSaved(false); }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)")}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(160,120,48,0.3)")}
                 onBlur={(e) => (e.currentTarget.style.borderColor = tokens.color.border)}
               />
             </div>
@@ -393,7 +393,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
                 style={{
                   background: tokens.color.dangerBg,
                   color: tokens.color.danger,
-                  border: `1px solid rgba(255,68,68,0.2)`,
+                  border: `1px solid rgba(185,28,28,0.2)`,
                 }}
               >
                 Konto löschen

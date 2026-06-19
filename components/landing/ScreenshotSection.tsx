@@ -31,18 +31,18 @@ const DESCRIPTIONS = [
 
 function WindowBar({ title }: { title: string }) {
   return (
-    <div className="bg-[#0C0C0C] border-b border-[rgba(255,255,255,0.06)] px-4 py-3 flex items-center gap-2">
+    <div className="bg-[#F0EDE4] border-b border-[rgba(16,20,24,0.08)] px-4 py-3 flex items-center gap-2">
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FF5F57" }} />
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FFBD2E" }} />
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#28CA41" }} />
-      <span className="text-xs text-[#666] ml-2">{title}</span>
+      <span className="text-xs text-[#A89A7A] ml-2">{title}</span>
     </div>
   );
 }
 
 function MockInput({ value }: { value: string }) {
   return (
-    <div className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-xs text-[#888]">
+    <div className="bg-[#F0EDE4] border border-[rgba(16,20,24,0.08)] rounded-[8px] px-3 py-2.5 text-xs text-[#6A5A3A]">
       {value}
     </div>
   );
@@ -53,7 +53,7 @@ function RechnerScreen() {
     <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6">
       <div className="flex flex-col gap-4">
         <div>
-          <p className="text-[10px] text-[#777] uppercase tracking-widest mb-2">Objekt</p>
+          <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest mb-2">Objekt</p>
           <div className="flex flex-col gap-2">
             <MockInput value="Altbauwohnung Goslar" />
             <MockInput value="185.000" />
@@ -61,7 +61,7 @@ function RechnerScreen() {
           </div>
         </div>
         <div>
-          <p className="text-[10px] text-[#777] uppercase tracking-widest mb-2">Finanzen</p>
+          <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest mb-2">Finanzen</p>
           <div className="flex flex-col gap-2">
             <MockInput value="850" />
             <MockInput value="0" />
@@ -71,23 +71,23 @@ function RechnerScreen() {
       <div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            ["BRUTTORENDITE", "5,51 %", "#00E0D7"],
-            ["CASHFLOW/MO.", "+148 €", "#00E0D7"],
-            ["NETTORENDITE", "4,12 %", "#00E0D7"],
-            ["LTV", "72 %", "#FFFFFF"],
+            ["BRUTTORENDITE", "5,51 %", "#A07830"],
+            ["CASHFLOW/MO.", "+148 €", "#A07830"],
+            ["NETTORENDITE", "4,12 %", "#A07830"],
+            ["LTV", "72 %", "#101418"],
           ].map(([l, v, c]) => (
-            <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[10px] px-4 py-3">
-              <p className="text-[9px] text-[#666] uppercase tracking-wide">{l}</p>
+            <div key={l} className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[10px] px-4 py-3">
+              <p className="text-[9px] text-[#A89A7A] uppercase tracking-wide">{l}</p>
               <p className="text-xl font-semibold tracking-[-0.02em] mt-1" style={{ color: c }}>{v}</p>
             </div>
           ))}
         </div>
         <div className="mt-4">
-          <p className="text-xs text-[#777] mb-1.5">Objektqualität</p>
-          <div className="h-2 rounded-full bg-[#1A1A1A] overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: "78%", background: "#00E0D7" }} />
+          <p className="text-xs text-[#6A5A3A] mb-1.5">Objektqualität</p>
+          <div className="h-2 rounded-full bg-[#F0EDE4] overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: "78%", background: "#A07830" }} />
           </div>
-          <p className="text-xs text-[#00E0D7] font-semibold mt-1.5">Stark</p>
+          <p className="text-xs text-[#A07830] font-semibold mt-1.5">Stark</p>
         </div>
         <div className="mt-4 flex flex-col gap-1.5">
           {[
@@ -96,8 +96,8 @@ function RechnerScreen() {
             ["Cashflow / Jahr", "+1.776 €"],
           ].map(([l, v]) => (
             <div key={l} className="flex justify-between text-xs">
-              <span className="text-[#666]">{l}</span>
-              <span className="text-[#888] font-medium">{v}</span>
+              <span className="text-[#A89A7A]">{l}</span>
+              <span className="text-[#6A5A3A] font-medium">{v}</span>
             </div>
           ))}
         </div>
@@ -115,24 +115,24 @@ function PortfolioScreen() {
           ["+892 €/Mo", "Cashflow"],
           ["5,17 %", "Ø Rendite"],
         ].map(([v, l]) => (
-          <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[10px] px-4 py-3">
-            <p className="text-base font-semibold text-white">{v}</p>
-            <p className="text-[10px] text-[#666] uppercase tracking-wide mt-0.5">{l}</p>
+          <div key={l} className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[10px] px-4 py-3">
+            <p className="text-base font-semibold text-[#101418]">{v}</p>
+            <p className="text-[10px] text-[#A89A7A] uppercase tracking-wide mt-0.5">{l}</p>
           </div>
         ))}
       </div>
       <div className="flex flex-col gap-3">
         {[
-          { name: "Altbauwohnung · Goslar", cf: "+148 €/Mo", y: "5,51 %", accent: "#00E0D7" },
-          { name: "ETW · München", cf: "−92 €/Mo", y: "3,80 %", accent: "#FF4444" },
+          { name: "Altbauwohnung · Goslar", cf: "+148 €/Mo", y: "5,51 %", accent: "#A07830" },
+          { name: "ETW · München", cf: "−92 €/Mo", y: "3,80 %", accent: "#B91C1C" },
         ].map((c) => (
-          <div key={c.name} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[12px] overflow-hidden flex">
+          <div key={c.name} className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[12px] overflow-hidden flex">
             <div className="w-1 flex-shrink-0" style={{ background: c.accent }} />
             <div className="flex-1 px-4 py-3 flex justify-between items-center">
-              <p className="text-sm font-medium text-white">{c.name}</p>
+              <p className="text-sm font-medium text-[#101418]">{c.name}</p>
               <div className="flex items-center gap-4">
                 <span className="text-xs" style={{ color: c.accent }}>{c.cf}</span>
-                <span className="text-sm font-semibold text-white">{c.y}</span>
+                <span className="text-sm font-semibold text-[#101418]">{c.y}</span>
               </div>
             </div>
           </div>
@@ -153,24 +153,24 @@ function StandortScreen() {
             ["FAKTOR", "19x"],
             ["RENDITE", "5,2 %"],
           ].map(([l, v]) => (
-            <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5">
-              <p className="text-[9px] text-[#666] uppercase tracking-wide">{l}</p>
-              <p className="text-sm font-semibold text-white mt-0.5">{v}</p>
+            <div key={l} className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[8px] px-3 py-2.5">
+              <p className="text-[9px] text-[#A89A7A] uppercase tracking-wide">{l}</p>
+              <p className="text-sm font-semibold text-[#101418] mt-0.5">{v}</p>
             </div>
           ))}
         </div>
-        <div className="mt-4 bg-[#0C0C0C] border border-[rgba(255,255,255,0.06)] rounded-[10px] px-4 py-3">
-          <p className="text-xs text-[#888] leading-relaxed">
+        <div className="mt-4 bg-white border border-[rgba(16,20,24,0.08)] rounded-[10px] px-4 py-3">
+          <p className="text-xs text-[#6A5A3A] leading-relaxed">
             Goslar (Niedersachsen) ist ein Kleinstadtstandort mit günstigen
             Kaufpreisen und überdurchschnittlichen Renditen.
           </p>
         </div>
       </div>
-      <div className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[12px] p-4 text-center">
-        <p className="text-[10px] text-[#777] uppercase tracking-widest mb-3">Score</p>
+      <div className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[12px] p-4 text-center">
+        <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest mb-3">Score</p>
         <div>
           <span className="text-[44px] font-semibold tracking-[-0.05em] text-[#FFB800] leading-none">62</span>
-          <span className="text-sm text-[#555]">/100</span>
+          <span className="text-sm text-[#A89A7A]">/100</span>
         </div>
         <div className="flex flex-col gap-2 mt-4 text-left">
           {[
@@ -181,11 +181,11 @@ function StandortScreen() {
           ].map(([l, v]) => (
             <div key={l as string}>
               <div className="flex justify-between text-[10px] mb-1">
-                <span className="text-[#777]">{l}</span>
-                <span className="text-white">{v}/25</span>
+                <span className="text-[#A89A7A]">{l}</span>
+                <span className="text-[#101418]">{v}/25</span>
               </div>
-              <div className="h-1.5 rounded-full bg-[#1A1A1A] overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${((v as number) / 25) * 100}%`, background: "#00E0D7" }} />
+              <div className="h-1.5 rounded-full bg-[#F0EDE4] overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${((v as number) / 25) * 100}%`, background: "#A07830" }} />
               </div>
             </div>
           ))}
@@ -205,35 +205,35 @@ function FinanzenScreen() {
           ["+892 €", "Cashflow"],
           ["1", "Warnung"],
         ].map(([v, l]) => (
-          <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[10px] px-3 py-2.5">
-            <p className="text-sm font-semibold text-white">{v}</p>
-            <p className="text-[9px] text-[#666] uppercase tracking-wide mt-0.5">{l}</p>
+          <div key={l} className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[10px] px-3 py-2.5">
+            <p className="text-sm font-semibold text-[#101418]">{v}</p>
+            <p className="text-[9px] text-[#A89A7A] uppercase tracking-wide mt-0.5">{l}</p>
           </div>
         ))}
       </div>
       <div className="flex gap-2 mb-4">
         {["Cashflow", "Ausgaben", "Zinsbindung", "Darlehen"].map((t, i) => (
-          <span key={t} className="text-xs px-3 py-1.5 rounded-[6px]" style={i === 2 ? { background: "#00E0D7", color: "#080808", fontWeight: 600 } : { background: "#0C0C0C", color: "#777" }}>
+          <span key={t} className="text-xs px-3 py-1.5 rounded-[6px]" style={i === 2 ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 } : { background: "#F0EDE4", color: "#6A5A3A" }}>
             {t}
           </span>
         ))}
       </div>
-      <div className="bg-[rgba(255,68,68,0.06)] border border-[rgba(255,68,68,0.15)] rounded-[10px] px-4 py-3 flex items-center gap-2 mb-3">
-        <Warning size={14} color="#FF4444" />
-        <span className="text-xs text-[#FF4444]">Zinsbindung MFH Leipzig läuft in 87 Tagen aus</span>
+      <div className="bg-[rgba(185,28,28,0.06)] border border-[rgba(185,28,28,0.15)] rounded-[10px] px-4 py-3 flex items-center gap-2 mb-3">
+        <Warning size={14} color="#B91C1C" />
+        <span className="text-xs text-[#B91C1C]">Zinsbindung MFH Leipzig läuft in 87 Tagen aus</span>
       </div>
       <div className="flex flex-col gap-3">
         {[
           { name: "MFH Leipzig", pct: 38, end: "2026" },
           { name: "Altbauwohnung Goslar", pct: 64, end: "2031" },
         ].map((f) => (
-          <div key={f.name} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[10px] px-4 py-3">
+          <div key={f.name} className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[10px] px-4 py-3">
             <div className="flex justify-between text-xs mb-2">
-              <span className="text-[#888] font-medium">{f.name}</span>
-              <span className="text-[#777]">Bindung bis {f.end}</span>
+              <span className="text-[#6A5A3A] font-medium">{f.name}</span>
+              <span className="text-[#A89A7A]">Bindung bis {f.end}</span>
             </div>
-            <div className="h-1.5 rounded-full bg-[#1A1A1A] overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${f.pct}%`, background: "#00E0D7" }} />
+            <div className="h-1.5 rounded-full bg-[#F0EDE4] overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${f.pct}%`, background: "#A07830" }} />
             </div>
           </div>
         ))}
@@ -246,36 +246,36 @@ function SteuernScreen() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6">
       <div>
-        <p className="text-[10px] text-[#777] uppercase tracking-widest mb-3">Anlage V – Vorbereitung</p>
+        <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest mb-3">Anlage V – Vorbereitung</p>
         <div className="flex flex-col gap-1.5">
           {[
-            ["Mieteinnahmen", "11.664 €", "#888"],
-            ["Werbungskosten", "−3.240 €", "#888"],
-            ["Zinsen", "−6.180 €", "#888"],
-            ["AfA", "−2.960 €", "#888"],
-            ["Überschuss", "−716 €", "#00E0D7"],
+            ["Mieteinnahmen", "11.664 €", "#6A5A3A"],
+            ["Werbungskosten", "−3.240 €", "#6A5A3A"],
+            ["Zinsen", "−6.180 €", "#6A5A3A"],
+            ["AfA", "−2.960 €", "#6A5A3A"],
+            ["Überschuss", "−716 €", "#A07830"],
           ].map(([l, v, c], i) => (
-            <div key={l} className="flex justify-between text-xs py-2" style={i === 4 ? { borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: 4, fontWeight: 600 } : {}}>
-              <span className="text-[#777]">{l}</span>
+            <div key={l} className="flex justify-between text-xs py-2" style={i === 4 ? { borderTop: "1px solid rgba(16,20,24,0.08)", marginTop: 4, fontWeight: 600 } : {}}>
+              <span className="text-[#A89A7A]">{l}</span>
               <span style={{ color: c }}>{v}</span>
             </div>
           ))}
         </div>
       </div>
-      <div className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[12px] p-4">
-        <p className="text-[10px] text-[#777] uppercase tracking-widest mb-3">AfA pro Objekt</p>
+      <div className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[12px] p-4">
+        <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest mb-3">AfA pro Objekt</p>
         {[
           ["Goslar", "2.960 €"],
           ["Leipzig", "4.120 €"],
         ].map(([l, v]) => (
-          <div key={l} className="flex justify-between text-xs py-2 border-b border-[rgba(255,255,255,0.05)] last:border-0">
-            <span className="text-[#888]">{l}</span>
-            <span className="text-white font-medium">{v}</span>
+          <div key={l} className="flex justify-between text-xs py-2 border-b border-[rgba(16,20,24,0.08)] last:border-0">
+            <span className="text-[#6A5A3A]">{l}</span>
+            <span className="text-[#101418] font-medium">{v}</span>
           </div>
         ))}
-        <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.06)] flex justify-between text-xs">
-          <span className="text-[#666]">Steuerersparnis</span>
-          <span className="text-[#00E0D7] font-semibold">2.978 €</span>
+        <div className="mt-3 pt-3 border-t border-[rgba(16,20,24,0.08)] flex justify-between text-xs">
+          <span className="text-[#A89A7A]">Steuerersparnis</span>
+          <span className="text-[#A07830] font-semibold">2.978 €</span>
         </div>
       </div>
     </div>
@@ -289,17 +289,17 @@ export default function ScreenshotSection() {
   const Screen = SCREENS[activeTab];
 
   return (
-    <section id="screenshots" className="bg-[#0C0C0C] py-32">
+    <section id="screenshots" className="bg-[#F0EDE4] py-32">
       <div className="max-w-[1200px] mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-12">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
+            <span className="inline-flex bg-white border border-[rgba(16,20,24,0.08)] text-[#A89A7A] text-xs px-3 py-1 rounded-full">
               Produkt-Tour
             </span>
-            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
+            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-[#101418] mt-4">
               Sieh Imvestra in Aktion.
             </h2>
-            <p className="text-[#777] text-lg mt-4">
+            <p className="text-[#6A5A3A] text-lg mt-4">
               Klick dich durch die wichtigsten Features.
             </p>
           </div>
@@ -314,11 +314,11 @@ export default function ScreenshotSection() {
               className="flex items-center gap-2 px-4 py-2.5 rounded-[8px] text-sm cursor-pointer transition-all duration-200"
               style={
                 activeTab === i
-                  ? { background: "#00E0D7", color: "#080808", fontWeight: 600 }
-                  : { background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#777" }
+                  ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 }
+                  : { background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }
               }
             >
-              <Icon size={15} color={activeTab === i ? "#080808" : "#777"} />
+              <Icon size={15} color={activeTab === i ? "#FFFFFF" : "#A89A7A"} />
               {label}
             </button>
           ))}
@@ -332,8 +332,8 @@ export default function ScreenshotSection() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -12 }}
             transition={{ duration: 0.3 }}
-            className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[20px] overflow-hidden max-w-[900px] mx-auto"
-            style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.8)" }}
+            className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[20px] overflow-hidden max-w-[900px] mx-auto"
+            style={{ boxShadow: "0 32px 80px rgba(16,20,24,0.08)" }}
           >
             <WindowBar title={TABS[activeTab].title} />
             <div className="min-h-[460px] p-6">
@@ -352,8 +352,8 @@ export default function ScreenshotSection() {
             transition={{ duration: 0.25 }}
             className="mt-8 text-center"
           >
-            <p className="text-base font-semibold text-white">{DESCRIPTIONS[activeTab].title}</p>
-            <p className="text-sm text-[#777] mt-1">{DESCRIPTIONS[activeTab].sub}</p>
+            <p className="text-base font-semibold text-[#101418]">{DESCRIPTIONS[activeTab].title}</p>
+            <p className="text-sm text-[#6A5A3A] mt-1">{DESCRIPTIONS[activeTab].sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>

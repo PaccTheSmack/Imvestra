@@ -55,11 +55,11 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
       <button
         type="button"
         onClick={onClick}
-        className="w-6 h-6 flex items-center justify-center hover:bg-[rgba(255,255,255,0.08)] rounded-[4px] transition-colors flex-shrink-0"
+        className="w-6 h-6 flex items-center justify-center hover:bg-[#F8F7F4] rounded-[4px] transition-colors flex-shrink-0"
       >
         {dir === "left"
-          ? <CaretLeft size={11} color="#666" />
-          : <CaretRight size={11} color="#666" />}
+          ? <CaretLeft size={11} color="#6A5A3A" />
+          : <CaretRight size={11} color="#6A5A3A" />}
       </button>
     )
   }
@@ -99,7 +99,7 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
           else if (n > max) onCh(max)
           else onCh(n)
         }}
-        className={`${width} bg-transparent text-sm font-semibold text-white text-center border-none outline-none focus:bg-[rgba(255,255,255,0.06)] rounded-[4px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        className={`${width} bg-transparent text-sm font-semibold text-[#101418] text-center border-none outline-none focus:bg-[#F8F7F4] rounded-[4px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
       />
     )
   }
@@ -107,27 +107,50 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
   return (
     <div>
       {label && (
-        <label className="text-[11px] text-[#666] uppercase tracking-wider mb-2 block">
+        <label className="text-[11px] text-[#6A5A3A] uppercase tracking-wider mb-2 block">
           {label}
         </label>
       )}
 
-      <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[8px] overflow-hidden">
+      <div
+        className="overflow-hidden rounded-[10px]"
+        style={{
+          background: "#FFFFFF",
+          border: "1px solid rgba(16,20,24,0.1)",
+          boxShadow: "0 8px 24px rgba(16,20,24,0.1)",
+        }}
+      >
 
         {/* Column headers */}
-        <div className="grid grid-cols-3 border-b border-[rgba(255,255,255,0.05)]">
+        <div
+          className="grid grid-cols-3"
+          style={{ borderBottom: "1px solid rgba(16,20,24,0.06)" }}
+        >
           {["TAG", "MONAT", "JAHR"].map(h => (
-            <div key={h} className="px-3 py-1.5 text-center text-[9px] text-[#444] uppercase tracking-wide border-r border-[rgba(255,255,255,0.05)] last:border-0">
+            <div
+              key={h}
+              className="px-3 py-1.5 text-center text-[9px] uppercase tracking-wide"
+              style={{
+                color: "#A89A7A",
+                borderRight: "1px solid rgba(16,20,24,0.06)",
+              }}
+            >
               {h}
             </div>
           ))}
         </div>
 
         {/* Controls */}
-        <div className="grid grid-cols-3 divide-x divide-[rgba(255,255,255,0.05)]">
+        <div
+          className="grid grid-cols-3"
+          style={{ borderTop: "none" }}
+        >
 
           {/* DAY */}
-          <div className="px-2 py-3 flex items-center justify-between gap-1">
+          <div
+            className="px-2 py-3 flex items-center justify-between gap-1"
+            style={{ borderRight: "1px solid rgba(16,20,24,0.06)" }}
+          >
             <Arrow
               dir="left"
               onClick={() => setDay(d => d <= 1 ? maxDay : d - 1)}
@@ -143,12 +166,15 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
           </div>
 
           {/* MONTH */}
-          <div className="px-2 py-3 flex items-center justify-between gap-1">
+          <div
+            className="px-2 py-3 flex items-center justify-between gap-1"
+            style={{ borderRight: "1px solid rgba(16,20,24,0.06)" }}
+          >
             <Arrow
               dir="left"
               onClick={() => setMonth(m => m <= 1 ? 12 : m - 1)}
             />
-            <span className="text-sm font-semibold text-white w-10 text-center select-none">
+            <span className="text-sm font-semibold text-[#101418] w-10 text-center select-none">
               {MONTHS[month - 1]}
             </span>
             <Arrow
@@ -180,7 +206,7 @@ export default function MonthYearPicker({ value, onChange, label, helper, minYea
       </div>
 
       {helper && (
-        <p className="text-[10px] text-[#555] mt-1.5">{helper}</p>
+        <p className="text-[10px] text-[#A89A7A] mt-1.5">{helper}</p>
       )}
     </div>
   )

@@ -44,14 +44,14 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-[#0C0C0C] py-32">
+    <section id="faq" className="bg-[#F8F7F4] py-32">
       <div className="max-w-[680px] mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-12">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
+            <span className="inline-flex bg-white border border-[rgba(16,20,24,0.08)] text-[#A89A7A] text-xs px-3 py-1 rounded-full">
               FAQ
             </span>
-            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
+            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-[#101418] mt-4">
               Häufige Fragen.
             </h2>
           </div>
@@ -61,14 +61,14 @@ export default function FAQSection() {
           {FAQS.map((item, i) => {
             const open = openIndex === i;
             return (
-              <div key={item.q} className="border-b border-[rgba(255,255,255,0.06)]">
+              <div key={item.q} className="border-b border-[rgba(16,20,24,0.08)]">
                 <button
                   onClick={() => setOpenIndex(open ? null : i)}
                   className="w-full flex justify-between items-center py-5 cursor-pointer text-left"
                 >
-                  <span className="text-base font-medium text-white pr-4">{item.q}</span>
+                  <span className="text-base font-medium text-[#101418] pr-4">{item.q}</span>
                   <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0">
-                    <CaretDown size={18} color="#777" />
+                    <CaretDown size={18} color="#A89A7A" />
                   </motion.div>
                 </button>
                 <AnimatePresence initial={false}>
@@ -80,7 +80,7 @@ export default function FAQSection() {
                       transition={{ duration: 0.25 }}
                       style={{ overflow: "hidden" }}
                     >
-                      <p className="pb-5 text-sm text-[#777] leading-relaxed">{item.a}</p>
+                      <p className="pb-5 text-sm text-[#6A5A3A] leading-relaxed">{item.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

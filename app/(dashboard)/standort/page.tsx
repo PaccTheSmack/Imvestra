@@ -36,7 +36,7 @@ function AnimatedScore({ value, prefersReduced }: { value: number; prefersReduce
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, prefersReduced])
 
-  const color = value >= 70 ? "#00E0D7" : value >= 55 ? "#FFB800" : "#FF4444"
+  const color = value >= 70 ? "#A07830" : value >= 55 ? "#92400E" : "#B91C1C"
   return (
     <span style={{ color, fontSize: 64, fontWeight: 600, letterSpacing: "-0.05em", lineHeight: 1 }}>
       {display}
@@ -91,24 +91,24 @@ function StandortContent() {
   const hasObjectData = kaufpreisParam && mieteParam && sqmParam
 
   return (
-    <div className="p-6 w-full" style={{ background: "#080808", minHeight: "100vh" }}>
+    <div className="p-6 w-full" style={{ background: "#F8F7F4", minHeight: "100vh" }}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <div
           className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
-          style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+          style={{ background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.12)" }}
         >
-          <MapPin size={18} color="#00E0D7" />
+          <MapPin size={18} color="#A07830" />
         </div>
         <div>
-          <h1 className="text-[20px] font-semibold text-white tracking-[-0.02em]">Standortanalyse</h1>
-          <p className="text-sm mt-0.5" style={{ color: "#777" }}>Marktdaten und Investoren-Score per PLZ</p>
+          <h1 className="text-[20px] font-semibold text-[#101418] tracking-[-0.02em]">Standortanalyse</h1>
+          <p className="text-sm mt-0.5" style={{ color: "#6A5A3A" }}>Marktdaten und Investoren-Score per PLZ</p>
         </div>
       </div>
 
       {/* PLZ Search */}
       <div className="mb-8" style={{ maxWidth: 400 }}>
-        <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#777" }}>
+        <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#6A5A3A" }}>
           Postleitzahl eingeben
         </p>
         <div className="relative">
@@ -121,27 +121,27 @@ function StandortContent() {
             onChange={(e) => handlePlzChange(e.target.value)}
             className="w-full rounded-[10px] px-4 py-3 text-lg tracking-widest focus:outline-none transition-all duration-150"
             style={{
-              background: "#141414",
-              border: stadtDaten ? "1px solid rgba(0,224,215,0.3)" : notFound ? "1px solid rgba(255,68,68,0.3)" : "1px solid rgba(255,255,255,0.07)",
-              color: "#fff",
+              background: "#FFFFFF",
+              border: stadtDaten ? "1px solid rgba(160,120,48,0.3)" : notFound ? "1px solid rgba(185,28,28,0.3)" : "1px solid rgba(16,20,24,0.1)",
+              color: "#101418",
             }}
           />
           {stadtDaten && plzInfo && (
             <span
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium"
-              style={{ color: "#00E0D7" }}
+              style={{ color: "#A07830" }}
             >
               {plzInfo.city}
             </span>
           )}
         </div>
         {notFound && (
-          <p className="text-xs mt-2" style={{ color: "#FF4444" }}>
+          <p className="text-xs mt-2" style={{ color: "#B91C1C" }}>
             PLZ nicht gefunden. Bitte prüfen.
           </p>
         )}
         {isFallback && plzInfo && (
-          <p className="text-xs mt-2" style={{ color: "#FFB800" }}>
+          <p className="text-xs mt-2" style={{ color: "#92400E" }}>
             Keine detaillierten Daten für diese PLZ. Zeige {plzInfo.state}-Durchschnitt.
           </p>
         )}
@@ -163,15 +163,15 @@ function StandortContent() {
               {/* LEFT COLUMN */}
               <div className="flex flex-col gap-4">
                 {/* Market Data Card */}
-                <div className="rounded-[14px] overflow-hidden" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div className="rounded-[14px] overflow-hidden" style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}>
                   {/* Card header */}
                   <div
                     className="px-5 py-4 flex items-center justify-between"
-                    style={{ background: "#0C0C0C", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                    style={{ background: "#F0EDE4", borderBottom: "1px solid rgba(16,20,24,0.06)" }}
                   >
                     <div>
-                      <p className="text-base font-semibold text-white">{stadtDaten.city}</p>
-                      <p className="text-xs mt-0.5" style={{ color: "#666" }}>
+                      <p className="text-base font-semibold text-[#101418]">{stadtDaten.city}</p>
+                      <p className="text-xs mt-0.5" style={{ color: "#6A5A3A" }}>
                         {stadtDaten.state} · {
                           plzInfo.region === "grossstadt" ? "Großstadt" :
                           plzInfo.region === "mittelstadt" ? "Mittelstadt" :
@@ -182,9 +182,9 @@ function StandortContent() {
                     <span
                       className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
                       style={
-                        stadtDaten.bevoelkerungstrend === "wachsend"    ? { background: "rgba(0,224,215,0.1)", color: "#00E0D7" } :
-                        stadtDaten.bevoelkerungstrend === "schrumpfend" ? { background: "rgba(255,68,68,0.1)", color: "#FF4444" } :
-                                                                          { background: "#1A1A1A", color: "#666" }
+                        stadtDaten.bevoelkerungstrend === "wachsend"    ? { background: "rgba(160,120,48,0.1)", color: "#A07830" } :
+                        stadtDaten.bevoelkerungstrend === "schrumpfend" ? { background: "rgba(185,28,28,0.1)", color: "#B91C1C" } :
+                                                                          { background: "#F0EDE4", color: "#6A5A3A" }
                       }
                     >
                       {stadtDaten.bevoelkerungstrend === "wachsend" ? "↑ Wachsend" :
@@ -201,13 +201,13 @@ function StandortContent() {
                       {
                         label: "Ø MARKTRENDITE",
                         value: formatPercent(stadtDaten.mietrendite_markt),
-                        color: stadtDaten.mietrendite_markt >= 0.05 ? "#00E0D7" :
-                               stadtDaten.mietrendite_markt >= 0.035 ? "#FFB800" : "#FF4444",
+                        color: stadtDaten.mietrendite_markt >= 0.05 ? "#A07830" :
+                               stadtDaten.mietrendite_markt >= 0.035 ? "#92400E" : "#B91C1C",
                       },
                     ].map(({ label, value, color }) => (
                       <div key={label}>
-                        <p className="text-[10px] uppercase tracking-wide" style={{ color: "#666" }}>{label}</p>
-                        <p className="text-lg font-semibold mt-1.5" style={{ color: color ?? "#fff" }}>{value}</p>
+                        <p className="text-[10px] uppercase tracking-wide" style={{ color: "#6A5A3A" }}>{label}</p>
+                        <p className="text-lg font-semibold mt-1.5" style={{ color: color ?? "#101418" }}>{value}</p>
                       </div>
                     ))}
                   </div>
@@ -215,8 +215,8 @@ function StandortContent() {
 
                 {/* Object Comparison */}
                 {hasObjectData && (
-                  <div className="rounded-[14px] p-5" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#777" }}>
+                  <div className="rounded-[14px] p-5" style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#6A5A3A" }}>
                       Dein Objekt im Vergleich
                     </p>
                     {[
@@ -239,19 +239,19 @@ function StandortContent() {
                       const objektPct = (objekt / maxVal) * 100
                       return (
                         <div key={label} className="flex items-center gap-4 mb-4 last:mb-0">
-                          <p className="text-xs w-28 flex-shrink-0" style={{ color: "#777" }}>{label}</p>
-                          <div className="flex-1 relative h-1.5 rounded-full overflow-hidden" style={{ background: "#1A1A1A" }}>
-                            <div className="absolute h-full rounded-full" style={{ width: `${marktPct}%`, background: "rgba(255,255,255,0.15)" }} />
+                          <p className="text-xs w-28 flex-shrink-0" style={{ color: "#6A5A3A" }}>{label}</p>
+                          <div className="flex-1 relative h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(16,20,24,0.06)" }}>
+                            <div className="absolute h-full rounded-full" style={{ width: `${marktPct}%`, background: "rgba(16,20,24,0.15)" }} />
                             <motion.div
                               className="absolute h-full rounded-full"
-                              style={{ background: higher ? "#00E0D7" : "#FF4444" }}
+                              style={{ background: higher ? "#A07830" : "#B91C1C" }}
                               initial={{ width: 0 }}
                               animate={{ width: `${objektPct}%` }}
                               transition={{ duration: prefersReduced ? 0 : 0.6, ease: "easeOut" }}
                             />
                           </div>
-                          <p className="text-xs text-right w-40 flex-shrink-0" style={{ color: "#777" }}>
-                            Markt: {format(markt)} · Objekt: <span style={{ color: "#fff" }}>{format(objekt)}</span>
+                          <p className="text-xs text-right w-40 flex-shrink-0" style={{ color: "#6A5A3A" }}>
+                            Markt: {format(markt)} · Objekt: <span style={{ color: "#101418" }}>{format(objekt)}</span>
                           </p>
                         </div>
                       )
@@ -260,37 +260,37 @@ function StandortContent() {
                 )}
 
                 {/* Analyse text */}
-                <div className="rounded-[14px] px-5 py-4 flex items-start gap-3" style={{ background: "#0C0C0C", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <Info size={15} color="#00E0D7" className="mt-0.5 flex-shrink-0" />
-                  <p className="text-sm leading-relaxed" style={{ color: "#888" }}>{score.analyse_text}</p>
+                <div className="rounded-[14px] px-5 py-4 flex items-start gap-3" style={{ background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.06)" }}>
+                  <Info size={15} color="#A07830" className="mt-0.5 flex-shrink-0" />
+                  <p className="text-sm leading-relaxed" style={{ color: "#6A5A3A" }}>{score.analyse_text}</p>
                 </div>
 
                 {/* Strengths + Risks */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-[12px] p-4" style={{ background: "rgba(0,224,215,0.04)", border: "1px solid rgba(0,224,215,0.1)" }}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#00E0D7" }}>
+                  <div className="rounded-[12px] p-4" style={{ background: "rgba(45,106,45,0.04)", border: "1px solid rgba(45,106,45,0.12)" }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#2D6A2D" }}>
                       Stärken
                     </p>
                     {score.staerken.length > 0 ? score.staerken.map((s) => (
                       <div key={s} className="flex items-center gap-2 py-1">
-                        <CheckCircle size={12} color="#00E0D7" weight="fill" />
-                        <span className="text-xs text-white">{s}</span>
+                        <CheckCircle size={12} color="#2D6A2D" weight="fill" />
+                        <span className="text-xs text-[#101418]">{s}</span>
                       </div>
                     )) : (
-                      <p className="text-xs" style={{ color: "#666" }}>Keine besonderen Stärken</p>
+                      <p className="text-xs" style={{ color: "#A89A7A" }}>Keine besonderen Stärken</p>
                     )}
                   </div>
-                  <div className="rounded-[12px] p-4" style={{ background: "rgba(255,68,68,0.04)", border: "1px solid rgba(255,68,68,0.1)" }}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#FF4444" }}>
+                  <div className="rounded-[12px] p-4" style={{ background: "rgba(185,28,28,0.04)", border: "1px solid rgba(185,28,28,0.12)" }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#B91C1C" }}>
                       Risiken
                     </p>
                     {score.risiken.length > 0 ? score.risiken.map((r) => (
                       <div key={r} className="flex items-center gap-2 py-1">
-                        <Warning size={12} color="#FF4444" weight="fill" />
-                        <span className="text-xs text-white">{r}</span>
+                        <Warning size={12} color="#B91C1C" weight="fill" />
+                        <span className="text-xs text-[#101418]">{r}</span>
                       </div>
                     )) : (
-                      <p className="text-xs" style={{ color: "#666" }}>Keine wesentlichen Risiken</p>
+                      <p className="text-xs" style={{ color: "#A89A7A" }}>Keine wesentlichen Risiken</p>
                     )}
                   </div>
                 </div>
@@ -299,8 +299,8 @@ function StandortContent() {
               {/* RIGHT COLUMN */}
               <div className="flex flex-col gap-4" style={{ position: "sticky", top: 32, alignSelf: "start" }}>
                 {/* Score Card */}
-                <div className="rounded-[14px] p-5" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#777" }}>
+                <div className="rounded-[14px] p-5" style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "#6A5A3A" }}>
                     Investoren-Score
                   </p>
 
@@ -308,7 +308,7 @@ function StandortContent() {
                   <div className="text-center mb-5">
                     <div className="flex items-end justify-center gap-1">
                       <AnimatedScore value={score.gesamt} prefersReduced={prefersReduced} />
-                      <span className="text-xl mb-2" style={{ color: "#555" }}>/100</span>
+                      <span className="text-xl mb-2" style={{ color: "#A89A7A" }}>/100</span>
                     </div>
                   </div>
 
@@ -317,10 +317,10 @@ function StandortContent() {
                     <span
                       className="text-xs font-semibold px-3 py-1.5 rounded-full border"
                       style={
-                        score.empfehlung === "kaufen"   ? { background: "rgba(0,224,215,0.1)",   color: "#00E0D7", borderColor: "rgba(0,224,215,0.2)" } :
-                        score.empfehlung === "prüfen"   ? { background: "rgba(255,184,0,0.1)",   color: "#FFB800", borderColor: "rgba(255,184,0,0.2)" } :
-                        score.empfehlung === "abwarten" ? { background: "#1A1A1A",               color: "#666",    borderColor: "rgba(255,255,255,0.1)" } :
-                                                          { background: "rgba(255,68,68,0.1)",   color: "#FF4444", borderColor: "rgba(255,68,68,0.2)" }
+                        score.empfehlung === "kaufen"   ? { background: "rgba(160,120,48,0.1)",  color: "#A07830", borderColor: "rgba(160,120,48,0.2)" } :
+                        score.empfehlung === "prüfen"   ? { background: "rgba(146,64,14,0.1)",   color: "#92400E", borderColor: "rgba(146,64,14,0.2)" } :
+                        score.empfehlung === "abwarten" ? { background: "#F0EDE4",               color: "#6A5A3A", borderColor: "rgba(16,20,24,0.1)" } :
+                                                          { background: "rgba(185,28,28,0.1)",   color: "#B91C1C", borderColor: "rgba(185,28,28,0.2)" }
                       }
                     >
                       {score.empfehlung_text}
@@ -337,13 +337,13 @@ function StandortContent() {
                     ].map(({ label, val }) => (
                       <div key={label}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span style={{ color: "#777" }}>{label}</span>
-                          <span style={{ color: "#fff" }}>{val}/25</span>
+                          <span style={{ color: "#6A5A3A" }}>{label}</span>
+                          <span style={{ color: "#101418" }}>{val}/25</span>
                         </div>
-                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#1A1A1A" }}>
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(16,20,24,0.06)" }}>
                           <motion.div
                             className="h-full rounded-full"
-                            style={{ background: "#00E0D7" }}
+                            style={{ background: "#A07830" }}
                             initial={{ width: 0 }}
                             animate={{ width: `${(val / 25) * 100}%` }}
                             transition={{ duration: prefersReduced ? 0 : 0.7, ease: "easeOut", delay: 0.1 }}
@@ -355,26 +355,26 @@ function StandortContent() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="rounded-[14px] p-4" style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#777" }}>
+                <div className="rounded-[14px] p-4" style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "#6A5A3A" }}>
                     Aktionen
                   </p>
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={() => router.push(`/calculator?plz=${plz}&city=${encodeURIComponent(stadtDaten.city)}`)}
                       className="w-full py-2.5 rounded-[8px] text-sm font-medium transition-all duration-150"
-                      style={{ background: "#00E0D7", color: "#080808" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#00c8c0")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "#00E0D7")}
+                      style={{ background: "#A07830", color: "#FFFFFF" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#8A6828")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "#A07830")}
                     >
                       Im Rechner analysieren
                     </button>
                     <button
                       onClick={() => router.push(`/verhandlung?plz=${plz}&miete_qm=${stadtDaten.miete_qm}`)}
                       className="w-full py-2.5 rounded-[8px] text-sm font-medium transition-all duration-150"
-                      style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.08)", color: "#888" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,224,215,0.2)"; e.currentTarget.style.color = "#fff" }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#888" }}
+                      style={{ background: "#F8F7F4", border: "1px solid rgba(16,20,24,0.1)", color: "#6A5A3A" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(160,120,48,0.2)"; e.currentTarget.style.color = "#101418" }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(16,20,24,0.1)"; e.currentTarget.style.color = "#6A5A3A" }}
                     >
                       Verhandlungsrechner
                     </button>
@@ -382,7 +382,7 @@ function StandortContent() {
                 </div>
 
                 {/* Disclaimer */}
-                <p className="text-[10px] leading-relaxed px-1" style={{ color: "#555" }}>
+                <p className="text-[10px] leading-relaxed px-1" style={{ color: "#A89A7A" }}>
                   Daten basieren auf öffentlichen Marktberichten (Stand 2026). Keine Gewähr für Richtigkeit. Eigene Recherche empfohlen.
                 </p>
               </div>
@@ -399,14 +399,14 @@ function StandortContent() {
           >
             <motion.div
               className="w-16 h-16 rounded-[18px] flex items-center justify-center mx-auto"
-              style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+              style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
               animate={prefersReduced ? {} : { y: [0, -6, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              <MapPin size={28} color="#555" />
+              <MapPin size={28} color="#A89A7A" />
             </motion.div>
-            <p className="text-base font-semibold text-white mt-6">PLZ eingeben um Marktdaten zu laden</p>
-            <p className="text-sm mt-2" style={{ color: "#777" }}>Standortdaten, Investoren-Score und Marktvergleich.</p>
+            <p className="text-base font-semibold text-[#101418] mt-6">PLZ eingeben um Marktdaten zu laden</p>
+            <p className="text-sm mt-2" style={{ color: "#6A5A3A" }}>Standortdaten, Investoren-Score und Marktvergleich.</p>
 
             {/* Popular PLZs */}
             <div className="mt-6 flex flex-wrap gap-2 justify-center">
@@ -415,9 +415,9 @@ function StandortContent() {
                   key={p}
                   onClick={() => setPlz(p)}
                   className="text-xs px-3 py-1.5 rounded-full transition-all duration-150"
-                  style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#777" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,224,215,0.2)"; e.currentTarget.style.color = "#00E0D7" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#777" }}
+                  style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(160,120,48,0.2)"; e.currentTarget.style.color = "#A07830" }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(16,20,24,0.08)"; e.currentTarget.style.color = "#6A5A3A" }}
                 >
                   {label}
                 </button>

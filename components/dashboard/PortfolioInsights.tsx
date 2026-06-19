@@ -140,7 +140,7 @@ const INSIGHT_CONFIG = {
     icon: ShieldWarning,
     color: tokens.color.danger,
     bg: tokens.color.dangerBg,
-    border: "rgba(255,68,68,0.15)",
+    border: "rgba(185,28,28,0.15)",
     label: "Risiko",
   },
   warning: {
@@ -160,7 +160,7 @@ const INSIGHT_CONFIG = {
   info: {
     icon: Info,
     color: tokens.color.accent,
-    bg: "rgba(0,224,215,0.06)",
+    bg: "rgba(160,120,48,0.06)",
     border: tokens.color.borderAccent,
     label: "Info",
   },

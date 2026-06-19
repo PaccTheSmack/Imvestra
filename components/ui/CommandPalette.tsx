@@ -21,7 +21,6 @@ import {
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 import { signOut } from "@/lib/auth-actions"
-import { tokens } from "@/lib/tokens"
 
 type CommandItem = {
   id: string
@@ -134,7 +133,7 @@ export default function CommandPalette() {
             exit={{ opacity: 0 }}
             transition={{ duration: prefersReduced ? 0 : 0.14 }}
             className="fixed inset-0 z-50"
-            style={{ background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)" }}
+            style={{ background: "rgba(16,20,24,0.4)", backdropFilter: "blur(4px)" }}
             onClick={() => setOpen(false)}
           />
 
@@ -150,29 +149,34 @@ export default function CommandPalette() {
             onKeyDown={onKeyDown}
           >
             <div
-              className="overflow-hidden rounded-[16px]"
+              className="overflow-hidden rounded-[14px]"
               style={{
-                background: "#111",
-                border: "1px solid rgba(255,255,255,0.1)",
-                boxShadow: "0 32px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04), 0 0 60px rgba(0,224,215,0.03)",
+                background: "#FFFFFF",
+                border: "1px solid rgba(16,20,24,0.1)",
+                boxShadow: "0 24px 64px rgba(16,20,24,0.16)",
               }}
             >
               {/* Search row */}
               <div
                 className="flex items-center gap-3 px-4 py-3.5"
-                style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+                style={{ borderBottom: "1px solid rgba(16,20,24,0.06)" }}
               >
-                <MagnifyingGlass size={16} color="#555" className="flex-shrink-0" />
+                <MagnifyingGlass size={16} color="#A89A7A" className="flex-shrink-0" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Suchen oder navigieren..."
-                  className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#444]"
+                  className="flex-1 bg-transparent text-sm text-[#101418] outline-none placeholder:text-[#A89A7A]"
                 />
                 <kbd
                   className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
-                  style={{ background: "#1A1A1A", color: "#444", fontFamily: "var(--font-mono)" }}
+                  style={{
+                    background: "#F0EDE4",
+                    color: "#6A5A3A",
+                    border: "1px solid rgba(16,20,24,0.08)",
+                    fontFamily: "var(--font-mono)",
+                  }}
                 >
                   esc
                 </kbd>
@@ -181,15 +185,15 @@ export default function CommandPalette() {
               {/* Results */}
               <div ref={listRef} className="max-h-[340px] overflow-y-auto py-1.5">
                 {filtered.length === 0 ? (
-                  <div className="px-4 py-10 text-center text-sm text-[#555]">
+                  <div className="px-4 py-10 text-center text-sm text-[#A89A7A]">
                     Keine Ergebnisse für &ldquo;{query}&rdquo;
                   </div>
                 ) : (
                   Object.entries(grouped).map(([category, items]) => (
                     <div key={category} className="mb-1">
                       <p
-                        className="px-4 pt-2 pb-1 text-[9px] font-semibold uppercase"
-                        style={{ color: "#444", letterSpacing: "0.1em" }}
+                        className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest"
+                        style={{ color: "#A89A7A" }}
                       >
                         {category}
                       </p>
@@ -204,18 +208,18 @@ export default function CommandPalette() {
                             onMouseEnter={() => setActiveIdx(idx)}
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors duration-75"
                             style={{
-                              background: active ? "rgba(255,255,255,0.05)" : "transparent",
-                              color: active ? "#e8e8e8" : "#777",
+                              background: active ? "rgba(160,120,48,0.08)" : "transparent",
+                              color: active ? "#101418" : "#6A5A3A",
                             }}
                           >
                             <item.Icon
                               size={15}
-                              color={active ? tokens.color.accent : "#4a4a4a"}
+                              color={active ? "#A07830" : "#A89A7A"}
                               className="flex-shrink-0"
                             />
                             <span className="flex-1">{item.label}</span>
                             {active && (
-                              <ArrowRight size={12} color="#444" className="flex-shrink-0" />
+                              <ArrowRight size={12} color="#A89A7A" className="flex-shrink-0" />
                             )}
                           </button>
                         )
@@ -228,7 +232,7 @@ export default function CommandPalette() {
               {/* Footer hints */}
               <div
                 className="px-4 py-2 flex items-center gap-5 text-[10px]"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "#3a3a3a" }}
+                style={{ borderTop: "1px solid rgba(16,20,24,0.06)", color: "#A89A7A" }}
               >
                 <span><span style={{ fontFamily: "var(--font-mono)" }}>↑↓</span> navigieren</span>
                 <span><span style={{ fontFamily: "var(--font-mono)" }}>↵</span> öffnen</span>

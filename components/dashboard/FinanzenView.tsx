@@ -22,24 +22,24 @@ interface FinanzenViewProps {
 }
 
 const URGENCY_BORDER: Record<FinanzierungUrgency, string> = {
-  expired:  "rgba(255,68,68,0.3)",
-  critical: "rgba(255,68,68,0.2)",
-  warning:  "rgba(255,184,0,0.2)",
-  ok:       "rgba(255,255,255,0.08)",
+  expired:  "rgba(185,28,28,0.25)",
+  critical: "rgba(185,28,28,0.18)",
+  warning:  "rgba(146,64,14,0.18)",
+  ok:       "rgba(16,20,24,0.08)",
 };
 
 const URGENCY_BADGE: Record<FinanzierungUrgency, { bg: string; text: string; label: string }> = {
-  expired:  { bg: "rgba(255,68,68,0.1)",   text: "#FF4444", label: "Abgelaufen" },
-  critical: { bg: "rgba(255,68,68,0.1)",   text: "#FF4444", label: "Kritisch"   },
-  warning:  { bg: "rgba(255,184,0,0.1)",   text: "#FFB800", label: "Bald fallig"},
-  ok:       { bg: "rgba(0,224,215,0.1)",  text: "#00E0D7", label: "Lauft"      },
+  expired:  { bg: "rgba(185,28,28,0.1)",   text: "#B91C1C", label: "Abgelaufen" },
+  critical: { bg: "rgba(185,28,28,0.1)",   text: "#B91C1C", label: "Kritisch"   },
+  warning:  { bg: "rgba(146,64,14,0.1)",   text: "#92400E", label: "Bald fallig"},
+  ok:       { bg: "rgba(160,120,48,0.1)", text: "#A07830", label: "Lauft"      },
 };
 
 const URGENCY_COLOR: Record<FinanzierungUrgency, string> = {
-  expired:  "#FF4444",
-  critical: "#FF4444",
-  warning:  "#FFB800",
-  ok:       "#00E0D7",
+  expired:  "#B91C1C",
+  critical: "#B91C1C",
+  warning:  "#92400E",
+  ok:       "#A07830",
 };
 
 function fmtDateLong(d: string) {
@@ -145,9 +145,9 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+            style={{ background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.12)" }}
           >
-            <Bank size={18} color="#00E0D7" />
+            <Bank size={18} color="#A07830" />
           </div>
           <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>
             Finanzen
@@ -183,12 +183,12 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { label: "GESAMTSCHULDEN",    value: formatCurrency(totalDebt),            color: tokens.color.text },
-            { label: "RATE / MONAT",      value: formatCurrency(totalRate),            color: "#FF4444"         },
+            { label: "RATE / MONAT",      value: formatCurrency(totalRate),            color: "#B91C1C"         },
             { label: "Ø ZINSSATZ",        value: formatPercent(avgInterest),           color: tokens.color.text },
             {
               label: "LAUFT AUS (12 Mo)",
               value: expiringCount + " Finanzierungen",
-              color: expiringCount > 0 ? "#FFB800" : tokens.color.text,
+              color: expiringCount > 0 ? "#92400E" : tokens.color.text,
             },
           ].map(({ label, value, color }) => (
             <div
@@ -214,14 +214,14 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
             animate={prefersReduced ? {} : { y: [0, -6, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             className="w-14 h-14 rounded-[14px] flex items-center justify-center mx-auto"
-            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}` }}
           >
-            <Bank size={24} color="#666" />
+            <Bank size={24} color={tokens.color.textSubtle} />
           </motion.div>
           <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>
             Keine Finanzierungen
           </p>
-          <p className="text-sm mt-2 max-w-[280px]" style={{ color: "#777" }}>
+          <p className="text-sm mt-2 max-w-[280px]" style={{ color: tokens.color.textMuted }}>
             Fuege deine Darlehen hinzu um Zinsbindungen zu tracken.
           </p>
           <div className="mt-5">
@@ -243,21 +243,21 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
             <FadeIn key={f.id} delay={i * 0.06}>
               <div
                 className="rounded-[16px] overflow-hidden"
-                style={{ background: "#111", border: `1px solid ${URGENCY_BORDER[f.urgency]}` }}
+                style={{ background: tokens.color.surface, border: `1px solid ${URGENCY_BORDER[f.urgency]}` }}
               >
                 {/* Top */}
                 <div className="px-6 py-5 flex items-start justify-between">
                   <div>
                     <span
                       className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase mb-2 inline-block"
-                      style={{ background: "#1A1A1A", color: "#777" }}
+                      style={{ background: tokens.color.bgSubtle, color: tokens.color.textSubtle }}
                     >
                       {f.property.type}
                     </span>
                     <p className="text-base font-semibold" style={{ color: tokens.color.text }}>
                       {f.property.name}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: "#666" }}>
+                    <p className="text-xs mt-0.5" style={{ color: tokens.color.textMuted }}>
                       {f.bank || "Bank nicht angegeben"}
                     </p>
                   </div>
@@ -272,7 +272,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                 {/* Metrics bar */}
                 <div
                   className="px-6 py-4 grid grid-cols-5 gap-4"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                  style={{ borderTop: `1px solid ${tokens.color.border}` }}
                 >
                   {[
                     { label: "DARLEHEN",  value: formatCurrency(f.loan_amount) },
@@ -290,7 +290,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                     },
                   ].map(({ label, value, sub }) => (
                     <div key={label}>
-                      <p className="text-[10px] uppercase tracking-wide" style={{ color: "#666" }}>
+                      <p className="text-[10px] uppercase tracking-wide" style={{ color: tokens.color.textSubtle }}>
                         {label}
                       </p>
                       <p className="text-sm font-semibold mt-1" style={{ color: tokens.color.text }}>
@@ -307,7 +307,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
 
                 {/* Progress bar */}
                 {f.fixed_until && (
-                  <div style={{ background: "rgba(255,255,255,0.04)", height: 3 }}>
+                  <div style={{ background: tokens.color.bgSubtle, height: 3 }}>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
@@ -320,9 +320,9 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                 {/* Actions */}
                 <div
                   className="px-6 py-3 flex items-center justify-between"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                  style={{ borderTop: `1px solid ${tokens.color.border}` }}
                 >
-                  <span className="text-xs" style={{ color: "#666" }}>
+                  <span className="text-xs" style={{ color: tokens.color.textMuted }}>
                     {f.fixed_until && f.urgency !== "expired"
                       ? "Zinsbindungsende: " + fmtDateLong(f.fixed_until)
                       : ""}
@@ -364,13 +364,13 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
               exit={{ opacity: 0, y: 8, scale: 0.97 }}
               transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               className="w-full max-w-[480px] rounded-[20px] overflow-hidden"
-              style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 24px 80px rgba(0,0,0,0.8)" }}
+              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}`, boxShadow: "0 24px 80px rgba(16,20,24,0.12)" }}
             >
-              <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: `1px solid ${tokens.color.border}` }}>
                 <p className="text-base font-semibold" style={{ color: tokens.color.text }}>Finanzierung hinzufugen</p>
-                <button onClick={() => setShowAddFinancing(false)} style={{ color: "#666" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}>
+                <button onClick={() => setShowAddFinancing(false)} style={{ color: tokens.color.textSubtle }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = tokens.color.text)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}>
                   <X size={18} />
                 </button>
               </div>
@@ -401,7 +401,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                   onChange={(e) => setForm((f) => ({ ...f, current_debt: e.target.value }))} />
               </div>
 
-              <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: `1px solid ${tokens.color.border}` }}>
                 <DarkButton variant="ghost" onClick={() => setShowAddFinancing(false)}>Abbrechen</DarkButton>
                 <DarkButton variant="primary" loading={saving} onClick={saveFinancing}>Speichern</DarkButton>
               </div>
@@ -428,17 +428,17 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
               exit={{ opacity: 0, y: 8, scale: 0.97 }}
               transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               className="w-full max-w-[440px] rounded-[20px] overflow-hidden"
-              style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 24px 80px rgba(0,0,0,0.8)" }}
+              style={{ background: tokens.color.surface, border: `1px solid ${tokens.color.border}`, boxShadow: "0 24px 80px rgba(16,20,24,0.12)" }}
             >
-              <div className="px-6 py-5 flex justify-between items-start" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-6 py-5 flex justify-between items-start" style={{ borderBottom: `1px solid ${tokens.color.border}` }}>
                 <div>
                   <p className="text-base font-semibold" style={{ color: tokens.color.text }}>Anschlussfinanzierung</p>
-                  <p className="text-xs mt-0.5" style={{ color: "#666" }}>{selectedFinancing.property.name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: tokens.color.textSubtle }}>{selectedFinancing.property.name}</p>
                 </div>
                 <button onClick={() => { setShowAnschluss(false); setSelectedFinancing(null); }}
-                  style={{ color: "#666" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}>
+                  style={{ color: tokens.color.textSubtle }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = tokens.color.text)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}>
                   <X size={18} />
                 </button>
               </div>
@@ -447,7 +447,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                 {/* Current situation */}
                 <div
                   className="rounded-[12px] p-4 grid grid-cols-3 gap-4"
-                  style={{ background: "#0C0C0C", border: "1px solid rgba(255,255,255,0.07)" }}
+                  style={{ background: tokens.color.bgSubtle, border: `1px solid ${tokens.color.border}` }}
                 >
                   {[
                     { label: "RESTSCHULD",       value: formatCurrency(anschlussDebt) },
@@ -455,7 +455,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                     { label: "ZINSBINDUNG BIS",  value: selectedFinancing.fixed_until ? fmtDateShort(selectedFinancing.fixed_until) : "–" },
                   ].map(({ label, value }) => (
                     <div key={label}>
-                      <p className="text-[10px] uppercase tracking-wide" style={{ color: "#666" }}>{label}</p>
+                      <p className="text-[10px] uppercase tracking-wide" style={{ color: tokens.color.textSubtle }}>{label}</p>
                       <p className="text-sm font-semibold mt-1" style={{ color: tokens.color.text }}>{value}</p>
                     </div>
                   ))}
@@ -472,15 +472,15 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="rounded-[12px] p-4"
-                    style={{ background: "rgba(0,224,215,0.06)", border: "1px solid rgba(0,224,215,0.15)" }}
+                    style={{ background: "rgba(160,120,48,0.06)", border: "1px solid rgba(160,120,48,0.15)" }}
                   >
-                    <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: "#777" }}>NEUE RATE / MONAT</p>
-                    <p className="text-2xl font-semibold" style={{ color: "#00E0D7" }}>
+                    <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: tokens.color.textSubtle }}>NEUE RATE / MONAT</p>
+                    <p className="text-2xl font-semibold" style={{ color: tokens.color.accent }}>
                       {formatCurrency(newMonthlyRate)}
                     </p>
-                    <div className="flex justify-between text-xs mt-3" style={{ color: "#777" }}>
+                    <div className="flex justify-between text-xs mt-3" style={{ color: tokens.color.textSubtle }}>
                       <span>Aktuell: {formatCurrency(selectedFinancing.rate_monthly)}</span>
-                      <span style={{ color: newMonthlyRate - selectedFinancing.rate_monthly > 0 ? "#FF4444" : "#00E0D7" }}>
+                      <span style={{ color: newMonthlyRate - selectedFinancing.rate_monthly > 0 ? tokens.color.danger : tokens.color.positive }}>
                         {formatCurrencySigned(newMonthlyRate - selectedFinancing.rate_monthly)}
                       </span>
                     </div>
@@ -488,7 +488,7 @@ export default function FinanzenView({ financings }: FinanzenViewProps) {
                 )}
               </div>
 
-              <div className="px-6 py-4 flex justify-end" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-6 py-4 flex justify-end" style={{ borderTop: `1px solid ${tokens.color.border}` }}>
                 <DarkButton variant="secondary" onClick={() => { setShowAnschluss(false); setSelectedFinancing(null); }}>
                   Schliessen
                 </DarkButton>

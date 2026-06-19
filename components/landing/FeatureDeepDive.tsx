@@ -15,11 +15,11 @@ function scrollTo(id: string) {
 
 function WindowBar({ title }: { title: string }) {
   return (
-    <div className="bg-[#0C0C0C] border-b border-[rgba(255,255,255,0.06)] px-4 py-3 flex items-center gap-2">
+    <div className="bg-[#F0EDE4] border-b border-[rgba(16,20,24,0.08)] px-4 py-3 flex items-center gap-2">
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FF5F57" }} />
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#FFBD2E" }} />
       <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#28CA41" }} />
-      <span className="text-xs text-[#666] ml-2">{title}</span>
+      <span className="text-xs text-[#A89A7A] ml-2">{title}</span>
     </div>
   );
 }
@@ -41,27 +41,27 @@ function TextSide({
 }) {
   return (
     <FadeIn direction={direction}>
-      <p className="text-[80px] font-semibold tracking-[-0.05em] text-[rgba(255,255,255,0.04)] leading-none mb-2">
+      <p className="text-[80px] font-semibold tracking-[-0.05em] text-[rgba(16,20,24,0.04)] leading-none mb-2">
         {number}
       </p>
-      <span className="inline-flex bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.15)] text-[#00E0D7] text-xs px-3 py-1 rounded-full mb-4">
+      <span className="inline-flex bg-[rgba(160,120,48,0.08)] border border-[rgba(160,120,48,0.15)] text-[#A07830] text-xs px-3 py-1 rounded-full mb-4">
         {tag}
       </span>
-      <h3 className="text-[32px] font-semibold tracking-[-0.02em] text-white leading-[1.2] mb-4">
+      <h3 className="text-[32px] font-semibold tracking-[-0.02em] text-[#101418] leading-[1.2] mb-4">
         {title}
       </h3>
-      <p className="text-base text-[#777] leading-relaxed mb-6">{description}</p>
+      <p className="text-base text-[#6A5A3A] leading-relaxed mb-6">{description}</p>
       <div className="flex flex-col gap-3">
         {features.map((f) => (
           <div key={f} className="flex items-start gap-3">
-            <CheckCircle size={15} color="#00E0D7" weight="fill" className="mt-0.5 flex-shrink-0" />
-            <span className="text-sm text-[#888]">{f}</span>
+            <CheckCircle size={15} color="#A07830" weight="fill" className="mt-0.5 flex-shrink-0" />
+            <span className="text-sm text-[#6A5A3A]">{f}</span>
           </div>
         ))}
       </div>
       <button
         onClick={() => scrollTo("waitlist")}
-        className="mt-6 inline-flex items-center gap-2 text-sm text-[#00E0D7] font-medium hover:gap-3 transition-all"
+        className="mt-6 inline-flex items-center gap-2 text-sm text-[#A07830] font-medium hover:gap-3 transition-all"
       >
         Jetzt ausprobieren <ArrowRight size={14} />
       </button>
@@ -70,26 +70,26 @@ function TextSide({
 }
 
 const HERO_METRICS = [
-  { value: "5,51 %", color: "#00E0D7" },
-  { value: "+148 €", color: "#00E0D7" },
-  { value: "4,12 %", color: "#00E0D7" },
-  { value: "18,1x", color: "#FFFFFF" },
+  { value: "5,51 %", color: "#A07830" },
+  { value: "+148 €", color: "#A07830" },
+  { value: "4,12 %", color: "#A07830" },
+  { value: "18,1x", color: "#101418" },
 ];
 
 export default function FeatureDeepDive() {
   return (
-    <section id="feature-details" className="bg-[#080808] py-32">
+    <section id="feature-details" className="bg-[#F8F7F4] py-32">
       <div className="max-w-[1200px] mx-auto px-6">
         {/* Header */}
         <FadeIn>
           <div className="text-center mb-20">
-            <span className="inline-flex bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] text-[#777] text-xs px-3 py-1 rounded-full">
+            <span className="inline-flex bg-white border border-[rgba(16,20,24,0.08)] text-[#A89A7A] text-xs px-3 py-1 rounded-full">
               Im Detail
             </span>
-            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-white mt-4">
+            <h2 className="text-[44px] font-semibold tracking-[-0.03em] text-[#101418] mt-4">
               Die besten Features erklärt.
             </h2>
-            <p className="text-[#777] text-lg mt-4">
+            <p className="text-[#6A5A3A] text-lg mt-4">
               Nicht nur ein Rechner. Eine komplette Investitionsplattform.
             </p>
           </div>
@@ -112,7 +112,7 @@ export default function FeatureDeepDive() {
             ]}
           />
           <FadeIn direction="right">
-            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[20px] overflow-hidden" style={{ boxShadow: "0 16px 64px rgba(0,0,0,0.6)" }}>
+            <div className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[20px] overflow-hidden" style={{ boxShadow: "0 16px 64px rgba(16,20,24,0.08)" }}>
               <WindowBar title="Imvestra – Renditerechner" />
               <div className="px-5 py-5">
                 <div className="flex gap-2 mb-4">
@@ -120,7 +120,7 @@ export default function FeatureDeepDive() {
                     <span
                       key={t}
                       className="text-xs px-3 py-1.5 rounded-[6px]"
-                      style={i === 0 ? { background: "#00E0D7", color: "#080808", fontWeight: 600 } : { background: "#0C0C0C", color: "#777" }}
+                      style={i === 0 ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 } : { background: "#F0EDE4", color: "#6A5A3A" }}
                     >
                       {t}
                     </span>
@@ -128,17 +128,17 @@ export default function FeatureDeepDive() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {HERO_METRICS.map((m, i) => (
-                    <div key={i} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[10px] px-4 py-3">
+                    <div key={i} className="bg-[#F8F7F4] border border-[rgba(16,20,24,0.08)] rounded-[10px] px-4 py-3">
                       <p className="text-2xl font-semibold tracking-[-0.02em]" style={{ color: m.color }}>{m.value}</p>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4">
-                  <p className="text-xs text-[#777] mb-1.5">Objektqualität</p>
-                  <div className="h-2 rounded-full bg-[#1A1A1A] overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: "78%", background: "#00E0D7" }} />
+                  <p className="text-xs text-[#6A5A3A] mb-1.5">Objektqualität</p>
+                  <div className="h-2 rounded-full bg-[#F0EDE4] overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: "78%", background: "#A07830" }} />
                   </div>
-                  <p className="text-xs text-[#00E0D7] font-semibold mt-1.5">Stark</p>
+                  <p className="text-xs text-[#A07830] font-semibold mt-1.5">Stark</p>
                 </div>
               </div>
             </div>
@@ -148,17 +148,17 @@ export default function FeatureDeepDive() {
         {/* ROW 2 – Standortanalyse (text right, visual left) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
           <FadeIn direction="left" className="lg:order-1 order-2">
-            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[20px] overflow-hidden" style={{ boxShadow: "0 16px 64px rgba(0,0,0,0.6)" }}>
+            <div className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[20px] overflow-hidden" style={{ boxShadow: "0 16px 64px rgba(16,20,24,0.08)" }}>
               <WindowBar title="Imvestra – Standortanalyse" />
               <div className="px-5 py-5">
-                <div className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white tracking-widest mb-3">
+                <div className="bg-[#F8F7F4] border border-[rgba(16,20,24,0.08)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] tracking-widest mb-3">
                   38640
                 </div>
-                <p className="text-sm font-semibold text-white">Goslar, Niedersachsen</p>
+                <p className="text-sm font-semibold text-[#101418]">Goslar, Niedersachsen</p>
                 <div className="flex items-center gap-4 mt-4">
                   <div className="text-center">
-                    <span className="text-[48px] font-semibold tracking-[-0.05em] text-[#00E0D7] leading-none">62</span>
-                    <span className="text-sm text-[#555]">/100</span>
+                    <span className="text-[48px] font-semibold tracking-[-0.05em] text-[#A07830] leading-none">62</span>
+                    <span className="text-sm text-[#A89A7A]">/100</span>
                   </div>
                   <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[rgba(255,184,0,0.1)] text-[#FFB800] border border-[rgba(255,184,0,0.2)]">
                     Solider Standort mit Potenzial
@@ -171,16 +171,16 @@ export default function FeatureDeepDive() {
                     ["FAKTOR", "19x"],
                     ["RENDITE", "5,2 %"],
                   ].map(([l, v]) => (
-                    <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2">
-                      <p className="text-[9px] text-[#666] uppercase tracking-wide">{l}</p>
-                      <p className="text-sm font-semibold text-white mt-0.5">{v}</p>
+                    <div key={l} className="bg-[#F8F7F4] border border-[rgba(16,20,24,0.08)] rounded-[8px] px-3 py-2">
+                      <p className="text-[9px] text-[#A89A7A] uppercase tracking-wide">{l}</p>
+                      <p className="text-sm font-semibold text-[#101418] mt-0.5">{v}</p>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2"><CheckCircle size={12} color="#00E0D7" weight="fill" /><span className="text-xs text-[#888]">Günstiger Kaufpreisfaktor</span></div>
-                  <div className="flex items-center gap-2"><CheckCircle size={12} color="#00E0D7" weight="fill" /><span className="text-xs text-[#888]">Überdurchschnittliche Rendite</span></div>
-                  <div className="flex items-center gap-2"><X size={12} color="#FF4444" /><span className="text-xs text-[#888]">Schrumpfende Bevölkerung</span></div>
+                  <div className="flex items-center gap-2"><CheckCircle size={12} color="#A07830" weight="fill" /><span className="text-xs text-[#6A5A3A]">Günstiger Kaufpreisfaktor</span></div>
+                  <div className="flex items-center gap-2"><CheckCircle size={12} color="#A07830" weight="fill" /><span className="text-xs text-[#6A5A3A]">Überdurchschnittliche Rendite</span></div>
+                  <div className="flex items-center gap-2"><X size={12} color="#B91C1C" /><span className="text-xs text-[#6A5A3A]">Schrumpfende Bevölkerung</span></div>
                 </div>
               </div>
             </div>
@@ -220,22 +220,22 @@ export default function FeatureDeepDive() {
             ]}
           />
           <FadeIn direction="right">
-            <div className="bg-[rgba(255,68,68,0.06)] border border-[rgba(255,68,68,0.15)] rounded-[14px] p-4 flex items-start gap-3">
-              <Warning size={16} color="#FF4444" className="mt-0.5 flex-shrink-0" />
+            <div className="bg-[rgba(185,28,28,0.06)] border border-[rgba(185,28,28,0.15)] rounded-[14px] p-4 flex items-start gap-3">
+              <Warning size={16} color="#B91C1C" className="mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-white">Zinsbindung läuft ab</p>
-                <p className="text-xs text-[#777] mt-0.5">MFH Leipzig · In 87 Tagen</p>
-                <button className="text-xs text-[#FF4444] mt-2">Anschluss berechnen</button>
+                <p className="text-sm font-semibold text-[#101418]">Zinsbindung läuft ab</p>
+                <p className="text-xs text-[#6A5A3A] mt-0.5">MFH Leipzig · In 87 Tagen</p>
+                <button className="text-xs text-[#B91C1C] mt-2">Anschluss berechnen</button>
               </div>
             </div>
-            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 mt-3 flex items-start gap-3">
-              <CheckSquare size={16} color="#00E0D7" className="mt-0.5 flex-shrink-0" />
+            <div className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[14px] p-4 mt-3 flex items-start gap-3">
+              <CheckSquare size={16} color="#A07830" className="mt-0.5 flex-shrink-0" />
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="bg-[rgba(0,224,215,0.1)] text-[#00E0D7] text-[9px] font-bold px-1.5 py-0.5 rounded-full">AUTO</span>
+                  <span className="bg-[rgba(160,120,48,0.1)] text-[#A07830] text-[9px] font-bold px-1.5 py-0.5 rounded-full">AUTO</span>
                 </div>
-                <p className="text-sm font-semibold text-white">Nebenkostenabrechnung 2025 – M. Müller</p>
-                <p className="text-xs text-[#777] mt-0.5">Fällig bis 31.03.2026</p>
+                <p className="text-sm font-semibold text-[#101418]">Nebenkostenabrechnung 2025 – M. Müller</p>
+                <p className="text-xs text-[#6A5A3A] mt-0.5">Fällig bis 31.03.2026</p>
               </div>
             </div>
           </FadeIn>
@@ -244,16 +244,16 @@ export default function FeatureDeepDive() {
         {/* ROW 4 – PDF + Steuer (text right, visual left) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <FadeIn direction="left" className="lg:order-1 order-2">
-            <div className="bg-[#111] rounded-[16px] overflow-hidden" style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.6)" }}>
-              <div className="bg-[#00E0D7] px-5 py-4 flex justify-between items-start">
+            <div className="bg-white rounded-[16px] overflow-hidden" style={{ boxShadow: "0 16px 48px rgba(16,20,24,0.08)" }}>
+              <div className="bg-[#A07830] px-5 py-4 flex justify-between items-start">
                 <div>
-                  <p className="text-lg font-bold text-[#080808]">Imvestra</p>
-                  <p className="text-xs text-[#080808] opacity-70">Bankpräsentation · Objektanalyse</p>
+                  <p className="text-lg font-bold text-white">Imvestra</p>
+                  <p className="text-xs text-white opacity-70">Bankpräsentation · Objektanalyse</p>
                 </div>
-                <p className="text-sm font-semibold text-[#080808] text-right">Altbauwohnung Goslar</p>
+                <p className="text-sm font-semibold text-white text-right">Altbauwohnung Goslar</p>
               </div>
               <div className="px-5 py-4">
-                <p className="text-[9px] text-[#666] uppercase tracking-widest mb-3">Kerndaten</p>
+                <p className="text-[9px] text-[#A89A7A] uppercase tracking-widest mb-3">Kerndaten</p>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     ["BRUTTO", "5,51 %"],
@@ -261,21 +261,21 @@ export default function FeatureDeepDive() {
                     ["NETTO", "4,12 %"],
                     ["LTV", "72 %"],
                   ].map(([l, v]) => (
-                    <div key={l} className="bg-[#0C0C0C] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2">
-                      <p className="text-[9px] text-[#666] uppercase tracking-wide">{l}</p>
-                      <p className="text-sm font-semibold text-white mt-0.5">{v}</p>
+                    <div key={l} className="bg-[#F8F7F4] border border-[rgba(16,20,24,0.08)] rounded-[8px] px-3 py-2">
+                      <p className="text-[9px] text-[#A89A7A] uppercase tracking-wide">{l}</p>
+                      <p className="text-sm font-semibold text-[#101418] mt-0.5">{v}</p>
                     </div>
                   ))}
                 </div>
-                <p className="text-[9px] text-[#666] uppercase tracking-widest mb-2 mt-4">Steuer &amp; AfA</p>
+                <p className="text-[9px] text-[#A89A7A] uppercase tracking-widest mb-2 mt-4">Steuer &amp; AfA</p>
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between text-xs">
-                    <span className="text-[#666]">AfA / Jahr</span>
-                    <span className="text-[#888] font-medium">2.960 €</span>
+                    <span className="text-[#A89A7A]">AfA / Jahr</span>
+                    <span className="text-[#6A5A3A] font-medium">2.960 €</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-[#666]">Steuerersparnis</span>
-                    <span className="text-[#00E0D7] font-semibold">1.243 €</span>
+                    <span className="text-[#A89A7A]">Steuerersparnis</span>
+                    <span className="text-[#A07830] font-semibold">1.243 €</span>
                   </div>
                 </div>
               </div>

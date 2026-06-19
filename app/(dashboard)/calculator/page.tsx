@@ -63,10 +63,10 @@ const AFA_TYPE_LABELS: Record<AfAResult["afa_type"], string> = {
 };
 
 const INPUT =
-  "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#777777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
-const LABEL = "block text-xs font-medium text-[#888888] mb-1.5";
+  "w-full bg-white border border-[rgba(16,20,24,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#A89A7A] focus:outline-none focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:border-[rgba(160,120,48,0.3)] transition-all duration-150";
+const LABEL = "block text-xs font-medium text-[#6A5A3A] mb-1.5";
 const SECTION_LABEL =
-  "text-[10px] font-semibold text-[#555] uppercase tracking-widest mb-4";
+  "text-[10px] font-semibold text-[#A89A7A] uppercase tracking-widest mb-4";
 
 type TabId =
   | "Übersicht"
@@ -559,12 +559,12 @@ export default function CalculatorPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.12)] rounded-[10px] flex items-center justify-center flex-shrink-0">
-            <Calculator size={18} color="#00E0D7" />
+          <div className="w-10 h-10 bg-[rgba(160,120,48,0.08)] border border-[rgba(160,120,48,0.12)] rounded-[10px] flex items-center justify-center flex-shrink-0">
+            <Calculator size={18} color="#A07830" />
           </div>
           <div>
-            <p className="text-[20px] font-semibold text-white tracking-[-0.02em] leading-tight">Renditerechner</p>
-            <p className="text-xs text-[#666] mt-0.5">Objekt analysieren und Rendite berechnen</p>
+            <p className="text-[20px] font-semibold text-[#101418] tracking-[-0.02em] leading-tight">Renditerechner</p>
+            <p className="text-xs text-[#6A5A3A] mt-0.5">Objekt analysieren und Rendite berechnen</p>
           </div>
         </div>
 
@@ -585,7 +585,7 @@ export default function CalculatorPage() {
                     )}
                     className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-[8px] transition-all border"
                     style={{ borderColor: tokens.color.border, color: tokens.color.textMuted, background: "transparent" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,224,215,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#00E0D7" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(160,120,48,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#A07830" }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = tokens.color.border; (e.currentTarget as HTMLButtonElement).style.color = tokens.color.textMuted }}
                   >
                     <MapPin size={13} />
@@ -601,7 +601,7 @@ export default function CalculatorPage() {
                   className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-[8px] transition-all disabled:opacity-60"
                   style={saved ? {
                     background: tokens.color.positiveBg,
-                    border: `1px solid rgba(0,224,215,0.2)`,
+                    border: `1px solid rgba(45,106,45,0.2)`,
                     color: tokens.color.positive,
                   } : {
                     background: tokens.color.surfaceHover,
@@ -834,7 +834,7 @@ export default function CalculatorPage() {
                           <input
                             type="checkbox" checked={steuerForm.is_denkmal}
                             onChange={(e) => setSteuerForm((f) => ({ ...f, is_denkmal: e.target.checked }))}
-                            className="w-4 h-4 accent-[#00E0D7]"
+                            className="w-4 h-4 accent-[#A07830]"
                           />
                           Denkmalschutz-Objekt
                         </label>
@@ -842,7 +842,7 @@ export default function CalculatorPage() {
                           <input
                             type="checkbox" checked={steuerForm.is_sanierung}
                             onChange={(e) => setSteuerForm((f) => ({ ...f, is_sanierung: e.target.checked }))}
-                            className="w-4 h-4 accent-[#00E0D7]"
+                            className="w-4 h-4 accent-[#A07830]"
                           />
                           Sanierung geplant
                         </label>
@@ -1263,7 +1263,7 @@ export default function CalculatorPage() {
                                             border: `1px solid ${tokens.color.border}`,
                                             color: isBase ? tokens.color.textMuted : tokens.color.text,
                                           }}
-                                          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)")}
+                                          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(160,120,48,0.4)")}
                                           onBlur={(e) => (e.currentTarget.style.borderColor = tokens.color.border)}
                                         />
                                       </div>
@@ -1406,7 +1406,7 @@ export default function CalculatorPage() {
                               {/* Steuerersparnis callout */}
                               <div
                                 className="rounded-[12px] px-4 py-4 flex items-start gap-3"
-                                style={{ background: tokens.color.positiveBg, border: `1px solid rgba(0,224,215,0.15)` }}
+                                style={{ background: tokens.color.positiveBg, border: `1px solid rgba(45,106,45,0.15)` }}
                               >
                                 <PiggyBank size={18} color={tokens.color.positive} className="mt-0.5 flex-shrink-0" />
                                 <div>
@@ -1536,7 +1536,7 @@ export default function CalculatorPage() {
 
                           <div
                             className="mt-4 rounded-[10px] px-4 py-3 flex items-start gap-2"
-                            style={{ background: tokens.color.warningBg, border: `1px solid rgba(255,184,0,0.2)` }}
+                            style={{ background: tokens.color.warningBg, border: `1px solid rgba(146,64,14,0.2)` }}
                           >
                             <Warning size={14} color={tokens.color.warning} className="mt-0.5 flex-shrink-0" />
                             <div>

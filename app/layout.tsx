@@ -38,9 +38,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Imvestra" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-        <meta name="theme-color" content="#080808" />
+        <meta name="theme-color" content="#F8F7F4" />
       </head>
-      <body className="bg-[#080808] antialiased">
+      <body className="bg-[#F8F7F4] antialiased">
         {children}
         <Toaster />
       </body>

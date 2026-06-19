@@ -16,11 +16,11 @@ import { tokens } from "@/lib/tokens";
 import type { Property, Plan } from "@/types";
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  ETW:     { bg: "rgba(0,224,215,0.1)",   text: tokens.color.accent },
-  MFH:     { bg: "rgba(139,92,246,0.1)",   text: "#A78BFA" },
-  EFH:     { bg: "rgba(0,224,215,0.08)",  text: tokens.color.accent },
-  DHH:     { bg: "rgba(251,146,60,0.1)",   text: "#FB923C" },
-  Gewerbe: { bg: "rgba(255,255,255,0.06)", text: tokens.color.textMuted },
+  ETW:     { bg: "rgba(160,120,48,0.1)",   text: tokens.color.accent },
+  MFH:     { bg: "rgba(139,92,246,0.1)",   text: "#7C3AED" },
+  EFH:     { bg: "rgba(160,120,48,0.08)",  text: tokens.color.accent },
+  DHH:     { bg: "rgba(234,88,12,0.1)",    text: "#EA580C" },
+  Gewerbe: { bg: "rgba(16,20,24,0.06)",    text: tokens.color.textMuted },
 };
 
 interface PDFExportViewProps {
@@ -40,12 +40,12 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
       <div className="p-6 w-full">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.12)] rounded-[10px] flex items-center justify-center flex-shrink-0">
-            <FilePdf size={18} color="#00E0D7" />
+          <div className="w-10 h-10 bg-[rgba(160,120,48,0.08)] border border-[rgba(160,120,48,0.12)] rounded-[10px] flex items-center justify-center flex-shrink-0">
+            <FilePdf size={18} color="#A07830" />
           </div>
           <div>
-            <p className="text-[20px] font-semibold text-white tracking-[-0.02em] leading-tight">PDF Bankpräsentation</p>
-            <p className="text-xs text-[#666] mt-0.5">Professionelle Objektanalyse für dein nächstes Bankgespräch</p>
+            <p className="text-[20px] font-semibold tracking-[-0.02em] leading-tight" style={{ color: tokens.color.text }}>PDF Bankpräsentation</p>
+            <p className="text-xs mt-0.5" style={{ color: tokens.color.textMuted }}>Professionelle Objektanalyse für dein nächstes Bankgespräch</p>
           </div>
         </div>
 
@@ -69,9 +69,9 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
                   animate={{ y: [0, -6, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   className="w-16 h-16 rounded-[16px] flex items-center justify-center mb-4"
-                  style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+                  style={{ background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.12)" }}
                 >
-                  <FilePdf size={28} color="#00E0D7" />
+                  <FilePdf size={28} color="#A07830" />
                 </motion.div>
                 <p className="text-base font-semibold tracking-[-0.02em] mb-1.5" style={{ color: tokens.color.text }}>Noch kein Objekt</p>
                 <p className="text-xs leading-relaxed mb-5 max-w-[180px]" style={{ color: tokens.color.textMuted }}>
@@ -90,7 +90,7 @@ export default function PDFExportView({ properties, plan }: PDFExportViewProps) 
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,224,215,0.1)", color: "#00E0D7" }}>{type}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(160,120,48,0.1)", color: "#A07830" }}>{type}</span>
                         <span className="text-xs" style={{ color: tokens.color.text }}>{name}</span>
                       </div>
                       <span className="text-xs tabular-nums" style={{ color: tokens.color.textMuted }}>{yield_}</span>

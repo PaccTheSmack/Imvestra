@@ -192,25 +192,25 @@ export default function NeuesObjektPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] p-6">
+    <div className="min-h-screen p-6" style={{ background: "#F8F7F4" }}>
       {/* Header */}
       <div className="flex items-center gap-4 mb-8 w-full">
         <button
           onClick={() => step > 1 ? setStep((step - 1) as Step) : router.push("/portfolio")}
-          className="w-9 h-9 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[8px] flex items-center justify-center hover:bg-[#1A1A1A] transition-all cursor-pointer flex-shrink-0"
+          className="w-9 h-9 bg-white border border-[rgba(16,20,24,0.08)] rounded-[8px] flex items-center justify-center hover:bg-[#1A1A1A] transition-all cursor-pointer flex-shrink-0"
         >
-          <ArrowLeft size={16} color="#666" />
+          <ArrowLeft size={16} color="#6A5A3A" />
         </button>
         <div>
-          <p className="text-[20px] font-semibold text-white">Objekt anlegen</p>
-          <p className="text-xs text-[#555] mt-0.5">Schritt {step} von 3</p>
+          <p className="text-[20px] font-semibold text-[#101418]">Objekt anlegen</p>
+          <p className="text-xs text-[#A89A7A] mt-0.5">Schritt {step} von 3</p>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="bg-[rgba(255,255,255,0.06)] h-1 rounded-full mb-8 w-full">
+      <div className="h-1 rounded-full mb-8 w-full" style={{ background: "rgba(16,20,24,0.08)" }}>
         <motion.div
-          className="h-full rounded-full bg-[#00E0D7]"
+          className="h-full rounded-full bg-[#A07830]"
           animate={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
           transition={{ duration: 0.5 }}
         />
@@ -222,7 +222,7 @@ export default function NeuesObjektPage() {
         <div
           ref={formRef}
           className="rounded-[16px] overflow-hidden flex flex-col"
-          style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -236,11 +236,11 @@ export default function NeuesObjektPage() {
               {/* ─── STEP 1 ─── */}
               {step === 1 && (
                 <>
-                  <p className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-5">Grunddaten</p>
+                  <p className="text-xs font-semibold text-[#A89A7A] uppercase tracking-widest mb-5">Grunddaten</p>
 
                   {/* Objekttyp */}
                   <div className="mb-5">
-                    <label className="block text-[11px] text-[#666] uppercase tracking-wider mb-2">
+                    <label className="block text-[11px] text-[#6A5A3A] uppercase tracking-wider mb-2">
                       Objekttyp <span className="text-[#FF4444] ml-0.5">*</span>
                     </label>
                     <div
@@ -253,27 +253,27 @@ export default function NeuesObjektPage() {
                           onClick={() => { setField("type", t); }}
                           className="px-4 py-2 rounded-[8px] text-sm cursor-pointer transition-all"
                           style={form.type === t
-                            ? { background: "#00E0D7", color: "#080808", fontWeight: 600 }
-                            : { background: "#0C0C0C", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }
+                            ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 }
+                            : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }
                           }
-                          onMouseEnter={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
-                          onMouseLeave={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#666"; }}
+                          onMouseEnter={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#101418"; }}
+                          onMouseLeave={e => { if (form.type !== t) (e.currentTarget as HTMLButtonElement).style.color = "#6A5A3A"; }}
                         >
                           {t}
                         </button>
                       ))}
                     </div>
-                    {errors.type && <p className="text-xs text-[#FF4444] mt-1">{errors.type}</p>}
+                    {errors.type && <p className="text-xs text-[#B91C1C] mt-1">{errors.type}</p>}
                   </div>
 
-                  <p className="text-[10px] text-[#555] mb-4">
-                    <span className="text-[#FF4444]">*</span> Pflichtfelder · Alle anderen Felder sind optional
+                  <p className="text-[10px] text-[#A89A7A] mb-4">
+                    <span className="text-[#B91C1C]">*</span> Pflichtfelder · Alle anderen Felder sind optional
                   </p>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <DarkInput
-                        label={<>Bezeichnung <span className="text-[#FF4444] ml-0.5">*</span></>}
+                        label={<>Bezeichnung <span className="text-[#B91C1C] ml-0.5">*</span></>}
                         placeholder="z.B. Altbauwohnung Goslar"
                         value={form.name}
                         error={errors.name}
@@ -283,7 +283,7 @@ export default function NeuesObjektPage() {
                     </div>
                     <div className="col-span-2">
                       <DarkInput
-                        label={<>Straße & Hausnummer <span className="text-[#FF4444] ml-0.5">*</span></>}
+                        label={<>Straße & Hausnummer <span className="text-[#B91C1C] ml-0.5">*</span></>}
                         placeholder="Rosentorstraße 12"
                         value={form.address}
                         error={errors.address}
@@ -292,7 +292,7 @@ export default function NeuesObjektPage() {
                       />
                     </div>
                     <DarkInput
-                      label={<>PLZ <span className="text-[#FF4444] ml-0.5">*</span></>}
+                      label={<>PLZ <span className="text-[#B91C1C] ml-0.5">*</span></>}
                       placeholder="38640"
                       maxLength={5}
                       value={form.plz}
@@ -305,7 +305,7 @@ export default function NeuesObjektPage() {
                       placeholder="wird automatisch erkannt"
                       value={form.city}
                       readOnly
-                      className="bg-[#0C0C0C] cursor-not-allowed"
+                      className="bg-[#F0EDE4] cursor-not-allowed"
                     />
                     <DarkInput
                       label="Baujahr"
@@ -315,7 +315,7 @@ export default function NeuesObjektPage() {
                       onChange={e => setField("build_year", e.target.value)}
                     />
                     <DarkInput
-                      label={<>Wohnfläche (m²) <span className="text-[#FF4444] ml-0.5">*</span></>}
+                      label={<>Wohnfläche (m²) <span className="text-[#B91C1C] ml-0.5">*</span></>}
                       placeholder="68"
                       type="number"
                       value={form.sqm}
@@ -331,7 +331,7 @@ export default function NeuesObjektPage() {
                       onChange={e => setField("units", e.target.value)}
                     />
                     <DarkInput
-                      label={<>Kaufpreis (€) <span className="text-[#FF4444] ml-0.5">*</span></>}
+                      label={<>Kaufpreis (€) <span className="text-[#B91C1C] ml-0.5">*</span></>}
                       placeholder="185000"
                       type="number"
                       value={form.kaufpreis}
@@ -359,7 +359,7 @@ export default function NeuesObjektPage() {
               {/* ─── STEP 2 ─── */}
               {step === 2 && (
                 <>
-                  <p className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-5">Technische Details</p>
+                  <p className="text-xs font-semibold text-[#A89A7A] uppercase tracking-widest mb-5">Technische Details</p>
 
                   <div className="grid grid-cols-2 gap-4">
                     <DarkSelect
@@ -418,20 +418,20 @@ export default function NeuesObjektPage() {
                           onClick={() => setField(key, !checked)}
                           className="flex items-center gap-3 px-4 py-3 rounded-[10px] cursor-pointer transition-all text-left"
                           style={checked
-                            ? { background: "rgba(0,224,215,0.04)", border: "1px solid rgba(0,224,215,0.25)" }
-                            : { background: "#0C0C0C", border: "1px solid rgba(255,255,255,0.08)" }
+                            ? { background: "rgba(160,120,48,0.06)", border: "1px solid rgba(160,120,48,0.25)" }
+                            : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)" }
                           }
                         >
                           <div
                             className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
                             style={checked
-                              ? { background: "#00E0D7", borderColor: "#00E0D7" }
-                              : { background: "transparent", borderColor: "rgba(255,255,255,0.2)" }
+                              ? { background: "#A07830", borderColor: "#A07830" }
+                              : { background: "transparent", borderColor: "rgba(16,20,24,0.2)" }
                             }
                           >
-                            {checked && <div className="w-1.5 h-1.5 rounded-full bg-[#080808]" />}
+                            {checked && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                           </div>
-                          <span className="text-sm text-white">{label}</span>
+                          <span className="text-sm text-[#101418]">{label}</span>
                         </button>
                       );
                     })}
@@ -439,13 +439,13 @@ export default function NeuesObjektPage() {
 
                   {/* Notes textarea */}
                   <div className="mt-5 flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-[#888888] uppercase tracking-wide">Notizen</label>
+                    <label className="text-xs font-medium text-[#6A5A3A] uppercase tracking-wide">Notizen</label>
                     <textarea
                       placeholder="Interne Anmerkungen..."
                       value={form.notes}
                       onChange={e => setField("notes", e.target.value)}
                       style={{ minHeight: 80 }}
-                      className="w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#777777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150 resize-none"
+                      className="w-full bg-white border border-[rgba(16,20,24,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#A89A7A] focus:outline-none focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:border-[rgba(160,120,48,0.3)] transition-all duration-150 resize-none"
                     />
                   </div>
                 </>
@@ -454,15 +454,15 @@ export default function NeuesObjektPage() {
               {/* ─── STEP 3 ─── */}
               {step === 3 && (
                 <>
-                  <p className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-5">Mieteinnahmen & Finanzierung</p>
+                  <p className="text-xs font-semibold text-[#A89A7A] uppercase tracking-widest mb-5">Mieteinnahmen & Finanzierung</p>
 
-                  <p className="text-[10px] text-[#555] mb-4">
-                    <span className="text-[#FF4444]">*</span> Pflichtfelder · Alle anderen Felder sind optional
+                  <p className="text-[10px] text-[#A89A7A] mb-4">
+                    <span className="text-[#B91C1C]">*</span> Pflichtfelder · Alle anderen Felder sind optional
                   </p>
 
                   <div className="grid grid-cols-2 gap-4">
                     <DarkInput
-                      label={<>Kaltmiete / Monat (€) <span className="text-[#FF4444] ml-0.5">*</span></>}
+                      label={<>Kaltmiete / Monat (€) <span className="text-[#B91C1C] ml-0.5">*</span></>}
                       placeholder="850"
                       type="number"
                       value={form.rent_monthly}
@@ -486,17 +486,17 @@ export default function NeuesObjektPage() {
                       onClick={() => setField("has_financing", !form.has_financing)}
                       className="w-full flex items-center justify-between px-4 py-3 rounded-[10px] cursor-pointer transition-all"
                       style={form.has_financing
-                        ? { background: "#0C0C0C", border: "1px solid rgba(0,224,215,0.2)" }
-                        : { background: "#0C0C0C", border: "1px solid rgba(255,255,255,0.08)" }
+                        ? { background: "#F0EDE4", border: "1px solid rgba(160,120,48,0.2)" }
+                        : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)" }
                       }
                     >
                       <div className="text-left">
-                        <p className="text-sm font-medium text-white">Finanzierung hinterlegen</p>
-                        <p className="text-xs text-[#555] mt-0.5">Optional – für Zinsanalyse und DSCR</p>
+                        <p className="text-sm font-medium text-[#101418]">Finanzierung hinterlegen</p>
+                        <p className="text-xs text-[#A89A7A] mt-0.5">Optional – für Zinsanalyse und DSCR</p>
                       </div>
                       <div
                         className="w-10 h-6 rounded-full flex items-center px-1 transition-all flex-shrink-0 ml-4"
-                        style={{ background: form.has_financing ? "#00E0D7" : "rgba(255,255,255,0.1)" }}
+                        style={{ background: form.has_financing ? "#A07830" : "rgba(16,20,24,0.1)" }}
                       >
                         <motion.div
                           className="w-4 h-4 bg-white rounded-full shadow"
@@ -573,11 +573,11 @@ export default function NeuesObjektPage() {
           {/* Action bar */}
           <div
             className="px-6 py-4 flex items-center justify-between"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "#0C0C0C" }}
+            style={{ borderTop: "1px solid rgba(16,20,24,0.06)", background: "#F8F7F4" }}
           >
             <button
               onClick={() => router.push("/portfolio")}
-              className="text-sm text-[#555] hover:text-white transition-colors cursor-pointer"
+              className="text-sm text-[#A89A7A] hover:text-[#101418] transition-colors cursor-pointer"
             >
               Abbrechen
             </button>
@@ -607,30 +607,30 @@ export default function NeuesObjektPage() {
           {/* Preview card */}
           <div
             className="rounded-[14px] overflow-hidden"
-            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
           >
             <div
               className="px-5 py-4"
-              style={{ background: "#0C0C0C", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+              style={{ background: "#F0EDE4", borderBottom: "1px solid rgba(16,20,24,0.06)" }}
             >
-              <p className="text-[10px] text-[#555] uppercase tracking-widest">Vorschau</p>
+              <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest">Vorschau</p>
             </div>
             <div className="px-5 py-4">
               {form.type && (
-                <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2 bg-[rgba(0,224,215,0.1)] text-[#00E0D7]">
+                <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2 bg-[rgba(160,120,48,0.1)] text-[#A07830]">
                   {form.type}
                 </span>
               )}
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-[#101418]">
                 {form.name || "Objektname"}
               </p>
               {(form.address || form.city) && (
-                <p className="text-xs text-[#555] mt-0.5">
+                <p className="text-xs text-[#A89A7A] mt-0.5">
                   {[form.address, [form.plz, form.city].filter(Boolean).join(" ")].filter(Boolean).join(", ")}
                 </p>
               )}
               {(form.build_year || form.sqm) && (
-                <p className="text-xs text-[#555] mt-0.5">
+                <p className="text-xs text-[#A89A7A] mt-0.5">
                   {[
                     form.build_year ? `Baujahr ${form.build_year}` : "",
                     form.sqm ? `${form.sqm} m²` : "",
@@ -641,13 +641,13 @@ export default function NeuesObjektPage() {
               {rentMonthly > 0 && kaufpreis > 0 && (
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   {[
-                    { label: "KAUFPREIS",     value: formatCurrency(kaufpreis),              color: "#fff" },
-                    { label: "BRUTTORENDITE", value: formatPercent(bruttorendite),            color: "#00E0D7" },
-                    { label: "CF/MONAT",      value: formatCurrencySigned(cashflowMonthly),   color: cashflowMonthly >= 0 ? "#00E0D7" : "#FF4444" },
-                    { label: "GESAMTINVEST.", value: formatCurrency(totalInvestment),         color: "#fff" },
+                    { label: "KAUFPREIS",     value: formatCurrency(kaufpreis),              color: "#101418" },
+                    { label: "BRUTTORENDITE", value: formatPercent(bruttorendite),            color: "#A07830" },
+                    { label: "CF/MONAT",      value: formatCurrencySigned(cashflowMonthly),   color: cashflowMonthly >= 0 ? "#2D6A2D" : "#B91C1C" },
+                    { label: "GESAMTINVEST.", value: formatCurrency(totalInvestment),         color: "#101418" },
                   ].map(({ label, value, color }) => (
-                    <div key={label} className="rounded-[8px] px-3 py-2" style={{ background: "#0C0C0C" }}>
-                      <p className="text-[9px] text-[#444]">{label}</p>
+                    <div key={label} className="rounded-[8px] px-3 py-2" style={{ background: "#F0EDE4" }}>
+                      <p className="text-[9px] text-[#A89A7A]">{label}</p>
                       <p className="text-xs font-semibold mt-0.5" style={{ color }}>{value}</p>
                     </div>
                   ))}
@@ -660,57 +660,57 @@ export default function NeuesObjektPage() {
           {wert && (
             <div
               className="rounded-[14px] overflow-hidden"
-              style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+              style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)" }}
             >
               <div
                 className="px-5 py-3 flex items-center gap-2"
-                style={{ background: "#0C0C0C", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                style={{ background: "#F0EDE4", borderBottom: "1px solid rgba(16,20,24,0.06)" }}
               >
-                <ChartLine size={13} color="#00E0D7" />
-                <p className="text-[10px] text-[#555] uppercase tracking-widest">Wertermittlung</p>
+                <ChartLine size={13} color="#A07830" />
+                <p className="text-[10px] text-[#A89A7A] uppercase tracking-widest">Wertermittlung</p>
               </div>
               <div className="px-5 py-4">
-                <p className="text-[10px] text-[#555] mb-1">Geschätzter Marktwert</p>
-                <p className="text-[22px] font-semibold text-white tracking-[-0.02em]">
+                <p className="text-[10px] text-[#A89A7A] mb-1">Geschätzter Marktwert</p>
+                <p className="text-[22px] font-semibold text-[#101418] tracking-[-0.02em]">
                   {formatCurrency(wert.geschaetzter_marktwert)}
                 </p>
 
                 {form.kaufdatum && wert.wertentwicklung_eur !== 0 && (
                   <>
                     <div className="mt-3 flex items-center justify-between">
-                      <span className="text-xs text-[#555]">Seit Kauf</span>
+                      <span className="text-xs text-[#A89A7A]">Seit Kauf</span>
                       <div className="flex items-center gap-1.5">
                         <span
                           className="text-sm font-semibold"
-                          style={{ color: wert.wertentwicklung_eur >= 0 ? "#00E0D7" : "#FF4444" }}
+                          style={{ color: wert.wertentwicklung_eur >= 0 ? "#2D6A2D" : "#B91C1C" }}
                         >
                           {formatCurrencySigned(wert.wertentwicklung_eur)}
                         </span>
                         <span
                           className="text-xs"
-                          style={{ color: wert.wertentwicklung_eur >= 0 ? "#00E0D7" : "#FF4444" }}
+                          style={{ color: wert.wertentwicklung_eur >= 0 ? "#2D6A2D" : "#B91C1C" }}
                         >
                           ({formatPercent(wert.wertentwicklung_pct)})
                         </span>
                       </div>
                     </div>
                     <div className="flex justify-between text-xs mt-1.5">
-                      <span className="text-[#555]">Jährl. Steigerung</span>
-                      <span style={{ color: "#888" }}>{formatPercent(wert.wertentwicklung_pa)}</span>
+                      <span className="text-[#A89A7A]">Jährl. Steigerung</span>
+                      <span style={{ color: "#A89A7A" }}>{formatPercent(wert.wertentwicklung_pa)}</span>
                     </div>
                   </>
                 )}
 
                 <div
                   className="mt-3 pt-3"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                  style={{ borderTop: "1px solid rgba(16,20,24,0.06)" }}
                 >
                   <span
                     className="text-[10px] flex items-center gap-1.5"
                     style={{
-                      color: wert.vertrauen === "hoch"   ? "#00E0D7"
-                           : wert.vertrauen === "mittel" ? "#FFB800"
-                           : "#FF4444",
+                      color: wert.vertrauen === "hoch"   ? "#2D6A2D"
+                           : wert.vertrauen === "mittel" ? "#92400E"
+                           : "#B91C1C",
                     }}
                   >
                     {"● "}
@@ -718,7 +718,7 @@ export default function NeuesObjektPage() {
                      : wert.vertrauen === "mittel" ? "Mittlere Datenqualität"
                      : "Begrenzte Datenqualität"}
                   </span>
-                  <p className="mt-2 text-[10px] text-[#333] leading-relaxed">{wert.hinweis}</p>
+                  <p className="mt-2 text-[10px] text-[#A89A7A] leading-relaxed">{wert.hinweis}</p>
                 </div>
               </div>
             </div>

@@ -51,7 +51,7 @@ function TransactionRow({ tx }: { tx: BankTransaction }) {
 
   return (
     <div
-      className="flex items-center justify-between py-3 px-4 rounded-[10px] hover:bg-[#1A1A1A] transition-colors duration-100"
+      className="flex items-center justify-between py-3 px-4 rounded-[10px] hover:bg-[#F8F7F4] transition-colors duration-100"
     >
       <div className="flex items-center gap-3 min-w-0">
         <div
@@ -124,7 +124,7 @@ function AccountCard({
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-[10px] flex items-center justify-center"
-            style={{ background: "rgba(0,224,215,0.08)", border: `1px solid ${tokens.color.borderAccent}` }}
+            style={{ background: "rgba(160,120,48,0.08)", border: `1px solid ${tokens.color.borderAccent}` }}
           >
             <Bank size={16} color={tokens.color.accent} />
           </div>
@@ -234,9 +234,9 @@ function ConnectModal({ onClose, onConnect }: { onClose: () => void; onConnect: 
         transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
         className="w-full max-w-[440px] rounded-[20px] overflow-hidden"
         style={{
-          background: "#111",
+          background: tokens.color.surface,
           border: `1px solid ${tokens.color.border}`,
-          boxShadow: "0 24px 80px rgba(0,0,0,0.8)",
+          boxShadow: "0 24px 80px rgba(16,20,24,0.1)",
         }}
       >
         {/* Header */}
@@ -254,7 +254,7 @@ function ConnectModal({ onClose, onConnect }: { onClose: () => void; onConnect: 
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-[6px] transition-colors hover:bg-[#1A1A1A]"
+            className="p-1.5 rounded-[6px] transition-colors hover:bg-[#F0EDE4]"
             style={{ color: "#666" }}
           >
             <X size={16} />
@@ -315,7 +315,7 @@ function ConnectModal({ onClose, onConnect }: { onClose: () => void; onConnect: 
             onClick={handleConnect}
             disabled={!selected || connecting}
             className="px-4 py-2 rounded-[8px] text-[13px] font-semibold transition-all disabled:opacity-40"
-            style={{ background: tokens.color.accent, color: "#080808" }}
+            style={{ background: tokens.color.accent, color: "#FFFFFF" }}
           >
             {connecting ? "Verbinde..." : "Weiter zur Bank →"}
           </motion.button>
@@ -433,7 +433,7 @@ export default function BankAccountTab({ bankAccounts, transactions }: BankAccou
           whileTap={{ scale: 0.97 }}
           onClick={() => setShowConnect(true)}
           className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-semibold transition-colors"
-          style={{ background: tokens.color.accent, color: "#080808" }}
+          style={{ background: tokens.color.accent, color: "#FFFFFF" }}
         >
           <Bank size={14} weight="bold" />
           Konto verbinden
@@ -485,7 +485,7 @@ export default function BankAccountTab({ bankAccounts, transactions }: BankAccou
             whileTap={{ scale: 0.97 }}
             onClick={() => setShowConnect(true)}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold"
-            style={{ background: tokens.color.accent, color: "#080808" }}
+            style={{ background: tokens.color.accent, color: "#FFFFFF" }}
           >
             <Bank size={14} weight="bold" />
             Jetzt verbinden

@@ -21,28 +21,33 @@ export default function RegisterPage() {
   }
 
   const inputClass = [
-    "w-full rounded-[8px] px-4 py-2.5 text-sm text-white placeholder:text-[#777777]",
+    "w-full rounded-[8px] px-4 py-2.5 text-sm text-[#101418] placeholder:text-[#A89A7A]",
     "focus:outline-none transition-all mt-1 block",
   ].join(" ");
 
   return (
-    <div className="min-h-screen flex" style={{ background: tokens.color.bg }}>
+    <div className="min-h-screen flex" style={{ background: "#F8F7F4" }}>
       {/* Left panel */}
       <div
-        className="hidden md:flex w-1/2 flex-col items-center justify-center px-12"
-        style={{ background: tokens.color.bgSubtle, borderRight: `1px solid ${tokens.color.border}` }}
+        className="hidden md:flex w-[40%] flex-col items-center justify-center px-12 relative overflow-hidden"
+        style={{ background: "#18160E" }}
       >
+        {/* Subtle radial decoration */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at 60% 40%, rgba(160,120,48,0.04) 0%, transparent 70%)" }}
+        />
         <Image
           src="/logo.svg"
           alt="Imvestra"
           width={160}
           height={42}
           priority
-          style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }}
+          style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(600%) hue-rotate(15deg) brightness(90%)" }}
         />
         <p
-          className="text-xl font-medium max-w-xs text-center mt-8 leading-snug"
-          style={{ color: tokens.color.text }}
+          className="text-xl font-light max-w-xs text-center mt-8 leading-snug"
+          style={{ color: "#F8F7F4" }}
         >
           Starte kostenlos - keine Kreditkarte nötig
         </p>
@@ -52,10 +57,10 @@ export default function RegisterPage() {
             "Professionelle PDF-Berichte",
             "Portfolio-Übersicht für alle Objekte",
           ].map((item) => (
-            <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: tokens.color.textMuted }}>
-              <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tokens.color.accentMuted }}>
+            <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "rgba(248,247,244,0.5)" }}>
+              <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(160,120,48,0.15)" }}>
                 <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
-                  <path d="M1 3.5L3 5.5L7 1.5" stroke="#00E0D7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M1 3.5L3 5.5L7 1.5" stroke="#C9A86A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
               {item}
@@ -67,9 +72,16 @@ export default function RegisterPage() {
       {/* Right – form */}
       <div
         className="flex-1 flex items-center justify-center px-6"
-        style={{ background: tokens.color.bg }}
+        style={{ background: "#F8F7F4" }}
       >
-        <div className="max-w-sm w-full">
+        <div
+          className="max-w-sm w-full rounded-[16px] p-8"
+          style={{
+            background: "#FFFFFF",
+            border: "1px solid rgba(16,20,24,0.08)",
+            boxShadow: "0 1px 3px rgba(16,20,24,0.06), 0 4px 16px rgba(16,20,24,0.04)",
+          }}
+        >
           <div className="flex justify-center mb-8 md:hidden">
             <Image
               src="/logo.svg"
@@ -77,7 +89,7 @@ export default function RegisterPage() {
               width={100}
               height={26}
               priority
-              style={{ filter: "brightness(0) saturate(100%) invert(75%) sepia(60%) saturate(500%) hue-rotate(155deg) brightness(95%)" }}
+              style={{ filter: "brightness(0) saturate(100%) invert(35%) sepia(60%) saturate(500%) hue-rotate(15deg) brightness(80%)" }}
             />
           </div>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: tokens.color.text }}>
@@ -98,7 +110,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="name"
-                className="text-xs font-medium uppercase tracking-wide block"
+                className="text-sm font-medium block"
                 style={{ color: tokens.color.textMuted }}
               >
                 Vollständiger Name
@@ -115,7 +127,7 @@ export default function RegisterPage() {
                   border: `1px solid ${tokens.color.border}`,
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)";
+                  e.currentTarget.style.borderColor = "rgba(160,120,48,0.3)";
                   e.currentTarget.style.background = tokens.color.surfaceHover;
                 }}
                 onBlur={(e) => {
@@ -127,7 +139,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="text-xs font-medium uppercase tracking-wide block"
+                className="text-sm font-medium block"
                 style={{ color: tokens.color.textMuted }}
               >
                 E-Mail
@@ -144,7 +156,7 @@ export default function RegisterPage() {
                   border: `1px solid ${tokens.color.border}`,
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)";
+                  e.currentTarget.style.borderColor = "rgba(160,120,48,0.3)";
                   e.currentTarget.style.background = tokens.color.surfaceHover;
                 }}
                 onBlur={(e) => {
@@ -156,7 +168,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="text-xs font-medium uppercase tracking-wide block"
+                className="text-sm font-medium block"
                 style={{ color: tokens.color.textMuted }}
               >
                 Passwort
@@ -174,7 +186,7 @@ export default function RegisterPage() {
                   border: `1px solid ${tokens.color.border}`,
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(0,224,215,0.4)";
+                  e.currentTarget.style.borderColor = "rgba(160,120,48,0.3)";
                   e.currentTarget.style.background = tokens.color.surfaceHover;
                 }}
                 onBlur={(e) => {

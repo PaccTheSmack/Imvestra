@@ -28,13 +28,13 @@ interface DarkButtonProps {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-[#00E0D7] text-[#080808] font-semibold shadow-[0_0_0_1px_rgba(0,224,215,0.3),0_4px_16px_rgba(0,224,215,0.12)] hover:brightness-105",
+    "bg-[#A07830] text-white font-semibold hover:bg-[#8A6420] hover:shadow-[0_4px_16px_rgba(160,120,48,0.2)]",
   secondary:
-    "bg-[#1A1A1A] text-white border border-[rgba(255,255,255,0.07)] hover:bg-[#222222] hover:border-[rgba(255,255,255,0.12)]",
+    "bg-white text-[#101418] border border-[rgba(16,20,24,0.1)] hover:bg-[#F0EDE4] hover:border-[rgba(16,20,24,0.16)]",
   ghost:
-    "bg-transparent text-[#888888] hover:text-white hover:bg-[rgba(255,255,255,0.05)]",
+    "bg-transparent border border-[rgba(16,20,24,0.14)] text-[#101418] hover:bg-[#F0EDE4]",
   danger:
-    "bg-[rgba(255,68,68,0.1)] text-[#FF4444] border border-[rgba(255,68,68,0.2)] hover:bg-[rgba(255,68,68,0.15)]",
+    "bg-[rgba(185,28,28,0.08)] text-[#B91C1C] border border-[rgba(185,28,28,0.2)] hover:bg-[rgba(185,28,28,0.14)]",
 };
 
 const sizeStyles: Record<Size, string> = {

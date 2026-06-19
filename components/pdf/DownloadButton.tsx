@@ -53,7 +53,7 @@ export default function DownloadButton({ propertyName, className, data }: Downlo
     setLoading(false);
   }
 
-  const cls = `flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#141414] text-white hover:border-[rgba(255,255,255,0.18)] hover:bg-[#1A1A1A] active:scale-[0.98] transition-all disabled:opacity-60 ${className ?? ""}`;
+  const cls = `flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-[8px] bg-[#A07830] text-white hover:bg-[#8A6420] active:scale-[0.98] transition-all disabled:opacity-60 ${className ?? ""}`;
 
   return (
     <button
@@ -62,7 +62,7 @@ export default function DownloadButton({ propertyName, className, data }: Downlo
       title={propertyName ? `PDF für ${propertyName}` : "PDF exportieren"}
       className={cls}
     >
-      <FilePdf size={14} color="#FF4444" />
+      <FilePdf size={14} color="currentColor" />
       {loading ? "Wird erstellt…" : "PDF exportieren"}
     </button>
   );
