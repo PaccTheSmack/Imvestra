@@ -45,9 +45,9 @@ type SortKind   = "due_date" | "priority" | "created";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PRIORITY_CONFIG = {
-  high:   { label: "Hoch",    color: "#FF4444", bg: "rgba(255,68,68,0.1)"   },
-  medium: { label: "Mittel",  color: "#FFB800", bg: "rgba(255,184,0,0.1)"  },
-  low:    { label: "Niedrig", color: "#00E0D7", bg: "rgba(0,224,215,0.1)" },
+  high:   { label: "Hoch",    color: "#B91C1C", bg: "rgba(185,28,28,0.1)"  },
+  medium: { label: "Mittel",  color: "#92400E", bg: "rgba(146,64,14,0.1)"  },
+  low:    { label: "Niedrig", color: "#2D6A2D", bg: "rgba(45,106,45,0.1)"  },
 } as const;
 
 const PRIORITY_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
@@ -84,11 +84,11 @@ function dueBand(t: TaskWithProperty): DueBand {
 const BAND_ORDER: DueBand[] = ["overdue", "today", "upcoming", "no_date", "done"];
 
 const BAND_META: Record<DueBand, { label: string; color: string }> = {
-  overdue:  { label: "ÜBERFÄLLIG", color: "#FF4444" },
-  today:    { label: "HEUTE",      color: "#FFB800" },
-  upcoming: { label: "DEMNÄCHST",  color: "#777"    },
-  no_date:  { label: "KEIN DATUM", color: "#666"    },
-  done:     { label: "ERLEDIGT",   color: "#666"    },
+  overdue:  { label: "ÜBERFÄLLIG", color: "#B91C1C" },
+  today:    { label: "HEUTE",      color: "#92400E" },
+  upcoming: { label: "DEMNÄCHST",  color: "#A89A7A" },
+  no_date:  { label: "KEIN DATUM", color: "#A89A7A" },
+  done:     { label: "ERLEDIGT",   color: "#A89A7A" },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -206,9 +206,9 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+            style={{ background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.18)" }}
           >
-            <CheckSquare size={18} color="#00E0D7" />
+            <CheckSquare size={18} color="#A07830" />
           </div>
           <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: tokens.color.text }}>
             Aufgaben
@@ -216,7 +216,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
           {openTasks > 0 && (
             <span
               className="text-[10px] font-semibold px-2 py-0.5 rounded-full ml-1"
-              style={{ background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }}
+              style={{ background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)", color: "#A89A7A" }}
             >
               {openTasks} offen
             </span>
@@ -232,9 +232,9 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { label: "OFFEN",      value: openTasks,      color: tokens.color.text                          },
-            { label: "ÜBERFÄLLIG", value: overdueTasks,   color: overdueTasks > 0 ? "#FF4444" : tokens.color.text },
-            { label: "HOHE PRIO",  value: highPriority,   color: highPriority > 0 ? "#FFB800" : tokens.color.text },
-            { label: "ERLEDIGT",   value: completedTasks, color: "#00E0D7"                                  },
+            { label: "ÜBERFÄLLIG", value: overdueTasks,   color: overdueTasks > 0 ? "#B91C1C" : tokens.color.text },
+            { label: "HOHE PRIO",  value: highPriority,   color: highPriority > 0 ? "#92400E" : tokens.color.text },
+            { label: "ERLEDIGT",   value: completedTasks, color: "#2D6A2D"                                  },
           ].map(({ label, value, color }) => (
             <div
               key={label}
@@ -264,11 +264,11 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                 onClick={() => setFilter(f)}
                 className="px-3 py-1.5 rounded-full text-xs cursor-pointer transition-all"
                 style={active
-                  ? { background: "#00E0D7", color: "#080808", fontWeight: 600 }
-                  : { background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }
+                  ? { background: "#A07830", color: "#FFFFFF", fontWeight: 600 }
+                  : { background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }
                 }
-                onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = "#fff"; }}
-                onMouseLeave={(e) => { if (!active) e.currentTarget.style.color = "#666"; }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = "#101418"; }}
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.color = "#6A5A3A"; }}
               >
                 {labels[f]}
               </button>
@@ -278,7 +278,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
             value={selectedProp}
             onChange={(e) => setSelectedProp(e.target.value)}
             className="px-3 py-1.5 rounded-[8px] text-xs cursor-pointer outline-none"
-            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }}
+            style={{ background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }}
           >
             <option value="all">Alle Objekte</option>
             {properties.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -288,7 +288,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortKind)}
           className="px-3 py-1.5 rounded-[8px] text-xs cursor-pointer outline-none"
-          style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#666" }}
+          style={{ background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)", color: "#6A5A3A" }}
         >
           <option value="due_date">Fälligkeit</option>
           <option value="priority">Priorität</option>
@@ -306,15 +306,15 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                 animate={prefersReduced ? {} : { y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 className="w-20 h-20 rounded-[20px] flex items-center justify-center mx-auto"
-                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)" }}
               >
-                <CheckSquare size={36} color="#333" />
+                <CheckSquare size={36} color="#A89A7A" />
               </motion.div>
 
               <h2 className="text-[24px] font-semibold tracking-[-0.02em] mt-8" style={{ color: tokens.color.text }}>
                 Keine Aufgaben offen
               </h2>
-              <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: "#555" }}>
+              <p className="text-sm mt-3 max-w-[340px] leading-relaxed" style={{ color: tokens.color.textMuted }}>
                 Organisiere Wartungsarbeiten, Fristen und alles rund um dein Portfolio — an einem Ort.
               </p>
 
@@ -327,22 +327,22 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
               {/* Ghost task previews */}
               <div className="mt-10 w-full max-w-[500px] flex flex-col gap-2 select-none pointer-events-none">
                 {[
-                  { title: "Heizung warten lassen",        priLabel: "Hoch",    priColor: "#FF4444", priBg: "rgba(255,68,68,0.1)" },
-                  { title: "Nebenkostenabrechnung prüfen", priLabel: "Mittel",  priColor: "#FFB800", priBg: "rgba(255,184,0,0.1)" },
-                  { title: "Mietvertrag verlängern",        priLabel: "Niedrig", priColor: "#00E0D7", priBg: "rgba(0,224,215,0.1)" },
+                  { title: "Heizung warten lassen",        priLabel: "Hoch",    priColor: "#B91C1C", priBg: "rgba(185,28,28,0.1)" },
+                  { title: "Nebenkostenabrechnung prüfen", priLabel: "Mittel",  priColor: "#92400E", priBg: "rgba(146,64,14,0.1)"  },
+                  { title: "Mietvertrag verlängern",        priLabel: "Niedrig", priColor: "#2D6A2D", priBg: "rgba(45,106,45,0.1)" },
                 ].map((t, i) => (
                   <div
                     key={t.title}
                     className="rounded-[12px] px-4 py-3.5 flex items-center gap-4"
                     style={{
-                      background: "#111",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      background: "#FFFFFF",
+                      border: "1px solid rgba(16,20,24,0.08)",
                       opacity: i === 0 ? 0.4 : i === 1 ? 0.25 : 0.15,
                       filter: "blur(1.5px)",
                     }}
                   >
-                    <div className="w-5 h-5 rounded-[5px] flex-shrink-0" style={{ border: "2px solid rgba(255,255,255,0.15)" }} />
-                    <p className="flex-1 text-sm font-medium text-white text-left">{t.title}</p>
+                    <div className="w-5 h-5 rounded-[5px] flex-shrink-0" style={{ border: "2px solid rgba(16,20,24,0.15)" }} />
+                    <p className="flex-1 text-sm font-medium text-[#101418] text-left">{t.title}</p>
                     <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: t.priBg, color: t.priColor }}>
                       {t.priLabel}
                     </span>
@@ -354,11 +354,11 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
             // Filter: done, nothing done yet
             <>
               <div className="w-16 h-16 rounded-[18px] flex items-center justify-center mx-auto"
-                style={{ background: "#111", border: "1px solid rgba(255,255,255,0.08)" }}>
-                <CheckCircle size={28} color="#333" />
+                style={{ background: "#F0EDE4", border: "1px solid rgba(16,20,24,0.08)" }}>
+                <CheckCircle size={28} color="#A89A7A" />
               </div>
               <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>Noch nichts erledigt</p>
-              <p className="text-sm mt-2" style={{ color: "#666" }}>Erledigte Aufgaben erscheinen hier.</p>
+              <p className="text-sm mt-2" style={{ color: tokens.color.textSubtle }}>Erledigte Aufgaben erscheinen hier.</p>
             </>
           ) : (
             // Filter: open, all done
@@ -368,7 +368,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                 <CheckCircle size={28} color="#22C55E" weight="fill" />
               </div>
               <p className="text-base font-semibold mt-5" style={{ color: tokens.color.text }}>Alles erledigt</p>
-              <p className="text-sm mt-2" style={{ color: "#666" }}>Keine offenen Aufgaben.</p>
+              <p className="text-sm mt-2" style={{ color: tokens.color.textSubtle }}>Keine offenen Aufgaben.</p>
             </>
           )}
         </div>
@@ -406,37 +406,37 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                     <div
                       className="rounded-[12px] px-4 py-3.5 flex items-start gap-4 transition-all duration-150 cursor-default"
                       style={{
-                        background: "#111",
+                        background: "#FFFFFF",
                         border: isAutoGen
-                          ? "1px solid rgba(0,224,215,0.18)"
-                          : "1px solid rgba(255,255,255,0.07)",
+                          ? "1px solid rgba(160,120,48,0.18)"
+                          : "1px solid rgba(16,20,24,0.08)",
                       }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLDivElement).style.borderColor = isAutoGen
-                          ? "rgba(0,224,215,0.32)"
-                          : "rgba(255,255,255,0.12)";
+                          ? "rgba(160,120,48,0.32)"
+                          : "rgba(160,120,48,0.15)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLDivElement).style.borderColor = isAutoGen
-                          ? "rgba(0,224,215,0.18)"
-                          : "rgba(255,255,255,0.07)";
+                          ? "rgba(160,120,48,0.18)"
+                          : "rgba(16,20,24,0.08)";
                       }}
                     >
                       {/* Checkbox */}
                       <motion.div
                         className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-[5px] flex items-center justify-center cursor-pointer"
                         style={{
-                          border: task.completed ? "2px solid #00E0D7" : "2px solid rgba(255,255,255,0.15)",
-                          background: task.completed ? "#00E0D7" : "transparent",
+                          border: task.completed ? "2px solid #A07830" : "2px solid rgba(16,20,24,0.15)",
+                          background: task.completed ? "#A07830" : "transparent",
                           transition: "all 0.15s ease",
                         }}
                         whileTap={prefersReduced ? {} : { scale: 0.85 }}
                         onClick={() => toggleTask(task.id, !task.completed)}
                         onMouseEnter={(e) => {
-                          if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "#00E0D7";
+                          if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "#A07830";
                         }}
                         onMouseLeave={(e) => {
-                          if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.15)";
+                          if (!task.completed) (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(16,20,24,0.15)";
                         }}
                       >
                         {task.completed && <CheckCircle size={14} color="#fff" weight="fill" />}
@@ -449,14 +449,14 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                           <div className="flex items-center gap-1.5 min-w-0">
                             <p
                               className="text-sm font-medium truncate"
-                              style={{ color: task.completed ? "#666" : tokens.color.text, textDecoration: task.completed ? "line-through" : "none" }}
+                              style={{ color: task.completed ? "#A89A7A" : tokens.color.text, textDecoration: task.completed ? "line-through" : "none" }}
                             >
                               {task.title}
                             </p>
                             {isAutoGen && (
                               <span
                                 className="text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide flex-shrink-0 flex items-center gap-0.5"
-                                style={{ background: "rgba(0,224,215,0.08)", color: "#00E0D7" }}
+                                style={{ background: "rgba(160,120,48,0.08)", color: "#A07830" }}
                               >
                                 <Sparkle size={7} weight="fill" />
                                 AUTO
@@ -474,7 +474,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                               <span
                                 className="text-[10px]"
                                 style={{
-                                  color: isOverdue ? "#FF4444" : isToday ? "#FFB800" : "#666",
+                                  color: isOverdue ? "#B91C1C" : isToday ? "#92400E" : "#A89A7A",
                                   fontWeight: isOverdue || isToday ? 600 : 400,
                                 }}
                               >
@@ -486,18 +486,18 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
 
                         {/* Description */}
                         {task.description && (
-                          <p className="text-xs mt-0.5 truncate" style={{ color: "#666" }}>
+                          <p className="text-xs mt-0.5 truncate" style={{ color: tokens.color.textSubtle }}>
                             {task.description}
                           </p>
                         )}
 
                         {/* Bottom row */}
                         <div className="mt-2 flex items-center gap-3">
-                          <span className="text-[10px]" style={{ color: "#666" }}>
+                          <span className="text-[10px]" style={{ color: tokens.color.textSubtle }}>
                             {catConfig.label}
                           </span>
                           {task.properties?.name && (
-                            <span className="text-[10px]" style={{ color: "#555" }}>
+                            <span className="text-[10px]" style={{ color: tokens.color.textSubtle }}>
                               · {task.properties.name}
                             </span>
                           )}
@@ -506,18 +506,18 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                             {!isAutoGen && (
                               <button
                                 className="p-1 rounded transition-colors"
-                                style={{ color: "#666" }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
+                                style={{ color: tokens.color.textSubtle }}
+                                onMouseEnter={(e) => (e.currentTarget.style.color = tokens.color.text)}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}
                               >
                                 <PencilSimple size={13} />
                               </button>
                             )}
                             <button
                               className="p-1 rounded transition-colors"
-                              style={{ color: "#666" }}
-                              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF4444")}
-                              onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
+                              style={{ color: tokens.color.textSubtle }}
+                              onMouseEnter={(e) => (e.currentTarget.style.color = "#B91C1C")}
+                              onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}
                               onClick={() => deleteTask(task.id)}
                             >
                               <Trash size={13} />
@@ -552,13 +552,13 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
               exit={{ opacity: 0, y: 8, scale: 0.97 }}
               transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
               className="w-full max-w-[480px] rounded-[20px] overflow-hidden"
-              style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 24px 80px rgba(0,0,0,0.8)" }}
+              style={{ background: "#FFFFFF", border: "1px solid rgba(16,20,24,0.08)", boxShadow: "0 24px 80px rgba(16,20,24,0.12)" }}
             >
-              <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(16,20,24,0.08)" }}>
                 <p className="text-base font-semibold" style={{ color: tokens.color.text }}>Aufgabe hinzufugen</p>
-                <button onClick={() => setShowAddTask(false)} style={{ color: "#666" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}>
+                <button onClick={() => setShowAddTask(false)} style={{ color: tokens.color.textSubtle }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = tokens.color.text)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = tokens.color.textSubtle)}>
                   <X size={18} />
                 </button>
               </div>
@@ -571,7 +571,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                   onChange={(e) => setTaskForm((f) => ({ ...f, title: e.target.value }))}
                 />
                 <div>
-                  <label className="block text-[11px] font-medium mb-1.5" style={{ color: "#666" }}>
+                  <label className="block text-[11px] font-medium mb-1.5" style={{ color: tokens.color.textSubtle }}>
                     Beschreibung
                   </label>
                   <textarea
@@ -579,15 +579,15 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                     value={taskForm.description}
                     onChange={(e) => setTaskForm((f) => ({ ...f, description: e.target.value }))}
                     rows={3}
-                    className="w-full rounded-[8px] px-3 py-2.5 text-sm outline-none resize-none"
+                    className="w-full rounded-[8px] px-3 py-2.5 text-sm outline-none resize-none placeholder:text-[#A89A7A]"
                     style={{
-                      background: "#0C0C0C",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "#FFFFFF",
+                      border: "1px solid rgba(16,20,24,0.1)",
                       color: tokens.color.text,
                       minHeight: 80,
                     }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")}
-                    onBlur={(e)  => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(160,120,48,0.4)")}
+                    onBlur={(e)  => (e.currentTarget.style.borderColor = "rgba(16,20,24,0.1)")}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -625,7 +625,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                 </div>
               </div>
 
-              <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: "1px solid rgba(16,20,24,0.08)" }}>
                 <DarkButton variant="ghost" onClick={() => setShowAddTask(false)}>Abbrechen</DarkButton>
                 <DarkButton variant="primary" loading={savingTask} onClick={saveTask}>Aufgabe speichern</DarkButton>
               </div>

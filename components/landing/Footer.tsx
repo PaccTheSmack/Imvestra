@@ -33,20 +33,20 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#080808] border-t border-[rgba(255,255,255,0.06)]">
+    <footer className="bg-[#F0EDE4] border-t border-[rgba(16,20,24,0.08)]">
       {/* Top */}
       <div className="py-12 max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Brand */}
         <div>
           <Image src="/logo.svg" alt="Imvestra" width={100} height={26} />
-          <p className="mt-4 text-sm text-[#666] leading-relaxed max-w-[200px]">
+          <p className="mt-4 text-sm text-[#6A5A3A] leading-relaxed max-w-[200px]">
             Das Betriebssystem für Immobilieninvestoren.
           </p>
         </div>
 
         {COLUMNS.map((col) => (
           <div key={col.heading}>
-            <p className="text-xs text-[#555] uppercase tracking-widest mb-4 font-semibold">
+            <p className="text-xs text-[#A89A7A] uppercase tracking-widest mb-4 font-semibold">
               {col.heading}
             </p>
             <ul className="flex flex-col gap-2.5">
@@ -54,7 +54,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[#666] hover:text-white transition-colors"
+                    className="text-sm text-[#6A5A3A] hover:text-[#101418] transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -66,9 +66,9 @@ export default function Footer() {
       </div>
 
       {/* Bottom */}
-      <div className="py-6 border-t border-[rgba(255,255,255,0.06)] max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <p className="text-xs text-[#555]">© 2026 Imvestra. Alle Rechte vorbehalten.</p>
-        <p className="text-xs text-[#555]">Nicht als Finanzberatung zu verstehen.</p>
+      <div className="py-6 border-t border-[rgba(16,20,24,0.08)] max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <p className="text-xs text-[#A89A7A]">© 2026 Imvestra. Alle Rechte vorbehalten.</p>
+        <p className="text-xs text-[#A89A7A]">Nicht als Finanzberatung zu verstehen.</p>
       </div>
     </footer>
   );

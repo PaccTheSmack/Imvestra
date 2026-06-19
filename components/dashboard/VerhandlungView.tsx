@@ -9,10 +9,10 @@ import { calculateMaxKaufpreis, compareWithAskingPrice } from "@/lib/calculation
 import type { Property } from "@/types";
 
 const INPUT =
-  "w-full bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-[8px] px-3 py-2.5 text-sm text-white placeholder:text-[#777777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] focus:bg-[#1A1A1A] transition-all duration-150";
-const LABEL = "block text-xs font-medium text-[#777777] mb-1.5";
+  "w-full bg-white border border-[rgba(16,20,24,0.1)] rounded-[8px] px-3 py-2.5 text-sm text-[#101418] placeholder:text-[#A89A7A] focus:outline-none focus:border-[rgba(160,120,48,0.4)] focus:ring-2 focus:ring-[rgba(160,120,48,0.2)] focus:bg-white transition-all duration-150";
+const LABEL = "block text-xs font-medium text-[#A89A7A] mb-1.5";
 const SECTION_LABEL =
-  "text-[11px] font-semibold text-[#777777] uppercase tracking-[0.08em] mb-4";
+  "text-[11px] font-semibold text-[#A89A7A] uppercase tracking-[0.08em] mb-4";
 
 function SuffixInput({ suffix, children }: { suffix: string; children: React.ReactNode }) {
   return (
@@ -112,9 +112,9 @@ export default function VerhandlungView({ properties }: VerhandlungViewProps) {
         <div className="flex items-center gap-3 mb-8">
           <div
             className="w-10 h-10 flex items-center justify-center rounded-[10px] flex-shrink-0"
-            style={{ background: "rgba(0,224,215,0.08)", border: "1px solid rgba(0,224,215,0.12)" }}
+            style={{ background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.18)" }}
           >
-            <Tag size={18} color="#00E0D7" />
+            <Tag size={18} color="#A07830" />
           </div>
           <div>
             <h1

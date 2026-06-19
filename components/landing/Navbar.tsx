@@ -35,10 +35,10 @@ export default function Navbar() {
       style={
         scrolled
           ? {
-              background: "rgba(8,8,8,0.85)",
+              background: "rgba(255,255,255,0.9)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              borderBottom: "1px solid rgba(16,20,24,0.08)",
             }
           : { background: "transparent", borderBottom: "1px solid transparent" }
       }
@@ -55,7 +55,7 @@ export default function Navbar() {
             <button
               key={target}
               onClick={() => scrollTo(target)}
-              className="text-sm text-[#666] hover:text-white transition-colors cursor-pointer"
+              className="text-sm text-[#6A5A3A] hover:text-[#101418] transition-colors cursor-pointer"
             >
               {label}
             </button>
@@ -66,7 +66,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/login"
-            className="text-sm text-[#666] hover:text-white transition-colors"
+            className="text-sm text-[#6A5A3A] hover:text-[#101418] transition-colors"
           >
             Anmelden
           </Link>
@@ -74,7 +74,8 @@ export default function Navbar() {
             whileHover={prefersReduced ? {} : { scale: 1.03 }}
             whileTap={prefersReduced ? {} : { scale: 0.97 }}
             onClick={() => scrollTo("waitlist")}
-            className="bg-[#00E0D7] text-[#080808] font-semibold text-sm px-4 py-2 rounded-[8px] hover:bg-[#00C7BE] transition-colors"
+            className="bg-[#A07830] text-white font-semibold text-sm px-4 py-2 rounded-[8px] hover:bg-[#8A6420] transition-colors cursor-pointer"
+            style={{ boxShadow: "0 4px 16px rgba(160,120,48,0.2)" }}
           >
             Kostenlos starten
           </motion.button>
@@ -86,7 +87,7 @@ export default function Navbar() {
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Menü"
         >
-          {mobileOpen ? <X size={20} color="#666" /> : <List size={20} color="#666" />}
+          {mobileOpen ? <X size={20} color="#6A5A3A" /> : <List size={20} color="#6A5A3A" />}
         </button>
       </div>
 
@@ -98,7 +99,8 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden absolute top-16 left-4 right-4 bg-[#0C0C0C] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 flex flex-col gap-1"
+            className="md:hidden absolute top-16 left-4 right-4 bg-white border border-[rgba(16,20,24,0.08)] rounded-[14px] p-4 flex flex-col gap-1"
+            style={{ boxShadow: "0 8px 32px rgba(16,20,24,0.1)" }}
           >
             {NAV_LINKS.map(({ label, target }) => (
               <button
@@ -107,14 +109,14 @@ export default function Navbar() {
                   setMobileOpen(false);
                   scrollTo(target);
                 }}
-                className="text-left text-sm text-[#888] hover:text-white py-2.5 px-2 rounded-[8px] transition-colors"
+                className="text-left text-sm text-[#6A5A3A] hover:text-[#101418] py-2.5 px-2 rounded-[8px] transition-colors"
               >
                 {label}
               </button>
             ))}
             <Link
               href="/login"
-              className="text-left text-sm text-[#888] hover:text-white py-2.5 px-2 rounded-[8px] transition-colors"
+              className="text-left text-sm text-[#6A5A3A] hover:text-[#101418] py-2.5 px-2 rounded-[8px] transition-colors"
             >
               Anmelden
             </Link>
@@ -123,7 +125,7 @@ export default function Navbar() {
                 setMobileOpen(false);
                 scrollTo("waitlist");
               }}
-              className="mt-2 bg-[#00E0D7] text-[#080808] font-semibold text-sm py-2.5 rounded-[8px] hover:bg-[#00C7BE] transition-colors"
+              className="mt-2 bg-[#A07830] text-white font-semibold text-sm py-2.5 rounded-[8px] hover:bg-[#8A6420] transition-colors"
             >
               Kostenlos starten
             </button>

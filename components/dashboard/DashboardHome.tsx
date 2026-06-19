@@ -26,11 +26,11 @@ import { generateSmartTasks } from "@/lib/smart-tasks";
 import { tokens } from "@/lib/tokens";
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  ETW:     { bg: "rgba(0,224,215,0.08)",  text: "#00E0D7" },
+  ETW:     { bg: "rgba(160,120,48,0.08)", text: "#A07830" },
   MFH:     { bg: "rgba(139,92,246,0.1)",  text: "#A78BFA" },
-  EFH:     { bg: "rgba(0,224,215,0.06)",  text: "#00E0D7" },
-  DHH:     { bg: "rgba(255,184,0,0.08)",  text: "#FFB800" },
-  Gewerbe: { bg: "rgba(255,255,255,0.05)", text: "#888888" },
+  EFH:     { bg: "rgba(160,120,48,0.06)", text: "#A07830" },
+  DHH:     { bg: "rgba(255,184,0,0.08)",  text: "#92400E" },
+  Gewerbe: { bg: "rgba(16,20,24,0.05)",   text: "#6A5A3A" },
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -194,7 +194,7 @@ export default function DashboardHome({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.25 }}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ background: tokens.color.dangerBg, border: `1px solid rgba(255,68,68,0.2)`, color: tokens.color.danger }}
+              style={{ background: tokens.color.dangerBg, border: `1px solid rgba(185,28,28,0.2)`, color: tokens.color.danger }}
             >
               <Warning size={12} />
               {overdueTasks} überfällige Aufgabe{overdueTasks > 1 ? "n" : ""}
@@ -269,7 +269,7 @@ export default function DashboardHome({
               const lineColor = isUp ? tokens.color.positive : tokens.color.danger;
               return (
                 <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" className="flex-shrink-0 opacity-80">
-                  <path d={areaPath} fill={isUp ? "rgba(34,197,94,0.06)" : "rgba(255,68,68,0.06)"} />
+                  <path d={areaPath} fill={isUp ? "rgba(45,106,45,0.06)" : "rgba(185,28,28,0.06)"} />
                   <path d={linePath} stroke={lineColor} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               );
@@ -612,7 +612,7 @@ export default function DashboardHome({
             className="rounded-[14px] px-5 py-5 mb-4 flex items-center gap-5 cursor-pointer"
             style={financingAlertCount > 0
               ? { background: "rgba(255,184,0,0.05)", border: "1px solid rgba(255,184,0,0.15)" }
-              : { background: tokens.color.dangerBg, border: `1px solid rgba(255,68,68,0.15)` }
+              : { background: tokens.color.dangerBg, border: `1px solid rgba(185,28,28,0.15)` }
             }
             whileHover={prefersReduced ? {} : { y: -2 }}
             transition={{ duration: 0.18 }}
@@ -623,7 +623,7 @@ export default function DashboardHome({
               style={{
                 background: financingAlertCount > 0
                   ? "rgba(255,184,0,0.12)"
-                  : "rgba(255,68,68,0.12)",
+                  : "rgba(185,28,28,0.12)",
               }}
             >
               {financingAlertCount > 0

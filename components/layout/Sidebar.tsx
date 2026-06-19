@@ -25,9 +25,6 @@ import {
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
-import { tokens } from "@/lib/tokens";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 type NavItem = {
   Icon: PhosphorIcon;
@@ -40,8 +37,6 @@ type NavSection = {
   section?: string;
   items: NavItem[];
 };
-
-// ─── Nav config — VERWALTUNG first, ANALYSE second ───────────────────────────
 
 const navSections: NavSection[] = [
   {
@@ -75,8 +70,6 @@ function isActive(href: string, pathname: string) {
   return pathname.startsWith(href);
 }
 
-// ─── NavItem Component ────────────────────────────────────────────────────────
-
 function NavLink({
   Icon,
   label,
@@ -91,33 +84,36 @@ function NavLink({
 
   return (
     <Link href={href} className="block mb-[2px]" title={collapsed ? label : undefined}>
-      <div
-        className="relative flex items-center rounded-[7px] transition-all duration-100 group"
+      <motion.div
+        className="relative flex items-center rounded-[8px] cursor-pointer"
         style={{
           padding: collapsed ? "7px 0" : "7px 10px",
           justifyContent: collapsed ? "center" : "flex-start",
           gap: collapsed ? 0 : 10,
-          background: active ? "rgba(0,224,215,0.05)" : "transparent",
-          color: active ? tokens.color.accent : tokens.color.textSubtle,
+          background: active ? "rgba(201,168,106,0.1)" : "transparent",
+          border: active ? "1px solid rgba(201,168,106,0.15)" : "1px solid transparent",
+          color: active ? "#C9A86A" : "#4A3A2A",
         }}
+        whileHover={active ? {} : { backgroundColor: "rgba(255,255,255,0.04)" }}
+        transition={{ duration: 0.15 }}
       >
-        {/* Left accent bar */}
+        {/* Active indicator pill */}
         {active && (
-          <div
+          <motion.div
+            layoutId="sidebar-active-bar"
             className="absolute left-0 top-[5px] bottom-[5px] w-[2px] rounded-full"
-            style={{ background: tokens.color.accent }}
+            style={{ background: "#C9A86A" }}
+            transition={{ type: "spring", stiffness: 400, damping: 35 }}
           />
         )}
 
-        {/* Icon */}
         <Icon
           size={15}
           weight={active ? "bold" : "regular"}
-          color={active ? tokens.color.accent : "#575757"}
-          className="flex-shrink-0 transition-colors duration-100"
+          color={active ? "#C9A86A" : "#4A3A2A"}
+          className="flex-shrink-0 transition-colors duration-150"
         />
 
-        {/* Label */}
         <AnimatePresence initial={false}>
           {!collapsed && (
             <motion.span
@@ -127,63 +123,52 @@ function NavLink({
               exit={{ opacity: 0, width: 0 }}
               transition={{ duration: 0.14 }}
               className="text-[13px] flex-1 whitespace-nowrap overflow-hidden leading-none"
-              style={{ fontWeight: active ? 500 : 400 }}
+              style={{
+                fontWeight: active ? 500 : 400,
+                color: active ? "#C9A86A" : "#6A5A4A",
+              }}
             >
               {label}
             </motion.span>
           )}
         </AnimatePresence>
 
-        {/* Static badge (NEU) */}
         {badge && !isAufgaben && !collapsed && (
           <span
             className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0"
-            style={{ background: "rgba(0,224,215,0.1)", color: tokens.color.accent }}
+            style={{ background: "rgba(160,120,48,0.15)", color: "#C9A86A" }}
           >
             {badge}
           </span>
         )}
 
-        {/* Task badge */}
-        {showBadge && (
-          collapsed ? (
-            <span
-              className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full"
-              style={{ background: tokens.color.danger }}
-            />
-          ) : (
-            !collapsed && (
-              <span
-                className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0 tabular-nums"
-                style={{ background: "rgba(255,68,68,0.1)", color: tokens.color.danger }}
-              >
-                {taskCount}
-              </span>
-            )
-          )
+        {showBadge && !collapsed && (
+          <span
+            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0 tabular-nums"
+            style={{ background: "rgba(185,28,28,0.15)", color: "#EF4444" }}
+          >
+            {taskCount}
+          </span>
         )}
 
-        {/* Hover bg overlay — CSS only, no inline JS */}
-        {!active && (
-          <div
-            className="absolute inset-0 rounded-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-100 pointer-events-none"
-            style={{ background: "rgba(255,255,255,0.03)" }}
+        {showBadge && collapsed && (
+          <span
+            className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full"
+            style={{ background: "#EF4444" }}
           />
         )}
-      </div>
+      </motion.div>
     </Link>
   );
 }
-
-// ─── Sidebar ─────────────────────────────────────────────────────────────────
 
 interface SidebarProps {
   userEmail?: string;
 }
 
 export default function Sidebar({ userEmail }: SidebarProps) {
-  const pathname       = usePathname();
-  const avatarLetter   = userEmail ? userEmail[0].toUpperCase() : "?";
+  const pathname     = usePathname();
+  const avatarLetter = userEmail ? userEmail[0].toUpperCase() : "?";
   const [openTaskCount, setOpenTaskCount] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -214,18 +199,18 @@ export default function Sidebar({ userEmail }: SidebarProps) {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 56 : 216 }}
+      animate={{ width: collapsed ? 56 : 220 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="flex-shrink-0 h-screen sticky top-0 flex flex-col overflow-hidden"
       style={{
-        background: "#0A0A0A",
-        borderRight: `1px solid ${tokens.color.border}`,
+        background: "#18160E",
+        borderRight: "1px solid rgba(201,168,106,0.08)",
       }}
     >
-      {/* ── Logo + collapse ── */}
+      {/* Logo + collapse */}
       <div
         className="h-[60px] flex items-center flex-shrink-0 px-4"
-        style={{ borderBottom: `1px solid ${tokens.color.border}` }}
+        style={{ borderBottom: "1px solid rgba(201,168,106,0.08)" }}
       >
         <div className="flex items-center justify-between w-full">
           <AnimatePresence initial={false}>
@@ -237,40 +222,54 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                <Image src="/logo.svg" alt="Imvestra" width={96} height={22} priority />
+                <Image
+                  src="/logo.svg"
+                  alt="Imvestra"
+                  width={96}
+                  height={22}
+                  priority
+                  style={{
+                    filter: "brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(600%) hue-rotate(15deg) brightness(90%)",
+                  }}
+                />
               </motion.div>
             )}
           </AnimatePresence>
 
           <button
             onClick={() => setCollapsed(c => !c)}
-            className="w-[22px] h-[22px] rounded-[5px] flex items-center justify-center flex-shrink-0 transition-colors duration-100 hover:bg-[#1A1A1A]"
-            style={{ color: "#404040", marginLeft: collapsed ? "auto" : 0, marginRight: collapsed ? "auto" : 0 }}
+            className="w-[22px] h-[22px] rounded-[5px] flex items-center justify-center flex-shrink-0 transition-colors duration-150"
+            style={{
+              color: "#4A3A2A",
+              marginLeft: collapsed ? "auto" : 0,
+              marginRight: collapsed ? "auto" : 0,
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,168,106,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "#C9A86A"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#4A3A2A"; }}
             aria-label={collapsed ? "Sidebar aufklappen" : "Sidebar einklappen"}
           >
-            {collapsed
-              ? <CaretRight size={11} />
-              : <CaretLeft size={11} />
-            }
+            {collapsed ? <CaretRight size={11} /> : <CaretLeft size={11} />}
           </button>
         </div>
       </div>
 
-      {/* ── Search / ⌘K ── */}
+      {/* Search / ⌘K */}
       <div className="px-3 py-3 flex-shrink-0">
         <button
           onClick={openPalette}
           aria-label="Suche (⌘K)"
           title={collapsed ? "Suchen (⌘K)" : undefined}
-          className="w-full flex items-center rounded-[7px] transition-colors duration-100 hover:border-[rgba(255,255,255,0.1)]"
+          className="w-full flex items-center rounded-[7px] transition-all duration-150"
           style={{
             padding: collapsed ? "7px 0" : "7px 10px",
             justifyContent: collapsed ? "center" : "flex-start",
             gap: collapsed ? 0 : 8,
-            background: tokens.color.surface,
-            border: `1px solid ${tokens.color.border}`,
-            color: "#444",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(201,168,106,0.08)",
+            color: "#4A3A2A",
           }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,106,0.2)"; (e.currentTarget as HTMLButtonElement).style.color = "#6A5A3A"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,106,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "#4A3A2A"; }}
         >
           <MagnifyingGlass size={13} className="flex-shrink-0" />
           <AnimatePresence initial={false}>
@@ -282,6 +281,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.12 }}
                 className="text-[12px] flex-1 text-left whitespace-nowrap"
+                style={{ color: "#4A3A2A" }}
               >
                 Suchen...
               </motion.span>
@@ -297,10 +297,9 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                 transition={{ duration: 0.12 }}
                 className="text-[10px] px-1.5 py-0.5 rounded-[4px] flex-shrink-0 leading-none"
                 style={{
-                  background: "#1A1A1A",
-                  color: "#3A3A3A",
-                  fontFamily: "var(--font-mono)",
-                  border: "1px solid #222",
+                  background: "rgba(201,168,106,0.06)",
+                  color: "#6A5A3A",
+                  border: "1px solid rgba(201,168,106,0.1)",
                 }}
               >
                 ⌘K
@@ -310,7 +309,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
         </button>
       </div>
 
-      {/* ── Nav ── */}
+      {/* Nav */}
       <nav className="flex-1 px-3 overflow-y-auto overflow-x-hidden py-1 space-y-[2px]">
         {navSections.map((section, si) => (
           <div key={si}>
@@ -324,8 +323,8 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.12 }}
-                      className="px-[10px] pt-5 pb-2 text-[9px] font-semibold uppercase tracking-[0.13em] whitespace-nowrap"
-                      style={{ color: "#383838" }}
+                      className="px-[10px] pt-5 pb-2 text-[9px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap"
+                      style={{ color: "#2E2618" }}
                     >
                       {section.section}
                     </motion.p>
@@ -334,7 +333,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                 {collapsed && si > 0 && (
                   <div
                     className="mx-auto my-3"
-                    style={{ width: 20, height: 1, background: "rgba(255,255,255,0.05)" }}
+                    style={{ width: 20, height: 1, background: "rgba(201,168,106,0.08)" }}
                   />
                 )}
               </div>
@@ -353,12 +352,11 @@ export default function Sidebar({ userEmail }: SidebarProps) {
         ))}
       </nav>
 
-      {/* ── Bottom ── */}
+      {/* Bottom */}
       <div
         className="flex-shrink-0 p-3"
-        style={{ borderTop: `1px solid ${tokens.color.border}` }}
+        style={{ borderTop: "1px solid rgba(201,168,106,0.08)" }}
       >
-        {/* Settings link */}
         <AnimatePresence initial={false}>
           {!collapsed && (
             <motion.div
@@ -371,8 +369,10 @@ export default function Sidebar({ userEmail }: SidebarProps) {
             >
               <Link
                 href="/settings"
-                className="flex items-center gap-2.5 px-[10px] py-[7px] rounded-[7px] transition-colors duration-100 hover:bg-[rgba(255,255,255,0.03)] group"
-                style={{ color: "#444" }}
+                className="flex items-center gap-2.5 px-[10px] py-[7px] rounded-[7px] transition-colors duration-150"
+                style={{ color: "#4A3A2A" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLAnchorElement).style.color = "#6A5A3A"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; (e.currentTarget as HTMLAnchorElement).style.color = "#4A3A2A"; }}
               >
                 <Gear size={14} className="flex-shrink-0" />
                 <span className="text-[12px]">Einstellungen</span>
@@ -383,20 +383,19 @@ export default function Sidebar({ userEmail }: SidebarProps) {
 
         {/* User row */}
         <div
-          className="flex items-center rounded-[7px] px-[10px] py-[7px] transition-colors duration-100 hover:bg-[rgba(255,255,255,0.03)] group cursor-default"
+          className="flex items-center rounded-[7px] px-[10px] py-[7px] transition-colors duration-150 cursor-default"
           style={{
             justifyContent: collapsed ? "center" : "flex-start",
             gap: collapsed ? 0 : 10,
           }}
           title={collapsed ? (userEmail ?? "") : undefined}
         >
-          {/* Avatar */}
           <div
             className="w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold leading-none"
             style={{
-              background: "rgba(0,224,215,0.08)",
-              border: `1px solid rgba(0,224,215,0.14)`,
-              color: tokens.color.accent,
+              background: "rgba(160,120,48,0.15)",
+              border: "1px solid rgba(201,168,106,0.2)",
+              color: "#C9A86A",
             }}
           >
             {avatarLetter}
@@ -414,7 +413,7 @@ export default function Sidebar({ userEmail }: SidebarProps) {
               >
                 <p
                   className="text-[11px] truncate leading-tight"
-                  style={{ color: "#444", maxWidth: 120 }}
+                  style={{ color: "#4A3A2A", maxWidth: 120 }}
                 >
                   {userEmail ?? ""}
                 </p>
@@ -431,10 +430,10 @@ export default function Sidebar({ userEmail }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.12 }}
                 onClick={() => signOut()}
-                className="flex-shrink-0 p-1 rounded-[5px] transition-colors duration-100 hover:bg-[rgba(255,68,68,0.08)]"
-                style={{ color: "#383838" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = tokens.color.danger }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#383838" }}
+                className="flex-shrink-0 p-1 rounded-[5px] transition-all duration-150"
+                style={{ color: "#3A2A1A" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(185,28,28,0.1)"; (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#3A2A1A"; }}
                 title="Abmelden"
                 aria-label="Abmelden"
               >

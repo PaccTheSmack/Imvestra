@@ -13,7 +13,7 @@ import {
 import FadeIn from "@/components/ui/FadeIn";
 
 const GRADIENT_TEXT: React.CSSProperties = {
-  background: "linear-gradient(135deg, #00E0D7 0%, #007A74 100%)",
+  background: "linear-gradient(135deg, #C9A86A 0%, #A07830 100%)",
   WebkitBackgroundClip: "text",
   backgroundClip: "text",
   WebkitTextFillColor: "transparent",
@@ -58,25 +58,25 @@ export default function WaitlistSection() {
   }
 
   return (
-    <section id="waitlist" className="bg-[#080808] py-32 relative overflow-hidden">
+    <section id="waitlist" className="py-32 relative overflow-hidden" style={{ background: "#18160E" }}>
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 90% 70% at 50% 120%, rgba(0,224,215,0.08) 0%, rgba(0,224,215,0.03) 40%, transparent 65%), radial-gradient(ellipse 60% 50% at 30% 100%, rgba(0,224,215,0.04) 0%, transparent 55%)",
+            "radial-gradient(ellipse 90% 70% at 50% 120%, rgba(160,120,48,0.12) 0%, rgba(160,120,48,0.05) 40%, transparent 65%), radial-gradient(ellipse 60% 50% at 30% 100%, rgba(160,120,48,0.06) 0%, transparent 55%)",
         }}
       />
       <div className="max-w-[640px] mx-auto px-6 text-center relative z-10">
         <FadeIn>
-          <span className="inline-flex bg-[rgba(0,224,215,0.08)] border border-[rgba(0,224,215,0.15)] text-[#00E0D7] text-xs px-3 py-1 rounded-full">
+          <span className="inline-flex bg-[rgba(201,168,106,0.1)] border border-[rgba(201,168,106,0.2)] text-[#C9A86A] text-xs px-3 py-1 rounded-full">
             Jetzt starten
           </span>
-          <h2 className="text-[48px] font-semibold tracking-[-0.04em] leading-[1.05] text-white mt-4">
+          <h2 className="text-[48px] font-semibold tracking-[-0.04em] leading-[1.05] text-[#F8F7F4] mt-4">
             Damit kein Detail<br />
             zum teuren<br />
             <span style={GRADIENT_TEXT}>Fehler</span> wird.
           </h2>
-          <p className="mt-5 text-[#777] text-lg leading-relaxed">
+          <p className="mt-5 text-[rgba(248,247,244,0.5)] text-lg leading-relaxed">
             30 Tage kostenlos testen. Kein Risiko. Jederzeit kündbar.
           </p>
 
@@ -85,14 +85,14 @@ export default function WaitlistSection() {
               whileHover={prefersReduced ? {} : { scale: 1.02 }}
               whileTap={prefersReduced ? {} : { scale: 0.97 }}
               onClick={() => router.push("/register")}
-              className="bg-[#00E0D7] text-[#080808] font-bold px-8 py-4 rounded-[12px] text-base"
-              style={{ boxShadow: "0 0 40px rgba(0,224,215,0.2)" }}
+              className="bg-[#A07830] text-white font-bold px-8 py-4 rounded-[12px] text-base cursor-pointer hover:bg-[#8A6420] transition-colors"
+              style={{ boxShadow: "0 0 40px rgba(160,120,48,0.3)" }}
             >
               Jetzt starten →
             </motion.button>
             <button
               onClick={() => setShowForm((v) => !v)}
-              className="border border-[rgba(255,255,255,0.12)] text-white px-8 py-4 rounded-[12px] text-base hover:bg-[#111] transition-all"
+              className="border border-[rgba(248,247,244,0.12)] text-[#F8F7F4] px-8 py-4 rounded-[12px] text-base hover:bg-[rgba(248,247,244,0.05)] transition-all cursor-pointer"
             >
               Auf Warteliste eintragen
             </button>
@@ -115,9 +115,9 @@ export default function WaitlistSection() {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <CheckCircle size={32} color="#00E0D7" weight="fill" className="mx-auto" />
-                    <p className="text-xl font-semibold text-white mt-3">Du bist dabei!</p>
-                    <p className="text-sm text-[#777] mt-1">Wir melden uns sobald Imvestra startet.</p>
+                    <CheckCircle size={32} color="#C9A86A" weight="fill" className="mx-auto" />
+                    <p className="text-xl font-semibold text-[#F8F7F4] mt-3">Du bist dabei!</p>
+                    <p className="text-sm text-[rgba(248,247,244,0.5)] mt-1">Wir melden uns sobald Imvestra startet.</p>
                   </motion.div>
                 ) : (
                   <form onSubmit={submit} className="flex flex-col gap-3">
@@ -128,18 +128,24 @@ export default function WaitlistSection() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="deine@email.de"
-                        className="flex-1 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-4 py-3 text-sm text-white placeholder:text-[#777] focus:outline-none focus:border-[rgba(0,224,215,0.4)] transition-all"
+                        className="flex-1 rounded-[10px] px-4 py-3 text-sm text-[#F8F7F4] focus:outline-none transition-all"
+                        style={{
+                          background: "rgba(248,247,244,0.07)",
+                          border: "1px solid rgba(248,247,244,0.1)",
+                        }}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(201,168,106,0.4)")}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(248,247,244,0.1)")}
                       />
                       <button
                         type="submit"
                         disabled={status === "loading"}
-                        className="bg-[#00E0D7] text-[#080808] font-semibold px-5 py-3 rounded-[10px] text-sm hover:bg-[#00C7BE] transition-colors disabled:opacity-60"
+                        className="bg-[#A07830] text-white font-semibold px-5 py-3 rounded-[10px] text-sm hover:bg-[#8A6420] transition-colors disabled:opacity-60 cursor-pointer"
                       >
                         {status === "loading" ? "…" : "Eintragen"}
                       </button>
                     </div>
                     {status === "error" && (
-                      <p className="text-xs text-[#FF4444]">{errorMsg}</p>
+                      <p className="text-xs text-[#FF6B6B]">{errorMsg}</p>
                     )}
                   </form>
                 )}
@@ -149,8 +155,8 @@ export default function WaitlistSection() {
 
           <div className="mt-10 flex justify-center gap-8 flex-wrap">
             {TRUST.map(({ Icon, label }) => (
-              <div key={label} className="text-xs text-[#555] flex items-center gap-1.5">
-                <Icon size={13} color="#555" />
+              <div key={label} className="text-xs text-[rgba(248,247,244,0.35)] flex items-center gap-1.5">
+                <Icon size={13} color="rgba(248,247,244,0.35)" />
                 {label}
               </div>
             ))}

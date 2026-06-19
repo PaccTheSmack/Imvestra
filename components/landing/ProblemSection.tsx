@@ -24,24 +24,24 @@ const PROBLEMS: { Icon: PhosphorIcon; title: string; body: string }[] = [
 
 export default function ProblemSection() {
   return (
-    <section id="problem" className="bg-[#080808] py-32">
+    <section id="problem" className="bg-[#F0EDE4] py-32">
       <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
         {/* LEFT */}
         <div className="lg:sticky lg:top-32">
           <FadeIn direction="left">
-            <h2 className="text-[42px] font-semibold tracking-[-0.03em] leading-[1.1] text-white mb-5">
+            <h2 className="text-[42px] font-semibold tracking-[-0.03em] leading-[1.1] text-[#101418] mb-5">
               Immobilien-Investments<br />
               verzeihen<br />
               keine Fehler.
             </h2>
-            <p className="text-base text-[#777] leading-relaxed max-w-[380px] mb-8">
+            <p className="text-base text-[#6A5A3A] leading-relaxed max-w-[380px] mb-8">
               Die meisten Investoren rechnen mit Excel-Tabellen oder Bauchgefühl.
               Cashflows werden falsch kalkuliert, Fristen vergessen,
               Zinsbindungen verpasst.
             </p>
             <div
-              className="rounded-[12px] px-5 py-4 text-sm text-[#888] italic leading-relaxed"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+              className="rounded-[12px] px-5 py-4 text-sm text-[#6A5A3A] italic leading-relaxed"
+              style={{ background: "rgba(160,120,48,0.05)", border: "1px solid rgba(160,120,48,0.12)" }}
             >
               Eine verpasste Zinsbindung, eine falsch kalkulierte Rendite oder
               ein übersehener Leerstand – das kostet Investoren jährlich
@@ -54,13 +54,13 @@ export default function ProblemSection() {
         <div className="flex flex-col gap-3">
           {PROBLEMS.map(({ Icon, title, body }, i) => (
             <FadeIn key={title} delay={i * 0.1}>
-              <div className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-[16px] p-6 hover:border-[rgba(255,255,255,0.12)] hover:bg-[#141414] transition-all duration-200 flex items-start gap-4">
-                <div className="w-10 h-10 rounded-[10px] bg-[rgba(255,68,68,0.08)] flex items-center justify-center flex-shrink-0">
-                  <Icon size={18} color="#FF4444" />
+              <div className="bg-white border border-[rgba(16,20,24,0.08)] rounded-[16px] p-6 hover:border-[rgba(160,120,48,0.2)] hover:-translate-y-0.5 transition-all duration-200 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-[10px] bg-[rgba(160,120,48,0.08)] flex items-center justify-center flex-shrink-0">
+                  <Icon size={18} color="#A07830" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-white mb-1.5">{title}</p>
-                  <p className="text-sm text-[#777] leading-relaxed">{body}</p>
+                  <p className="text-base font-semibold text-[#101418] mb-1.5">{title}</p>
+                  <p className="text-sm text-[#6A5A3A] leading-relaxed">{body}</p>
                 </div>
               </div>
             </FadeIn>

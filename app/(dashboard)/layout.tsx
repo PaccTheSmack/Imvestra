@@ -9,9 +9,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <DashboardLayoutClient>
-      <div className="flex min-h-screen bg-[#080808]">
+      <div className="flex min-h-screen bg-[#F8F7F4]">
         <Sidebar userEmail={user?.email} />
-        <main className="flex-1 min-w-0 overflow-y-auto">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-[#F8F7F4]">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>
