@@ -4,25 +4,18 @@ import { usePathname } from "next/navigation";
 import { Bell, Plus } from "@phosphor-icons/react";
 import Link from "next/link";
 
-const PAGE_META: Record<string, { title: string; sub: string; ctaLabel?: string; ctaHref?: string }> = {
-  "/dashboard":   { title: "Übersicht",       sub: "Deine Immobilien auf einen Blick",       ctaLabel: "Objekt anlegen", ctaHref: "/portfolio/neu" },
-  "/portfolio":   { title: "Portfolio",        sub: "Alle deine Objekte im Überblick",         ctaLabel: "Objekt anlegen", ctaHref: "/portfolio/neu" },
-  "/mieter":      { title: "Mietverwaltung",   sub: "Mieter, Zahlungen & Verträge",            ctaLabel: "Mieter anlegen", ctaHref: "/mieter" },
-  "/finanzen":    { title: "Finanzen",          sub: "Cashflow, Ausgaben & Finanzierungen",     ctaLabel: "Ausgabe erfassen" },
-  "/aufgaben":    { title: "Aufgaben",          sub: "Deine offenen To-dos",                    ctaLabel: "Aufgabe anlegen" },
-  "/steuern":     { title: "Steuern",           sub: "AfA, Einnahmen & steuerliche Übersicht" },
-  "/calculator":  { title: "Rechner",           sub: "Deal-Analyse & Renditerechner" },
-  "/verhandlung": { title: "Verhandlung",       sub: "Preisfindung & Kaufpreisanalyse" },
-  "/standort":    { title: "Standortanalyse",   sub: "Lage, Infrastruktur & Marktdaten" },
-  "/pdf-export":  { title: "PDF Export",        sub: "Portfolio-Bericht generieren" },
-  "/settings":    { title: "Einstellungen",     sub: "Konto, Plan & Datenschutz" },
+const CTA_MAP: Record<string, { label: string; href: string }> = {
+  "/dashboard":  { label: "Objekt anlegen", href: "/portfolio/neu" },
+  "/portfolio":  { label: "Objekt anlegen", href: "/portfolio/neu" },
+  "/mieter":     { label: "Mieter anlegen", href: "/mieter" },
+  "/aufgaben":   { label: "Aufgabe anlegen", href: "/aufgaben" },
 };
 
-function getPageMeta(pathname: string) {
-  for (const [key, val] of Object.entries(PAGE_META)) {
+function getCta(pathname: string) {
+  for (const [key, val] of Object.entries(CTA_MAP)) {
     if (pathname === key || (key !== "/dashboard" && pathname.startsWith(key))) return val;
   }
-  return { title: "Imvestra", sub: "" };
+  return null;
 }
 
 interface TopBarProps {
@@ -31,30 +24,20 @@ interface TopBarProps {
 
 export default function TopBar({ userEmail }: TopBarProps) {
   const pathname = usePathname();
-  const meta = getPageMeta(pathname);
+  const cta = getCta(pathname);
   const avatarLetter = userEmail ? userEmail[0].toUpperCase() : "?";
   const displayName = userEmail ? userEmail.split("@")[0] : "Nutzer";
 
   return (
     <header
-      className="sticky top-0 z-10 h-[64px] px-8 flex items-center justify-between flex-shrink-0"
+      className="sticky top-0 z-10 h-[56px] px-8 flex items-center justify-end flex-shrink-0"
       style={{
         background: "white",
         borderBottom: "1px solid rgba(0,0,0,0.07)",
         boxShadow: "0 1px 0 rgba(0,0,0,0.04)",
       }}
     >
-      {/* Left */}
-      <div>
-        <h1 className="text-[20px] font-semibold tracking-[-0.02em]" style={{ color: "#101418" }}>
-          {meta.title}
-        </h1>
-        {meta.sub && (
-          <p className="text-[12px] mt-0.5" style={{ color: "#9CA3AF" }}>{meta.sub}</p>
-        )}
-      </div>
-
-      {/* Right */}
+      {/* Right only — page titles live in the page itself */}
       <div className="flex items-center gap-3">
         {/* Bell */}
         <button
@@ -67,9 +50,9 @@ export default function TopBar({ userEmail }: TopBarProps) {
         </button>
 
         {/* CTA */}
-        {meta.ctaLabel && (
+        {cta && (
           <Link
-            href={meta.ctaHref ?? "#"}
+            href={cta.href}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-[10px] text-[13px] font-semibold transition-all duration-150 active:scale-[0.98]"
             style={{
               background: "#A07830",
@@ -80,7 +63,7 @@ export default function TopBar({ userEmail }: TopBarProps) {
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#A07830"; (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 4px 14px rgba(160,120,48,0.2)"; }}
           >
             <Plus size={14} weight="bold" />
-            {meta.ctaLabel}
+            {cta.label}
           </Link>
         )}
 

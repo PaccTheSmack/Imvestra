@@ -465,54 +465,51 @@ export default function PortfolioView({ properties, financings, payments, expens
 
       {/* ── Hero Metrics Bar ─────────────────────────────────────────────────── */}
       <div className="px-6 py-4">
-        <div className="bg-[#A07830] rounded-[14px] shadow-[0_4px_24px_rgba(160,120,48,0.25)] px-6 py-5">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
 
-          {/* 1 – Portfoliowert */}
-          <div>
+          {/* 1 – Portfoliowert — dark gold hero */}
+          <div className="bg-[#A07830] rounded-[14px] shadow-[0_4px_24px_rgba(160,120,48,0.25)] px-4 py-4 lg:col-span-1">
             <div className="flex items-center">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">Portfoliowert</span>
+              <span className="text-[9px] text-white/70 font-bold uppercase tracking-[0.14em]">Portfoliowert</span>
               <Tooltip text="Geschätzter Gesamtmarktwert aller Immobilien. Berechnet aus Ertragswert und Vergleichswert." />
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] text-white mt-1.5">{formatCurrency(summary.total_marktwert)}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">Gesamtwert</p>
+            <p className="text-[20px] font-bold tracking-[-0.02em] text-white mt-1.5 leading-none">{formatCurrency(summary.total_marktwert)}</p>
+            <p className="text-[11px] text-white/60 mt-1">Gesamtwert</p>
           </div>
 
-          {/* Divider */}
-          <div className="hidden lg:block w-px bg-white/15 self-stretch" />
-
           {/* 2 – Eigenkapital */}
-          <div>
+          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] px-4 py-4">
             <div className="flex items-center">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">Eigenkapital</span>
+              <span className="text-[9px] text-[#9CA3AF] font-bold uppercase tracking-[0.14em]">Eigenkapital</span>
               <Tooltip text="Aktueller Eigenkapitalwert = Marktwert minus Restschulden. Was dir nach Verkauf und Schuldenrückzahlung bliebe." />
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
+            <p className="text-[20px] font-bold tracking-[-0.02em] mt-1.5 leading-none" style={{ color: "#101418" }}>
               {formatCurrency(summary.total_eigenkapital_aktuell)}
             </p>
-            <p className="text-[11px] mt-0.5 text-white/70">
+            <p className="text-[11px] mt-1" style={{ color: summary.total_eigenkapital_gewinn >= 0 ? "#2D6A2D" : "#B91C1C" }}>
               {formatCurrencySigned(summary.total_eigenkapital_gewinn)} Gewinn
             </p>
           </div>
 
           {/* 3 – Wertsteigerung */}
-          <div>
+          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] px-4 py-4">
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">Wertsteigerung</span>
+              <span className="text-[9px] text-[#9CA3AF] font-bold uppercase tracking-[0.14em]">Wertsteigerung</span>
               <Tooltip text="Differenz zwischen aktuellem Marktwert und ursprünglichem Kaufpreis aller Objekte." />
               <button
                 onClick={() => setValueDisplay(v => v === "eur" ? "pct" : "eur")}
-                className="text-[9px] px-1.5 py-0.5 rounded-full border border-white/30 text-white/70 hover:text-white cursor-pointer transition-colors"
+                className="text-[9px] px-1.5 py-0.5 rounded-full border border-[rgba(0,0,0,0.1)] text-[#9CA3AF] hover:text-[#101418] cursor-pointer transition-colors"
               >
                 {valueDisplay === "eur" ? "%" : "€"}
               </button>
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
+            <p className="text-[20px] font-bold tracking-[-0.02em] mt-1.5 leading-none"
+               style={{ color: summary.total_wertentwicklung_eur >= 0 ? "#2D6A2D" : "#B91C1C" }}>
               {valueDisplay === "eur"
                 ? formatCurrencySigned(summary.total_wertentwicklung_eur)
                 : formatPercent(summary.total_wertentwicklung_pct)}
             </p>
-            <p className="text-[11px] text-white/70 mt-0.5">
+            <p className="text-[11px] text-[#9CA3AF] mt-1">
               {valueDisplay === "eur"
                 ? formatPercent(summary.total_wertentwicklung_pct)
                 : formatCurrency(summary.total_wertentwicklung_eur)}
@@ -520,55 +517,58 @@ export default function PortfolioView({ properties, financings, payments, expens
           </div>
 
           {/* 4 – Cashflow */}
-          <div>
+          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] px-4 py-4">
             <div className="flex items-center">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">Cashflow / Mo.</span>
+              <span className="text-[9px] text-[#9CA3AF] font-bold uppercase tracking-[0.14em]">Cashflow / Mo.</span>
               <Tooltip text="Monatlicher Netto-Cashflow nach Abzug aller Kosten (Zinsen, Tilgung, Hausgeld, Instandhaltung)." />
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
+            <p className="text-[20px] font-bold tracking-[-0.02em] mt-1.5 leading-none"
+               style={{ color: summary.total_cashflow_monthly >= 0 ? "#2D6A2D" : "#B91C1C" }}>
               {formatCurrencySigned(summary.total_cashflow_monthly)}
             </p>
-            <p className="text-[11px] text-white/70 mt-0.5">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
+            <p className="text-[11px] text-[#9CA3AF] mt-1">{formatCurrency(summary.total_cashflow_yearly)}/Jahr</p>
           </div>
 
-          {/* 5 – ROE */}
-          <div>
+          {/* 5 – EK-Rendite */}
+          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] px-4 py-4">
             <div className="flex items-center">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">EK-Rendite</span>
+              <span className="text-[9px] text-[#9CA3AF] font-bold uppercase tracking-[0.14em]">EK-Rendite</span>
               <Tooltip text="ROE: Jährlicher Cashflow geteilt durch eingesetztes Eigenkapital. Zeigt wie effizient dein Kapital arbeitet." />
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
+            <p className="text-[20px] font-bold tracking-[-0.02em] mt-1.5 leading-none"
+               style={{ color: colorByValue(summary.portfolio_roe, 3, 6) }}>
               {formatPercent(summary.portfolio_roe)}
             </p>
-            <p className="text-[11px] text-white/70 mt-0.5">ROE p.a.</p>
+            <p className="text-[11px] text-[#9CA3AF] mt-1">ROE p.a.</p>
           </div>
 
           {/* 6 – Gesamtrendite */}
-          <div>
+          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] px-4 py-4">
             <div className="flex items-center">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">Gesamtrendite</span>
+              <span className="text-[9px] text-[#9CA3AF] font-bold uppercase tracking-[0.14em]">Gesamtrendite</span>
               <Tooltip text="Cashflow + Wertsteigerung geteilt durch eingesetztes Eigenkapital. Die wahre Rendite deines Investments." />
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
+            <p className="text-[20px] font-bold tracking-[-0.02em] mt-1.5 leading-none"
+               style={{ color: colorByValue(summary.portfolio_gesamtrendite, 4, 8) }}>
               {formatPercent(summary.portfolio_gesamtrendite)}
             </p>
-            <p className="text-[11px] text-white/70 mt-0.5">inkl. Wertsteigerung</p>
+            <p className="text-[11px] text-[#9CA3AF] mt-1">inkl. Wertsteigerung</p>
           </div>
 
           {/* 7 – Restschuld */}
-          <div>
+          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.07)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] px-4 py-4">
             <div className="flex items-center">
-              <span className="text-[10px] text-white/70 uppercase tracking-widest">Restschuld</span>
+              <span className="text-[9px] text-[#9CA3AF] font-bold uppercase tracking-[0.14em]">Restschuld</span>
               <Tooltip text="Gesamte noch ausstehende Darlehensschulden über alle Objekte. Wird monatlich durch Tilgung reduziert." />
             </div>
-            <p className="text-[22px] font-bold tracking-[-0.02em] mt-1.5 text-white">
+            <p className="text-[20px] font-bold tracking-[-0.02em] mt-1.5 leading-none text-[#B91C1C]">
               {formatCurrency(summary.total_restschuld)}
             </p>
-            <p className="text-[11px] mt-0.5 text-white/70">
+            <p className="text-[11px] text-[#9CA3AF] mt-1">
               {formatPercent(summary.total_fremdkapital_quote)} des Portfoliowerts
             </p>
           </div>
-        </div>
+
         </div>
       </div>
 
