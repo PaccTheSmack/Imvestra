@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="200 100 1450 340" role="img" aria-label="Imvestra">
+  <defs>
+    <linearGradient id="goldTall" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F0D991"/>
+      <stop offset="20%" stop-color="#C9A86A"/>
+      <stop offset="52%" stop-color="#A07830"/>
+      <stop offset="76%" stop-color="#E5C579"/>
+      <stop offset="100%" stop-color="#6F4B16"/>
+    </linearGradient>
+    <linearGradient id="goldFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F3DE9B"/>
+      <stop offset="44%" stop-color="#C9A86A"/>
+      <stop offset="100%" stop-color="#8B6121"/>
+    </linearGradient>
+    <linearGradient id="goldDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C9A86A"/>
+      <stop offset="45%" stop-color="#A07830"/>
+      <stop offset="100%" stop-color="#56380E"/>
+    </linearGradient>
+    <linearGradient id="stoneLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#D4D0C9"/>
+      <stop offset="36%" stop-color="#B8B4AC"/>
+      <stop offset="65%" stop-color="#94908A"/>
+      <stop offset="100%" stop-color="#6E6B63"/>
+    </linearGradient>
+    <filter id="iconShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#A07830" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Icon -->
+  <g transform="translate(248 124) scale(1.13)" filter="url(#iconShadow)">
+    <polygon points="0,214 0,117 45,80 45,214" fill="url(#stoneLight)"/>
+    <polygon points="45,80 64,96 64,214 45,214" fill="#8C887D" opacity="0.4"/>
+    <polygon points="112,214 112,24 162,-18 162,214" fill="url(#goldTall)"/>
+    <polygon points="162,-18 184,4 184,214 162,214" fill="url(#goldDark)" opacity="0.88"/>
+    <polygon points="154,214 154,129 201,90 201,214" fill="url(#goldFace)"/>
+    <polygon points="201,90 221,108 221,214 201,214" fill="url(#goldDark)" opacity="0.78"/>
+    <polygon points="238,214 238,73 293,119 293,214" fill="url(#goldFace)"/>
+    <polygon points="293,119 316,137 316,214 293,214" fill="url(#goldDark)" opacity="0.72"/>
+  </g>
+
+  <!-- Divider -->
+  <line x1="687" y1="150" x2="687" y2="370" stroke="rgba(0,0,0,0.12)" stroke-width="2"/>
+
+  <!-- Wordmark -->
+  <text x="790" y="308"
+        font-family="Inter, Montserrat, Avenir Next, Helvetica Neue, Arial, sans-serif"
+        font-size="86" font-weight="600" letter-spacing="26"
+        fill="url(#goldTall)">IMVESTRA</text>
+</svg>

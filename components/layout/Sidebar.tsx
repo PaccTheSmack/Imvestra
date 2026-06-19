@@ -123,7 +123,7 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
 
   return (
     <aside
-      className="w-[240px] h-screen sticky top-0 flex flex-col flex-shrink-0 overflow-hidden"
+      className="w-[272px] h-screen sticky top-0 flex flex-col flex-shrink-0 overflow-hidden"
       style={{
         background: "#FFFFFF",
         borderRight: "1px solid rgba(0,0,0,0.07)",
@@ -131,15 +131,14 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
       }}
     >
       {/* Logo */}
-      <div className="px-5 pt-6 pb-4 flex-shrink-0">
+      <div className="px-4 pt-6 pb-3 flex-shrink-0">
         <Image
-          src="/imvestra-logo-noclaim.svg"
+          src="/imvestra-logo-horizontal.svg"
           alt="Imvestra"
-          width={600}
-          height={444}
+          width={1450}
+          height={340}
           priority
           className="w-full h-auto"
-          style={{ maxHeight: 72 }}
         />
       </div>
 
