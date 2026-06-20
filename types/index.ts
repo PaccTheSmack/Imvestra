@@ -407,3 +407,29 @@ export function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB"
   return (bytes / (1024 * 1024)).toFixed(1) + " MB"
 }
+
+export interface Mahnung {
+  id: string
+  user_id: string
+  tenant_id: string
+  property_id: string
+  rent_payment_id: string | null
+  mahnstufe: 1 | 2 | 3
+  betrag_offen: number
+  mahngebuehr: number
+  verzugszinsen: number
+  gesamtbetrag: number
+  faellig_seit: string
+  mahndatum: string
+  zahlungsfrist: string
+  status: "offen" | "bezahlt" | "storniert" | "in_bearbeitung"
+  versand_methode: "email" | "post" | "beides" | null
+  versandt_am: string | null
+  versandt_an_email: string | null
+  notizen: string | null
+  gesperrt: boolean
+  gesperrt_grund: string | null
+  created_at: string
+  tenants?: { name: string; email: string | null }
+  properties?: { name: string; address: string | null }
+}

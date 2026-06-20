@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { ArrowUpRight } from "@phosphor-icons/react";
+import { ArrowUpRight, Warning } from "@phosphor-icons/react";
 import type { PortfolioSummary } from "@/lib/portfolio-calculations";
 import CountUp from "@/components/ui/CountUp";
 import { generateSmartTasks } from "@/lib/smart-tasks";
@@ -45,6 +45,8 @@ interface DashboardHomeProps {
   monthlyRentSoll?: number;
   monthlyRentIst?: number;
   overdueTasks?: number;
+  overdueCount?: number;
+  overdueTotal?: number;
   userId?: string;
   portfolioSummary?: PortfolioSummary;
 }
@@ -64,6 +66,8 @@ export default function DashboardHome({
   financingAlertCount = 0,
   monthlyRentSoll = 0,
   overdueTasks = 0,
+  overdueCount = 0,
+  overdueTotal = 0,
   userId,
   portfolioSummary,
 }: DashboardHomeProps) {
@@ -96,6 +100,39 @@ export default function DashboardHome({
           Hier ist deine Übersicht für heute.
         </p>
       </div>
+
+      {/* OVERDUE ALERT BANNER */}
+      {overdueCount > 0 && (
+        <div
+          className="flex items-center justify-between mb-5"
+          style={{
+            background: "rgba(185,28,28,0.04)",
+            border: "1px solid rgba(185,28,28,0.12)",
+            borderRadius: 12,
+            padding: "14px 20px",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <Warning size={18} color="#B91C1C" />
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#B91C1C" }}>
+                {overdueCount} Zahlung{overdueCount !== 1 ? "en" : ""} überfällig · {fmtCurrency(overdueTotal)} offen
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => router.push("/mahnwesen")}
+            style={{
+              fontSize: 12, fontWeight: 500, color: "#B91C1C",
+              background: "rgba(185,28,28,0.08)",
+              border: "1px solid rgba(185,28,28,0.15)",
+              padding: "6px 14px", borderRadius: 8,
+            }}
+          >
+            Mahnwesen öffnen →
+          </button>
+        </div>
+      )}
 
       {/* STAT CARDS — grid-cols-4 */}
       <div className="grid grid-cols-4 gap-4 mb-6">

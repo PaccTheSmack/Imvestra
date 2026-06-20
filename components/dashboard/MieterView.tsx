@@ -7,6 +7,7 @@ import {
   UsersFour,
   X,
   DotsThree,
+  Warning,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 import DarkButton from "@/components/ui/DarkButton";
@@ -361,14 +362,27 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                   <div className="flex-1 px-5 py-4 flex items-center justify-between gap-4">
                       {/* Left */}
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold" style={{ color: "#101418" }}>
-                          {tenant.name}
-                          {tenant.unit_number && (
-                            <span className="ml-2 text-[10px] font-normal" style={{ color: "#9CA3AF" }}>
-                              {tenant.unit_number}
-                            </span>
-                          )}
-                        </p>
+                        {(() => {
+                          const hasOverdue = tenant.rent_payments.some((p) => p.status === "late");
+                          return (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-sm font-semibold" style={{ color: "#101418" }}>
+                                {tenant.name}
+                                {tenant.unit_number && (
+                                  <span className="ml-2 text-[10px] font-normal" style={{ color: "#9CA3AF" }}>
+                                    {tenant.unit_number}
+                                  </span>
+                                )}
+                              </p>
+                              {hasOverdue && (
+                                <span style={{ fontSize: 10, fontWeight: 600, color: "#B91C1C", background: "rgba(185,28,28,0.08)", padding: "2px 7px", borderRadius: 99, border: "1px solid rgba(185,28,28,0.15)" }}>
+                                  Zahlung überfällig
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
+
                         <p className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>
                           {propertyName(tenant.property_id)}
                         </p>
@@ -400,6 +414,20 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
 
                       {/* Right */}
                       <div className="flex gap-2 items-center flex-shrink-0">
+                        {tenant.rent_payments.some((p) => p.status === "late") && (
+                          <button
+                            onClick={() => router.push("/mahnwesen")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold transition-all"
+                            style={{
+                              background: "rgba(185,28,28,0.08)",
+                              border: "1px solid rgba(185,28,28,0.15)",
+                              color: "#B91C1C",
+                            }}
+                          >
+                            <Warning size={12} color="#B91C1C" />
+                            Mahnen
+                          </button>
+                        )}
                         <DarkButton
                           variant="secondary"
                           size="sm"
