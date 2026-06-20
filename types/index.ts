@@ -351,3 +351,59 @@ export const PLAN_CONFIG: Record<Plan, PlanConfig> = {
     highlighted: false,
   },
 };
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+
+export type DocumentCategory =
+  | "mietvertrag"
+  | "nebenkostenabrechnung"
+  | "rechnung"
+  | "beleg"
+  | "protokoll"
+  | "foto"
+  | "brief"
+  | "versicherung"
+  | "finanzierung"
+  | "sonstiges"
+
+export interface Document {
+  id: string
+  user_id: string
+  property_id: string | null
+  tenant_id: string | null
+  name: string
+  original_name: string
+  file_path: string
+  file_size: number
+  mime_type: string
+  category: DocumentCategory
+  tags: string[]
+  notes: string | null
+  created_at: string
+  updated_at: string
+  properties?: { name: string } | null
+  tenants?: { name: string } | null
+}
+
+export const DOCUMENT_CATEGORIES: Record<DocumentCategory, {
+  label: string
+  iconName: string
+  color: string
+}> = {
+  mietvertrag:           { label: "Mietvertrag",           iconName: "FileText",     color: "#A07830" },
+  nebenkostenabrechnung: { label: "Nebenkosten",           iconName: "Receipt",      color: "#2D6A2D" },
+  rechnung:              { label: "Rechnung",              iconName: "Invoice",      color: "#B91C1C" },
+  beleg:                 { label: "Beleg",                 iconName: "Receipt",      color: "#92400E" },
+  protokoll:             { label: "Protokoll",             iconName: "ClipboardText",color: "#1D4ED8" },
+  foto:                  { label: "Foto",                  iconName: "Image",        color: "#7C3AED" },
+  brief:                 { label: "Brief",                 iconName: "Envelope",     color: "#6B7280" },
+  versicherung:          { label: "Versicherung",          iconName: "Shield",       color: "#0891B2" },
+  finanzierung:          { label: "Finanzierung",          iconName: "Bank",         color: "#059669" },
+  sonstiges:             { label: "Sonstiges",             iconName: "File",         color: "#9CA3AF" },
+}
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + " B"
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB"
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB"
+}
