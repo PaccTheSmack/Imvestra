@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
+  const origin = request.headers.get("origin") ?? process.env.NEXT_PUBLIC_APP_URL ?? ""
   const { bewerber_id } = await request.json()
 
   // Verify ownership
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (existing && !existing.ausgefuellt_am) {
-    const link = `${process.env.NEXT_PUBLIC_APP_URL}/selbstauskunft/${existing.zugangscode}`
+    const link = `${origin}/selbstauskunft/${existing.zugangscode}`
     return NextResponse.json({ zugangscode: existing.zugangscode, link })
   }
 
@@ -45,6 +46,6 @@ export async function POST(request: NextRequest) {
     .update({ status: "selbstauskunft_angefordert" })
     .eq("id", bewerber_id)
 
-  const link = `${process.env.NEXT_PUBLIC_APP_URL}/selbstauskunft/${auskunft.zugangscode}`
+  const link = `${origin}/selbstauskunft/${auskunft.zugangscode}`
   return NextResponse.json({ zugangscode: auskunft.zugangscode, link })
 }
