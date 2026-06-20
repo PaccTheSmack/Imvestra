@@ -28,6 +28,12 @@ const inputStyle: React.CSSProperties = {
   boxSizing: "border-box",
 }
 
+const inputErrStyle: React.CSSProperties = {
+  ...inputStyle,
+  border: "1.5px solid #B91C1C",
+  background: "rgba(185,28,28,0.03)",
+}
+
 const labelStyle: React.CSSProperties = {
   fontSize: 11, fontWeight: 600, color: "#6B7280",
   display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em",
@@ -38,11 +44,61 @@ const cardStyle: React.CSSProperties = {
   borderRadius: 14, padding: 24, marginBottom: 16,
 }
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+function Field({ label, required, error, children }: { label: string; required?: boolean; error?: boolean; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 14 }}>
-      <label style={labelStyle}>{label}{required && <span style={{ color: "#B91C1C", marginLeft: 3 }}>*</span>}</label>
+      <label style={{ ...labelStyle, color: error ? "#B91C1C" : "#6B7280" }}>
+        {label}{required && <span style={{ color: "#B91C1C", marginLeft: 3 }}>*</span>}
+      </label>
       {children}
+      {error && <p style={{ fontSize: 11, color: "#B91C1C", margin: "4px 0 0" }}>Pflichtfeld</p>}
+    </div>
+  )
+}
+
+const MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"]
+const YEARS = Array.from({ length: 90 }, (_, i) => 2008 - i) // 2008 → 1919
+
+function DatePicker({ value, onChange, hasError }: { value: string; onChange: (v: string) => void; hasError: boolean }) {
+  const parts = value ? value.split("-") : ["", "", ""]
+  const [year, month, day] = parts
+
+  function update(newYear: string, newMonth: string, newDay: string) {
+    if (newYear && newMonth && newDay) {
+      onChange(`${newYear}-${newMonth.padStart(2,"0")}-${newDay.padStart(2,"0")}`)
+    } else {
+      onChange("")
+    }
+  }
+
+  const selectStyle: React.CSSProperties = {
+    flex: 1, padding: "10px 8px", borderRadius: 9, fontSize: 13,
+    border: `${hasError ? "1.5px solid #B91C1C" : "1px solid rgba(0,0,0,0.12)"}`,
+    background: hasError ? "rgba(185,28,28,0.03)" : "white",
+    outline: "none", color: value ? "#101418" : "#9CA3AF", cursor: "pointer",
+    appearance: "none" as React.CSSProperties["appearance"],
+  }
+
+  return (
+    <div style={{ display: "flex", gap: 8 }}>
+      <select style={{ ...selectStyle, flex: "0 0 80px" }} value={day} onChange={e => update(year, month, e.target.value)}>
+        <option value="">Tag</option>
+        {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+          <option key={d} value={String(d).padStart(2,"0")}>{d}</option>
+        ))}
+      </select>
+      <select style={{ ...selectStyle, flex: "0 0 120px" }} value={month} onChange={e => update(year, e.target.value, day)}>
+        <option value="">Monat</option>
+        {MONTHS.map((m, i) => (
+          <option key={i} value={String(i+1).padStart(2,"0")}>{m}</option>
+        ))}
+      </select>
+      <select style={selectStyle} value={year} onChange={e => update(e.target.value, month, day)}>
+        <option value="">Jahr</option>
+        {YEARS.map(y => (
+          <option key={y} value={String(y)}>{y}</option>
+        ))}
+      </select>
     </div>
   )
 }
@@ -53,8 +109,8 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
+  const [attempted, setAttempted] = useState<Set<Section>>(new Set())
 
-  // Form state
   const [form, setForm] = useState({
     vorname: "", nachname: "", geburtsdatum: "", geburtsort: "",
     nationalitaet: "deutsch", ausweis_typ: "personalausweis", ausweis_nr: "",
@@ -76,6 +132,41 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
 
   const set = (key: string, value: unknown) => setForm(p => ({ ...p, [key]: value }))
 
+  function sectionErrors(section: Section): Set<string> {
+    const errs = new Set<string>()
+    if (section === "persoenlich") {
+      if (!form.vorname) errs.add("vorname")
+      if (!form.nachname) errs.add("nachname")
+      if (!form.geburtsdatum) errs.add("geburtsdatum")
+      if (!form.aktuelle_adresse) errs.add("aktuelle_adresse")
+    }
+    if (section === "beruf") {
+      if (!form.beschaeftigungsart) errs.add("beschaeftigungsart")
+      if (!form.nettoeinkommen) errs.add("nettoeinkommen")
+      if (!form.arbeitgeber) errs.add("arbeitgeber")
+    }
+    if (section === "einverstaendnis") {
+      if (!form.einverstaendnis_datenschutz) errs.add("einverstaendnis_datenschutz")
+      if (!form.einverstaendnis_schufa) errs.add("einverstaendnis_schufa")
+      const nameMatch = form.unterschrift_name.toLowerCase().trim() === `${form.vorname} ${form.nachname}`.toLowerCase().trim()
+      if (!form.unterschrift_name || !nameMatch) errs.add("unterschrift_name")
+    }
+    return errs
+  }
+
+  function isErr(field: string) {
+    return attempted.has(activeSection) && sectionErrors(activeSection).has(field)
+  }
+
+  function handleWeiter(next: Section) {
+    const errs = sectionErrors(activeSection)
+    if (errs.size > 0) {
+      setAttempted(prev => { const s = new Set(prev); s.add(activeSection); return s })
+      return
+    }
+    setActiveSection(next)
+  }
+
   const mietquote = form.nettoeinkommen && kaltmiete
     ? kaltmiete / parseFloat(form.nettoeinkommen)
     : null
@@ -84,13 +175,13 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
     ? mietquote <= 0.33 ? "#2D6A2D" : mietquote <= 0.40 ? "#D97706" : "#B91C1C"
     : "#6B7280"
 
-  const canSubmit =
-    form.vorname && form.nachname && form.geburtsdatum &&
-    form.aktuelle_adresse && form.beschaeftigungsart && form.nettoeinkommen &&
-    form.einverstaendnis_datenschutz && form.einverstaendnis_schufa &&
-    form.unterschrift_name.toLowerCase().trim() === `${form.vorname} ${form.nachname}`.toLowerCase().trim()
+  const finalErrors = sectionErrors("einverstaendnis")
+  const canSubmit = finalErrors.size === 0 &&
+    sectionErrors("persoenlich").size === 0 &&
+    sectionErrors("beruf").size === 0
 
   async function handleSubmit() {
+    setAttempted(prev => { const s = new Set(prev); s.add("einverstaendnis"); return s })
     if (!canSubmit) return
     setSubmitting(true)
     setError("")
@@ -104,10 +195,13 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
           einverstaendnis_datum: new Date().toISOString(),
         }),
       })
-      if (!res.ok) throw new Error("Fehler beim Übermitteln")
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error ?? "Fehler beim Übermitteln")
+      }
       setSubmitted(true)
-    } catch {
-      setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.")
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Ein Fehler ist aufgetreten.")
     } finally {
       setSubmitting(false)
     }
@@ -194,15 +288,17 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
               <div style={cardStyle}>
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: "#101418", marginBottom: 16, marginTop: 0 }}>Persönliche Daten</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <Field label="Vorname" required>
-                    <input style={inputStyle} value={form.vorname} onChange={e => set("vorname", e.target.value)} placeholder="Max" />
+                  <Field label="Vorname" required error={isErr("vorname")}>
+                    <input style={isErr("vorname") ? inputErrStyle : inputStyle} value={form.vorname} onChange={e => set("vorname", e.target.value)} placeholder="Max" />
                   </Field>
-                  <Field label="Nachname" required>
-                    <input style={inputStyle} value={form.nachname} onChange={e => set("nachname", e.target.value)} placeholder="Mustermann" />
+                  <Field label="Nachname" required error={isErr("nachname")}>
+                    <input style={isErr("nachname") ? inputErrStyle : inputStyle} value={form.nachname} onChange={e => set("nachname", e.target.value)} placeholder="Mustermann" />
                   </Field>
-                  <Field label="Geburtsdatum" required>
-                    <input type="date" style={inputStyle} value={form.geburtsdatum} onChange={e => set("geburtsdatum", e.target.value)} />
-                  </Field>
+                </div>
+                <Field label="Geburtsdatum" required error={isErr("geburtsdatum")}>
+                  <DatePicker value={form.geburtsdatum} onChange={v => set("geburtsdatum", v)} hasError={isErr("geburtsdatum")} />
+                </Field>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <Field label="Geburtsort">
                     <input style={inputStyle} value={form.geburtsort} onChange={e => set("geburtsort", e.target.value)} placeholder="Berlin" />
                   </Field>
@@ -220,8 +316,8 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                     <input style={inputStyle} value={form.ausweis_nr} onChange={e => set("ausweis_nr", e.target.value)} placeholder="L01X00T471" />
                   </Field>
                 </div>
-                <Field label="Aktuelle Adresse" required>
-                  <textarea style={{ ...inputStyle, resize: "vertical", minHeight: 60 }} value={form.aktuelle_adresse} onChange={e => set("aktuelle_adresse", e.target.value)} placeholder="Musterstraße 1, 12345 Berlin" />
+                <Field label="Aktuelle Adresse" required error={isErr("aktuelle_adresse")}>
+                  <textarea style={{ ...(isErr("aktuelle_adresse") ? inputErrStyle : inputStyle), resize: "vertical", minHeight: 60 }} value={form.aktuelle_adresse} onChange={e => set("aktuelle_adresse", e.target.value)} placeholder="Musterstraße 1, 12345 Berlin" />
                 </Field>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <Field label="Wohnhaft seit">
@@ -232,7 +328,10 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                   <textarea style={{ ...inputStyle, resize: "vertical", minHeight: 60 }} value={form.kuendigungsgrund} onChange={e => set("kuendigungsgrund", e.target.value)} placeholder="Warum verlassen Sie Ihre aktuelle Wohnung?" />
                 </Field>
               </div>
-              <button onClick={() => setActiveSection("beruf")} style={{ width: "100%", padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              <button
+                onClick={() => handleWeiter("beruf")}
+                style={{ width: "100%", padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+              >
                 Weiter →
               </button>
             </motion.div>
@@ -242,7 +341,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
             <motion.div key="beruf" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <div style={cardStyle}>
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: "#101418", marginBottom: 16, marginTop: 0 }}>Beruf & Einkommen</h3>
-                <Field label="Beschäftigungsart" required>
+                <Field label="Beschäftigungsart" required error={isErr("beschaeftigungsart")}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                     {[
                       { val: "angestellt", label: "Angestellt" },
@@ -256,8 +355,10 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                         key={opt.val}
                         onClick={() => set("beschaeftigungsart", opt.val)}
                         style={{
-                          padding: "10px 8px", border: `1.5px solid ${form.beschaeftigungsart === opt.val ? "#A07830" : "rgba(0,0,0,0.1)"}`,
-                          borderRadius: 9, background: form.beschaeftigungsart === opt.val ? "rgba(160,120,48,0.08)" : "white",
+                          padding: "10px 8px",
+                          border: `1.5px solid ${form.beschaeftigungsart === opt.val ? "#A07830" : isErr("beschaeftigungsart") ? "rgba(185,28,28,0.4)" : "rgba(0,0,0,0.1)"}`,
+                          borderRadius: 9,
+                          background: form.beschaeftigungsart === opt.val ? "rgba(160,120,48,0.08)" : isErr("beschaeftigungsart") ? "rgba(185,28,28,0.02)" : "white",
                           fontSize: 12, fontWeight: form.beschaeftigungsart === opt.val ? 600 : 400,
                           color: form.beschaeftigungsart === opt.val ? "#A07830" : "#6B7280",
                           cursor: "pointer", transition: "all 0.12s",
@@ -267,10 +368,11 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                       </button>
                     ))}
                   </div>
+                  {isErr("beschaeftigungsart") && <p style={{ fontSize: 11, color: "#B91C1C", margin: "6px 0 0" }}>Bitte Beschäftigungsart auswählen</p>}
                 </Field>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <Field label="Arbeitgeber" required>
-                    <input style={inputStyle} value={form.arbeitgeber} onChange={e => set("arbeitgeber", e.target.value)} placeholder="Firma GmbH" />
+                  <Field label="Arbeitgeber" required error={isErr("arbeitgeber")}>
+                    <input style={isErr("arbeitgeber") ? inputErrStyle : inputStyle} value={form.arbeitgeber} onChange={e => set("arbeitgeber", e.target.value)} placeholder="Firma GmbH" />
                   </Field>
                   <Field label="Beschäftigt seit">
                     <input type="month" style={inputStyle} value={form.beschaeftigt_seit} onChange={e => set("beschaeftigt_seit", e.target.value)} />
@@ -278,8 +380,8 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                   <Field label="Beruf / Position">
                     <input style={inputStyle} value={form.beruf} onChange={e => set("beruf", e.target.value)} placeholder="Softwareentwickler" />
                   </Field>
-                  <Field label="Nettoeinkommen (€/Monat)" required>
-                    <input type="number" style={inputStyle} value={form.nettoeinkommen} onChange={e => set("nettoeinkommen", e.target.value)} placeholder="2500" />
+                  <Field label="Nettoeinkommen (€/Monat)" required error={isErr("nettoeinkommen")}>
+                    <input type="number" style={isErr("nettoeinkommen") ? inputErrStyle : inputStyle} value={form.nettoeinkommen} onChange={e => set("nettoeinkommen", e.target.value)} placeholder="2500" />
                   </Field>
                 </div>
 
@@ -317,7 +419,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => setActiveSection("persoenlich")} style={{ flex: 1, padding: "12px 0", background: "white", color: "#6B7280", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, fontSize: 14, cursor: "pointer" }}>← Zurück</button>
-                <button onClick={() => setActiveSection("haushalt")} style={{ flex: 2, padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Weiter →</button>
+                <button onClick={() => handleWeiter("haushalt")} style={{ flex: 2, padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Weiter →</button>
               </div>
             </motion.div>
           )}
@@ -369,7 +471,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => setActiveSection("beruf")} style={{ flex: 1, padding: "12px 0", background: "white", color: "#6B7280", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, fontSize: 14, cursor: "pointer" }}>← Zurück</button>
-                <button onClick={() => setActiveSection("finanzen")} style={{ flex: 2, padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Weiter →</button>
+                <button onClick={() => handleWeiter("finanzen")} style={{ flex: 2, padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Weiter →</button>
               </div>
             </motion.div>
           )}
@@ -432,7 +534,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => setActiveSection("haushalt")} style={{ flex: 1, padding: "12px 0", background: "white", color: "#6B7280", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, fontSize: 14, cursor: "pointer" }}>← Zurück</button>
-                <button onClick={() => setActiveSection("einverstaendnis")} style={{ flex: 2, padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Weiter →</button>
+                <button onClick={() => handleWeiter("einverstaendnis")} style={{ flex: 2, padding: "12px 0", background: "#A07830", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Weiter →</button>
               </div>
             </motion.div>
           )}
@@ -456,13 +558,18 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                     onClick={() => set(item.key, !form[item.key as keyof typeof form])}
                     style={{
                       display: "flex", gap: 12, padding: "14px 16px", borderRadius: 10, cursor: "pointer",
-                      border: `1.5px solid ${form[item.key as keyof typeof form] ? "#A07830" : "rgba(0,0,0,0.1)"}`,
-                      background: form[item.key as keyof typeof form] ? "rgba(160,120,48,0.04)" : "white",
+                      border: `1.5px solid ${
+                        form[item.key as keyof typeof form] ? "#A07830"
+                        : isErr(item.key) ? "#B91C1C"
+                        : "rgba(0,0,0,0.1)"
+                      }`,
+                      background: form[item.key as keyof typeof form] ? "rgba(160,120,48,0.04)" : isErr(item.key) ? "rgba(185,28,28,0.03)" : "white",
                       marginBottom: 10, transition: "all 0.12s",
                     }}
                   >
                     <div style={{
-                      width: 18, height: 18, borderRadius: 5, border: `2px solid ${form[item.key as keyof typeof form] ? "#A07830" : "rgba(0,0,0,0.2)"}`,
+                      width: 18, height: 18, borderRadius: 5,
+                      border: `2px solid ${form[item.key as keyof typeof form] ? "#A07830" : isErr(item.key) ? "#B91C1C" : "rgba(0,0,0,0.2)"}`,
                       background: form[item.key as keyof typeof form] ? "#A07830" : "white",
                       display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1,
                       transition: "all 0.12s",
@@ -472,25 +579,30 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                     <p style={{ fontSize: 12, color: "#374151", margin: 0, lineHeight: 1.6 }}>{item.text}</p>
                   </div>
                 ))}
+                {(isErr("einverstaendnis_datenschutz") || isErr("einverstaendnis_schufa")) && (
+                  <p style={{ fontSize: 11, color: "#B91C1C", margin: "0 0 12px" }}>Bitte beide Einverständnisse bestätigen</p>
+                )}
 
                 <div style={{ marginTop: 20 }}>
                   <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
                     <p style={{ fontSize: 11, color: "#6B7280", margin: "0 0 4px" }}>Datum</p>
                     <p style={{ fontSize: 13, fontWeight: 500, color: "#374151", margin: 0 }}>{new Date().toLocaleDateString("de-DE")}</p>
                   </div>
-                  <Field label="Unterschrift (Vollständigen Namen eingeben)">
+                  <Field label="Unterschrift (Vollständigen Namen eingeben)" required error={isErr("unterschrift_name")}>
                     <div style={{ position: "relative" }}>
                       <User size={14} color="#9CA3AF" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }} />
                       <input
-                        style={{ ...inputStyle, paddingLeft: 30 }}
+                        style={{ ...(isErr("unterschrift_name") ? inputErrStyle : inputStyle), paddingLeft: 30 }}
                         value={form.unterschrift_name}
                         onChange={e => set("unterschrift_name", e.target.value)}
-                        placeholder={`${form.vorname} ${form.nachname}`}
+                        placeholder={form.vorname && form.nachname ? `${form.vorname} ${form.nachname}` : "Vor- und Nachname"}
                       />
                     </div>
                     {form.unterschrift_name && form.vorname && form.nachname &&
                       form.unterschrift_name.toLowerCase().trim() !== `${form.vorname} ${form.nachname}`.toLowerCase().trim() && (
-                        <p style={{ fontSize: 11, color: "#B91C1C", marginTop: 4 }}>Name stimmt nicht überein</p>
+                        <p style={{ fontSize: 11, color: "#B91C1C", marginTop: 4 }}>
+                          Name muss exakt lauten: {form.vorname} {form.nachname}
+                        </p>
                       )}
                   </Field>
                 </div>
@@ -506,12 +618,13 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                 <button onClick={() => setActiveSection("finanzen")} style={{ flex: 1, padding: "12px 0", background: "white", color: "#6B7280", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, fontSize: 14, cursor: "pointer" }}>← Zurück</button>
                 <button
                   onClick={handleSubmit}
-                  disabled={!canSubmit || submitting}
+                  disabled={submitting}
                   style={{
                     flex: 2, padding: "12px 0", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600,
-                    cursor: canSubmit && !submitting ? "pointer" : "not-allowed",
-                    background: canSubmit ? "#A07830" : "rgba(0,0,0,0.08)",
-                    color: canSubmit ? "white" : "#9CA3AF",
+                    cursor: submitting ? "not-allowed" : "pointer",
+                    background: "#A07830",
+                    color: "white",
+                    opacity: submitting ? 0.7 : 1,
                     transition: "all 0.15s",
                   }}
                 >
