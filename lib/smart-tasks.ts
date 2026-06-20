@@ -269,6 +269,46 @@ export async function generateSmartTasks(
     }
   }
 
+  // 7. Einzugsprotokoll fehlt für neue Mieter
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0]
+
+  const { data: newTenants } = await supabase
+    .from("tenants")
+    .select("id, name, move_in_date")
+    .eq("user_id", userId)
+    .eq("is_active", true)
+    .gte("move_in_date", sevenDaysAgoStr)
+    .lte("move_in_date", today)
+
+  const { data: einzugProtokolle } = await supabase
+    .from("uebergabeprotokolle")
+    .select("tenant_id")
+    .eq("user_id", userId)
+    .eq("typ", "einzug")
+
+  for (const tenant of newTenants ?? []) {
+    const hasProtokoll = einzugProtokolle?.some(p => p.tenant_id === tenant.id)
+    if (!hasProtokoll) {
+      if (!isDuplicateByField("generic", "tenant_id", tenant.id)) {
+        tasksToCreate.push({
+          user_id: userId,
+          property_id: null,
+          title: `Einzugsprotokoll erstellen — ${tenant.name}`,
+          description: `Neuer Mieter seit ${new Date(tenant.move_in_date).toLocaleDateString("de-DE")}. Übergabeprotokoll für den Einzug erstellen.`,
+          priority: "high",
+          category: "tenant",
+          due_date: today,
+          completed: false,
+          source_type: "auto",
+          action_type: "generic",
+          action_payload: { redirect: "/uebergabe", tenant_id: tenant.id },
+        })
+      }
+    }
+  }
+
   if (tasksToCreate.length > 0) {
     await supabase.from("tasks").insert(tasksToCreate)
   }
