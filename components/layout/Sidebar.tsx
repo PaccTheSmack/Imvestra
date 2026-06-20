@@ -137,7 +137,7 @@ function NavLink({
         <Link
           href={href}
           className="block"
-          onClick={hasChildren ? (e) => { e.preventDefault(); onToggle(); } : undefined}
+          onClick={hasChildren ? () => onToggle() : undefined}
         >
           <motion.div
             className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer"
