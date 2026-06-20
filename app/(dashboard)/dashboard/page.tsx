@@ -6,6 +6,7 @@ import { calculatePortfolioSummary } from "@/lib/portfolio-calculations";
 import DashboardHome from "@/components/dashboard/DashboardHome";
 import UpgradeSuccess from "@/components/dashboard/UpgradeSuccess";
 import type { Property, Financing } from "@/types";
+import { generateSmartTasks } from "@/lib/smart-tasks";
 
 function daysUntil(d: string) {
   return Math.ceil((new Date(d).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -41,6 +42,8 @@ export default async function DashboardPage() {
   if (profile?.onboarding_completed === false) {
     redirect("/onboarding");
   }
+
+  await generateSmartTasks(supabase, user!.id)
 
   const firstName = (profile?.name ?? user?.email ?? "").split(" ")[0];
   const isFreePlan = !profile?.plan || profile.plan === "free";
@@ -96,7 +99,6 @@ export default async function DashboardPage() {
         monthlyRentSoll={monthlyRentSoll}
         monthlyRentIst={monthlyRentIst}
         overdueTasks={overdueTasks}
-        userId={user!.id}
         portfolioSummary={portfolioSummary}
       />
       <Suspense fallback={null}>

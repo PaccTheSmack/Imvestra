@@ -145,6 +145,9 @@ export interface Tenant {
   notes?: string;
   is_active: boolean;
   created_at: string;
+  nk_vorauszahlung?: number | null;
+  wohnflaeche?: number | null;
+  einwohnerzahl?: number | null;
 }
 
 export interface Task {
@@ -160,6 +163,8 @@ export interface Task {
   source_type?: string;
   source_id?: string;
   auto_generated?: boolean;
+  action_type?: string | null;
+  action_payload?: Record<string, unknown>;
   created_at: string;
 }
 

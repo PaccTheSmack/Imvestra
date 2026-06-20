@@ -64,6 +64,9 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
     rent_monthly: "",
     deposit: "",
     notes: "",
+    nk_vorauszahlung: 0,
+    wohnflaeche: null as number | null,
+    einwohnerzahl: 1,
   });
 
   // Payment form state
@@ -134,6 +137,9 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
       deposit: parseFloat(tenantForm.deposit) || 0,
       notes: tenantForm.notes || null,
       is_active: true,
+      nk_vorauszahlung: tenantForm.nk_vorauszahlung || 0,
+      wohnflaeche: tenantForm.wohnflaeche ?? null,
+      einwohnerzahl: tenantForm.einwohnerzahl || 1,
     }).select().single();
 
     if (error) {
@@ -156,7 +162,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
 
     setSaving(false);
     setShowAddTenant(false);
-    setTenantForm({ property_id: properties[0]?.id ?? "", name: "", unit_number: "", email: "", phone: "", move_in_date: "", rent_monthly: "", deposit: "", notes: "" });
+    setTenantForm({ property_id: properties[0]?.id ?? "", name: "", unit_number: "", email: "", phone: "", move_in_date: "", rent_monthly: "", deposit: "", notes: "", nk_vorauszahlung: 0, wohnflaeche: null, einwohnerzahl: 1 });
     router.refresh();
   }
 
@@ -400,6 +406,11 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                           <p className="text-sm font-semibold" style={{ color: "#101418" }}>
                             {fmtCurrency(tenant.rent_monthly)}/Mo
                           </p>
+                          {tenant.nk_vorauszahlung != null && tenant.nk_vorauszahlung > 0 && (
+                            <p style={{ fontSize: 11, color: "#9CA3AF" }}>
+                              NK-Vorauszahlung: <strong style={{ color: "#101418" }}>{tenant.nk_vorauszahlung}€/Mo</strong>
+                            </p>
+                          )}
                         </div>
                         <span
                           className="text-[10px] font-semibold px-2 py-1 rounded-full"
@@ -428,6 +439,12 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                             Mahnen
                           </button>
                         )}
+                        <button
+                          onClick={() => window.location.href = "/nebenkostenabrechnung"}
+                          style={{ fontSize: 11, fontWeight: 500, color: "#A07830", padding: "5px 10px", borderRadius: 7, border: "1px solid rgba(160,120,48,0.2)", background: "rgba(160,120,48,0.05)" }}
+                        >
+                          NKA erstellen
+                        </button>
                         <DarkButton
                           variant="secondary"
                           size="sm"
@@ -602,6 +619,47 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                     value={tenantForm.deposit}
                     onChange={(e) => setTenantForm((f) => ({ ...f, deposit: e.target.value }))}
                   />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {/* NK-Vorauszahlung */}
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6 }}>
+                      NK-Vorauszahlung (€/Mo)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={tenantForm.nk_vorauszahlung ?? ""}
+                      onChange={e => setTenantForm(f => ({ ...f, nk_vorauszahlung: parseFloat(e.target.value) || 0 }))}
+                      style={{ width: "100%", padding: "9px 12px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.12)", fontSize: 13 }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6 }}>
+                      Wohnfläche (m²)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={tenantForm.wohnflaeche ?? ""}
+                      onChange={e => setTenantForm(f => ({ ...f, wohnflaeche: parseFloat(e.target.value) || null }))}
+                      style={{ width: "100%", padding: "9px 12px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.12)", fontSize: 13 }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6 }}>
+                      Personenzahl
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={tenantForm.einwohnerzahl ?? 1}
+                      onChange={e => setTenantForm(f => ({ ...f, einwohnerzahl: parseInt(e.target.value) || 1 }))}
+                      style={{ width: "100%", padding: "9px 12px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.12)", fontSize: 13 }}
+                    />
+                  </div>
                 </div>
                 <DarkInput
                   label="Notizen"

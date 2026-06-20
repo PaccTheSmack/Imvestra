@@ -16,6 +16,7 @@ import {
   Trash,
   X,
   Sparkle,
+  Warning,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
@@ -24,12 +25,18 @@ import DarkInput from "@/components/ui/DarkInput";
 import DarkSelect from "@/components/ui/DarkSelect";
 import FadeIn from "@/components/ui/FadeIn";
 import type { Task } from "@/types";
+import TaskActionCard from "@/components/dashboard/TaskActionCard";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type TaskWithProperty = Task & { properties?: { id: string; name: string } | null };
+type TaskWithProperty = Task & {
+  properties?: { id: string; name: string } | null;
+  action_type?: string | null;
+  action_payload?: Record<string, unknown>;
+  source_type?: string;
+};
 
 interface AufgabenViewProps {
   tasks: TaskWithProperty[];
@@ -375,6 +382,32 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
           )}
         </div>
       )}
+
+      {/* ── Action tasks ────────────────────────────────────────────────── */}
+      {(() => {
+        const actionTasks = localTasks.filter(t => t.action_type && t.action_type !== "generic")
+        if (actionTasks.length === 0) return null
+        return (
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3" style={{ background: "rgba(185,28,28,0.04)", border: "1px solid rgba(185,28,28,0.1)", borderRadius: 10, padding: "10px 14px" }}>
+              <Warning size={15} color="#B91C1C" />
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#B91C1C" }}>
+                {actionTasks.length} Aktion{actionTasks.length !== 1 ? "en" : ""} erforderlich
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              {actionTasks.map(task => (
+                <TaskActionCard
+                  key={task.id}
+                  task={task as Parameters<typeof TaskActionCard>[0]["task"]}
+                  onComplete={(id) => setLocalTasks(prev => prev.filter(t => t.id !== id))}
+                  onDismiss={(id) => setLocalTasks(prev => prev.filter(t => t.id !== id))}
+                />
+              ))}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── Task list (grouped) ─────────────────────────────────────────── */}
       <div>

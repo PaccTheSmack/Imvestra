@@ -1,181 +1,222 @@
-import { createClient } from "@/lib/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js"
 
-interface SmartTaskRule {
-  source_type: string;
-  source_id: string;
-  title: string;
-  description: string;
-  priority: "low" | "medium" | "high";
-  category: string;
-  due_date?: string;
-  property_id?: string;
-}
-
-export async function generateSmartTasks(userId: string): Promise<{ created: number }> {
-  const supabase = createClient();
+export async function generateSmartTasks(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<void> {
+  const today = new Date().toISOString().split("T")[0]
 
   const [
+    { data: payments },
+    { data: mahnungen },
+    { data: transactions },
     { data: financings },
-    { data: tenants },
-    { data: properties },
-    { data: existingAuto },
+    { data: existingTasks },
   ] = await Promise.all([
-    supabase.from("financings").select("*, properties(id, name)").eq("user_id", userId),
-    supabase.from("tenants").select("*").eq("user_id", userId).eq("is_active", true),
-    supabase.from("properties").select("*").eq("user_id", userId),
-    supabase.from("tasks")
-      .select("source_type, source_id")
+    supabase
+      .from("rent_payments")
+      .select("*, tenants(name), properties(name)")
       .eq("user_id", userId)
-      .eq("auto_generated", true)
-      .eq("completed", false),
-  ]);
+      .eq("status", "pending")
+      .lt("due_date", today),
+    supabase
+      .from("mahnungen")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "offen"),
+    supabase
+      .from("bank_transactions")
+      .select("*, tenants(name)")
+      .eq("user_id", userId)
+      .eq("match_status", "suggested"),
+    supabase
+      .from("financings")
+      .select("*, properties(name)")
+      .eq("user_id", userId),
+    supabase
+      .from("tasks")
+      .select("action_type, action_payload")
+      .eq("user_id", userId)
+      .eq("completed", false)
+      .eq("source_type", "auto"),
+  ])
 
-  const existing = new Set(
-    existingAuto?.map((t) => `${t.source_type}:${t.source_id}`) ?? []
-  );
+  const tasksToCreate: Record<string, unknown>[] = []
 
-  const rules: SmartTaskRule[] = [];
-  const today = new Date();
-
-  // ── Finanzierungen ─────────────────────────────────────────────────────────
-  financings?.forEach((f) => {
-    if (!f.fixed_until) return;
-    const expiry  = new Date(f.fixed_until);
-    const daysLeft = Math.ceil((expiry.getTime() - today.getTime()) / 86400000);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const propName = (f as any).properties?.name ?? "Objekt";
-
-    if (daysLeft < 0) {
-      rules.push({
-        source_type: "financing_expired",
-        source_id: f.id,
-        title: `Zinsbindung abgelaufen – ${propName}`,
-        description: `Die Zinsbindung für ${propName} ist seit ${Math.abs(daysLeft)} Tagen abgelaufen. Sofort Anschlussfinanzierung klären.`,
-        priority: "high",
-        category: "financial",
-        property_id: f.property_id,
-      });
-    } else if (daysLeft <= 180) {
-      rules.push({
-        source_type: "financing_critical",
-        source_id: f.id,
-        title: `Zinsbindung läuft bald aus – ${propName}`,
-        description: `Noch ${daysLeft} Tage bis zur Zinsbindung. Jetzt Angebote einholen.`,
-        priority: "high",
-        category: "financial",
-        due_date: f.fixed_until,
-        property_id: f.property_id,
-      });
-    } else if (daysLeft <= 365) {
-      rules.push({
-        source_type: "financing_warning",
-        source_id: f.id,
-        title: `Anschlussfinanzierung vorbereiten – ${propName}`,
-        description: `Zinsbindung läuft in ${Math.ceil(daysLeft / 30)} Monaten aus. Jetzt Vergleiche starten.`,
-        priority: "medium",
-        category: "financial",
-        due_date: new Date(expiry.getTime() - 90 * 86400000).toISOString().split("T")[0],
-        property_id: f.property_id,
-      });
-    }
-  });
-
-  // ── Mieter ─────────────────────────────────────────────────────────────────
-  tenants?.forEach((t) => {
-    const moveIn      = new Date(t.move_in_date);
-    const monthsRented = Math.floor((today.getTime() - moveIn.getTime()) / (86400000 * 30));
-
-    if (monthsRented > 0 && monthsRented % 12 >= 11) {
-      const year = moveIn.getFullYear() + Math.floor(monthsRented / 12);
-      rules.push({
-        source_type: "nka_due",
-        source_id: `${t.id}_${year}`,
-        title: `Nebenkostenabrechnung ${year} – ${t.name}`,
-        description: `Jährliche Nebenkostenabrechnung für Mieter ${t.name} erstellen.`,
-        priority: "medium",
-        category: "tenant",
-        due_date: new Date(year + 1, 0, 31).toISOString().split("T")[0],
-        property_id: t.property_id,
-      });
-    }
-
-    if (monthsRented > 0 && monthsRented % 24 >= 22) {
-      rules.push({
-        source_type: "rent_adjustment",
-        source_id: `${t.id}_adj_${Math.floor(monthsRented / 24)}`,
-        title: `Mietanpassung prüfen – ${t.name}`,
-        description: `${t.name} wohnt seit über ${Math.floor(monthsRented / 12)} Jahren. Mieterhöhung gemäß Mietspiegel prüfen.`,
-        priority: "low",
-        category: "tenant",
-        property_id: t.property_id,
-      });
-    }
-  });
-
-  // ── Objekte ────────────────────────────────────────────────────────────────
-  properties?.forEach((p) => {
-    const hasActiveTenant = tenants?.some((t) => t.property_id === p.id);
-    if (!hasActiveTenant) {
-      rules.push({
-        source_type: "no_tenant",
-        source_id: p.id,
-        title: `Objekt nicht vermietet – ${p.name}`,
-        description: `${p.name} hat keinen aktiven Mieter. Leerstand kostet Rendite.`,
-        priority: "medium",
-        category: "general",
-        property_id: p.id,
-      });
-    }
-  });
-
-  // ── System / Wiederkehrend ─────────────────────────────────────────────────
-  const cm = today.getMonth() + 1;
-  const cy = today.getFullYear();
-
-  if (cm >= 1 && cm <= 3) {
-    rules.push({
-      source_type: "tax_return",
-      source_id: `tax_${cy}`,
-      title: `Steuererklärung ${cy} vorbereiten`,
-      description: `Anlage V (Einkünfte aus Vermietung) für ${cy} beim Steuerberater einreichen.`,
-      priority: "medium",
-      category: "financial",
-      due_date: `${cy}-07-31`,
-    });
+  function isDuplicate(type: string, id: string): boolean {
+    return existingTasks?.some(
+      (t) =>
+        t.action_type === type &&
+        (t.action_payload as Record<string, unknown>)?.payment_id === id
+    ) ?? false
   }
 
-  if (cm === 12 || cm === 1) {
-    rules.push({
-      source_type: "nka_annual",
-      source_id: `nka_${cy}`,
-      title: `Nebenkostenabrechnung ${cy} erstellen`,
-      description: `Jährliche Nebenkostenabrechnung für alle Objekte bis 31. März erstellen.`,
-      priority: "medium",
-      category: "tenant",
-      due_date: `${cy + (cm === 12 ? 1 : 0)}-03-31`,
-    });
+  function isDuplicateByField(type: string, field: string, value: string): boolean {
+    return existingTasks?.some(
+      (t) =>
+        t.action_type === type &&
+        (t.action_payload as Record<string, unknown>)?.[field] === value
+    ) ?? false
   }
 
-  // ── Insert ─────────────────────────────────────────────────────────────────
-  const toInsert = rules.filter((r) => !existing.has(`${r.source_type}:${r.source_id}`));
-  if (toInsert.length === 0) return { created: 0 };
+  // 1. Unbestätigte Bankzahlungen
+  for (const tx of transactions ?? []) {
+    if (!isDuplicateByField("confirm_payment", "transaction_id", tx.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Zahlung prüfen — ${(tx.tenants as { name: string } | null)?.name ?? "Unbekannt"}`,
+        description: `${tx.betrag}€ eingegangen am ${new Date(tx.transaction_date).toLocaleDateString("de-DE")}. Bitte Zuordnung prüfen und bestätigen.`,
+        priority: "medium",
+        category: "financial",
+        due_date: today,
+        completed: false,
+        source_type: "auto",
+        action_type: "confirm_payment",
+        action_payload: {
+          transaction_id: tx.id,
+          suggested_tenant_id: tx.suggested_tenant_id,
+          betrag: tx.betrag,
+          confidence: tx.match_confidence ?? 0,
+        },
+      })
+    }
+  }
 
-  const { error } = await supabase.from("tasks").insert(
-    toInsert.map((r) => ({
-      user_id:        userId,
-      title:          r.title,
-      description:    r.description,
-      priority:       r.priority,
-      category:       r.category,
-      due_date:       r.due_date ?? null,
-      property_id:    r.property_id ?? null,
-      source_type:    r.source_type,
-      source_id:      r.source_id,
-      auto_generated: true,
-      completed:      false,
-    }))
-  );
+  // 2. Überfällige Zahlungen → Mahnung empfohlen
+  for (const payment of payments ?? []) {
+    const tage = Math.floor(
+      (new Date().getTime() - new Date(payment.due_date).getTime()) / (1000 * 60 * 60 * 24)
+    )
+    const hasMahnung = mahnungen?.some((m) => m.rent_payment_id === payment.id)
+    const tenantName = (payment.tenants as { name: string } | null)?.name ?? "Unbekannt"
 
-  if (error) console.error("Smart tasks error:", error);
-  return { created: toInsert.length };
+    if (tage >= 3 && !hasMahnung) {
+      if (!isDuplicate("create_mahnung", payment.id)) {
+        tasksToCreate.push({
+          user_id: userId,
+          property_id: payment.property_id,
+          title: `Mahnung empfohlen — ${tenantName}`,
+          description: `Miete ${payment.amount}€ ist seit ${tage} Tagen überfällig. Mahnung mit einem Klick erstellen.`,
+          priority: tage > 14 ? "high" : "medium",
+          category: "financial",
+          due_date: today,
+          completed: false,
+          source_type: "auto",
+          action_type: "create_mahnung",
+          action_payload: {
+            payment_id: payment.id,
+            tenant_id: payment.tenant_id,
+            betrag: payment.amount,
+            tage_ueberfaellig: tage,
+          },
+        })
+      }
+    }
+  }
+
+  // 3. Mahnung Eskalation
+  for (const mahnung of mahnungen ?? []) {
+    if (mahnung.zahlungsfrist < today && mahnung.mahnstufe < 3) {
+      if (!isDuplicateByField("create_mahnung", "existing_mahnung_id", mahnung.id)) {
+        tasksToCreate.push({
+          user_id: userId,
+          title: `${mahnung.mahnstufe + 1}. Mahnung empfohlen`,
+          description: `Zahlungsfrist der ${mahnung.mahnstufe}. Mahnung ist abgelaufen. Nächste Mahnstufe empfohlen.`,
+          priority: "high",
+          category: "financial",
+          due_date: today,
+          completed: false,
+          source_type: "auto",
+          action_type: "create_mahnung",
+          action_payload: {
+            existing_mahnung_id: mahnung.id,
+            new_mahnstufe: mahnung.mahnstufe + 1,
+            tenant_id: mahnung.tenant_id,
+          },
+        })
+      }
+    }
+  }
+
+  // 4. Zinsbindung
+  for (const fin of financings ?? []) {
+    if (!fin.fixed_until) continue
+    const daysUntil = Math.floor(
+      (new Date(fin.fixed_until).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+    )
+    if (daysUntil <= 180 && daysUntil > 0) {
+      if (!isDuplicateByField("check_zinsbindung", "financing_id", fin.id)) {
+        tasksToCreate.push({
+          user_id: userId,
+          property_id: fin.property_id,
+          title: `Zinsbindung läuft ab — ${(fin.properties as { name: string } | null)?.name ?? "Objekt"}`,
+          description: `Zinsbindung endet am ${new Date(fin.fixed_until).toLocaleDateString("de-DE")}. Anschlussfinanzierung prüfen.`,
+          priority: daysUntil <= 90 ? "high" : "medium",
+          category: "financial",
+          due_date: fin.fixed_until,
+          completed: false,
+          source_type: "auto",
+          action_type: "check_zinsbindung",
+          action_payload: { financing_id: fin.id },
+        })
+      }
+    }
+  }
+
+  // 5. NKA Frist (ab September)
+  const currentMonth = new Date().getMonth() + 1
+  if (currentMonth >= 9) {
+    const letzteJahr = new Date().getFullYear() - 1
+    const { data: nkaProps } = await supabase
+      .from("properties")
+      .select("id, name")
+      .eq("user_id", userId)
+
+    const { data: vorhandeneNka } = await supabase
+      .from("nka_abrechnungen")
+      .select("property_id, abrechnungsjahr, status")
+      .eq("user_id", userId)
+      .eq("abrechnungsjahr", letzteJahr)
+
+    for (const prop of nkaProps ?? []) {
+      const nka = vorhandeneNka?.find(n => n.property_id === prop.id)
+      if (!nka) {
+        if (!isDuplicateByField("generic", "property_id", prop.id)) {
+          tasksToCreate.push({
+            user_id: userId,
+            property_id: prop.id,
+            title: `NKA ${letzteJahr} erstellen — ${prop.name}`,
+            description: `Nebenkostenabrechnung ${letzteJahr} noch ausstehend. Frist: 31.12.${new Date().getFullYear()} (§556 BGB).`,
+            priority: currentMonth >= 11 ? "high" : "medium",
+            category: "financial",
+            due_date: `${new Date().getFullYear()}-12-31`,
+            completed: false,
+            source_type: "auto",
+            action_type: "generic",
+            action_payload: { property_id: prop.id, redirect: "/nebenkostenabrechnung" },
+          })
+        }
+      } else if (nka.status === "entwurf") {
+        if (!isDuplicateByField("generic", "property_id", prop.id)) {
+          tasksToCreate.push({
+            user_id: userId,
+            property_id: prop.id,
+            title: `NKA ${letzteJahr} finalisieren — ${prop.name}`,
+            description: `Entwurf vorhanden. Bitte finalisieren und an Mieter versenden.`,
+            priority: "high",
+            category: "financial",
+            due_date: `${new Date().getFullYear()}-12-31`,
+            completed: false,
+            source_type: "auto",
+            action_type: "generic",
+            action_payload: { property_id: prop.id, redirect: "/nebenkostenabrechnung" },
+          })
+        }
+      }
+    }
+  }
+
+  if (tasksToCreate.length > 0) {
+    await supabase.from("tasks").insert(tasksToCreate)
+  }
 }

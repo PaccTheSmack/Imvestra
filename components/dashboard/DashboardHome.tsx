@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { ArrowUpRight, Warning } from "@phosphor-icons/react";
+import { ArrowUpRight, Warning, CurrencyDollar } from "@phosphor-icons/react";
 import type { PortfolioSummary } from "@/lib/portfolio-calculations";
 import CountUp from "@/components/ui/CountUp";
-import { generateSmartTasks } from "@/lib/smart-tasks";
+
+function formatCurrencyLocal(n: number) {
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(n)
+}
 
 function fmtCurrency(n: number) {
   return new Intl.NumberFormat("de-DE", { style: "decimal", maximumFractionDigits: 0 }).format(n) + " €";
@@ -47,8 +49,8 @@ interface DashboardHomeProps {
   overdueTasks?: number;
   overdueCount?: number;
   overdueTotal?: number;
-  userId?: string;
   portfolioSummary?: PortfolioSummary;
+  actionTasks?: { action_type: string | null; title: string; action_payload: Record<string, unknown> }[];
 }
 
 function getGreeting(firstName: string) {
@@ -68,22 +70,12 @@ export default function DashboardHome({
   overdueTasks = 0,
   overdueCount = 0,
   overdueTotal = 0,
-  userId,
   portfolioSummary,
+  actionTasks,
 }: DashboardHomeProps) {
   const router = useRouter();
-  const [, setSmartNotifCount] = useState(0);
 
-  useEffect(() => {
-    if (!userId) return;
-    generateSmartTasks(userId).then(({ created }) => {
-      if (created > 0) {
-        setSmartNotifCount(created);
-      }
-    });
-  }, [userId]);
-
-  const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
+const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
   const ltvPct = hasPortfolio
     ? Math.min(portfolioSummary!.total_fremdkapital_quote * 100, 100)
     : 0;
@@ -131,6 +123,61 @@ export default function DashboardHome({
           >
             Mahnwesen öffnen →
           </button>
+        </div>
+      )}
+
+      {/* ACTION SUMMARY GRID */}
+      {(actionTasks && actionTasks.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+          {/* Zahlungen prüfen */}
+          {(() => {
+            const paymentTasks = actionTasks.filter(t => t.action_type === "confirm_payment")
+            const sum = paymentTasks.reduce((s, t) => s + ((t.action_payload?.betrag as number) ?? 0), 0)
+            if (paymentTasks.length === 0) return null
+            return (
+              <div style={{ background: "rgba(45,106,45,0.04)", border: "1px solid rgba(45,106,45,0.15)", borderRadius: 12, padding: "14px 16px" }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <CurrencyDollar size={15} color="#2D6A2D" />
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 99, background: "rgba(45,106,45,0.12)", color: "#2D6A2D" }}>{paymentTasks.length}</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#2D6A2D" }}>{paymentTasks.length} Zahlung{paymentTasks.length !== 1 ? "en" : ""} zu bestätigen</p>
+                <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2 }}>{formatCurrencyLocal(sum)} eingegangen</p>
+                <button onClick={() => router.push("/aufgaben")} style={{ fontSize: 11, color: "#2D6A2D", marginTop: 8, fontWeight: 500 }}>Jetzt prüfen →</button>
+              </div>
+            )
+          })()}
+          {/* Mahnungen */}
+          {(() => {
+            const mahnTasks = actionTasks.filter(t => t.action_type === "create_mahnung")
+            const sum = mahnTasks.reduce((s, t) => s + ((t.action_payload?.betrag as number) ?? 0), 0)
+            if (mahnTasks.length === 0) return null
+            return (
+              <div style={{ background: "rgba(185,28,28,0.04)", border: "1px solid rgba(185,28,28,0.12)", borderRadius: 12, padding: "14px 16px" }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Warning size={15} color="#B91C1C" />
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 99, background: "rgba(185,28,28,0.1)", color: "#B91C1C" }}>{mahnTasks.length}</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#B91C1C" }}>{mahnTasks.length} Mahnung{mahnTasks.length !== 1 ? "en" : ""} empfohlen</p>
+                <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2 }}>{formatCurrencyLocal(sum)} ausstehend</p>
+                <button onClick={() => router.push("/mahnwesen")} style={{ fontSize: 11, color: "#B91C1C", marginTop: 8, fontWeight: 500 }}>Zum Mahnwesen →</button>
+              </div>
+            )
+          })()}
+          {/* Zinsbindung */}
+          {(() => {
+            const zinsTasks = actionTasks.filter(t => t.action_type === "check_zinsbindung")
+            if (zinsTasks.length === 0) return null
+            return (
+              <div style={{ background: "rgba(160,120,48,0.04)", border: "1px solid rgba(160,120,48,0.15)", borderRadius: 12, padding: "14px 16px" }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Warning size={15} color="#A07830" />
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 99, background: "rgba(160,120,48,0.1)", color: "#A07830" }}>{zinsTasks.length}</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#A07830" }}>{zinsTasks.length} Zinsbindung{zinsTasks.length !== 1 ? "en" : ""} laufen ab</p>
+                <button onClick={() => router.push("/calculator")} style={{ fontSize: 11, color: "#A07830", marginTop: 8, fontWeight: 500 }}>Zum Zinsrechner →</button>
+              </div>
+            )
+          })()}
         </div>
       )}
 
