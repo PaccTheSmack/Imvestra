@@ -47,7 +47,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/verhandlung") ||
     request.nextUrl.pathname.startsWith("/dokumente") ||
     request.nextUrl.pathname.startsWith("/mahnwesen") ||
-    request.nextUrl.pathname.startsWith("/nebenkostenabrechnung");
+    request.nextUrl.pathname.startsWith("/nebenkostenabrechnung") ||
+    request.nextUrl.pathname.startsWith("/mietvertraege");
 
   if (isDashboard && !user) {
     return NextResponse.redirect(new URL("/login", request.url));

@@ -216,6 +216,59 @@ export async function generateSmartTasks(
     }
   }
 
+  // 6. Mietvertrag fehlt / läuft ab
+  const { data: activeTenants } = await supabase
+    .from("tenants")
+    .select("id, name")
+    .eq("user_id", userId)
+    .eq("is_active", true)
+
+  const { data: allVertraege } = await supabase
+    .from("mietvertraege")
+    .select("tenant_id, mietende, befristet, status")
+    .eq("user_id", userId)
+    .neq("status", "archiviert")
+
+  for (const tenant of activeTenants ?? []) {
+    const vertrag = allVertraege?.find(v => v.tenant_id === tenant.id)
+    if (!vertrag) {
+      if (!isDuplicateByField("generic", "tenant_id", tenant.id)) {
+        tasksToCreate.push({
+          user_id: userId,
+          property_id: null,
+          title: `Mietvertrag fehlt — ${tenant.name}`,
+          description: `Für ${tenant.name} ist kein digitaler Mietvertrag hinterlegt. Jetzt erstellen.`,
+          priority: "low",
+          category: "tenant",
+          due_date: null,
+          completed: false,
+          source_type: "auto",
+          action_type: "generic",
+          action_payload: { redirect: "/mietvertraege", tenant_id: tenant.id },
+        })
+      }
+    } else if (vertrag.befristet && vertrag.mietende) {
+      const daysLeft = Math.floor((new Date(vertrag.mietende).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      if (daysLeft <= 90 && daysLeft >= 0) {
+        if (!isDuplicateByField("generic", "tenant_id", tenant.id)) {
+          tasksToCreate.push({
+            user_id: userId,
+            property_id: null,
+            title: `Mietvertrag läuft ab — ${tenant.name}`,
+            description: `Befristeter Mietvertrag endet am ${new Date(vertrag.mietende).toLocaleDateString("de-DE")}. Verlängern oder Auszug vorbereiten.`,
+            priority: "high",
+            category: "tenant",
+            due_date: vertrag.mietende,
+            completed: false,
+            source_type: "auto",
+            action_type: "generic",
+            action_payload: { redirect: "/mietvertraege", tenant_id: tenant.id },
+          })
+        }
+      }
+    }
+  }
+
   if (tasksToCreate.length > 0) {
     await supabase.from("tasks").insert(tasksToCreate)
   }

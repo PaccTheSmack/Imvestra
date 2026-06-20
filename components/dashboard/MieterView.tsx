@@ -8,6 +8,7 @@ import {
   X,
   DotsThree,
   Warning,
+  FileText,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 import DarkButton from "@/components/ui/DarkButton";
@@ -411,6 +412,12 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                               NK-Vorauszahlung: <strong style={{ color: "#101418" }}>{tenant.nk_vorauszahlung}€/Mo</strong>
                             </p>
                           )}
+                          <button
+                            onClick={() => router.push(`/mietvertraege?tenant=${tenant.id}`)}
+                            style={{ fontSize: 11, color: "#A07830", padding: "3px 0", cursor: "pointer", textAlign: "left" }}
+                          >
+                            Mietvertrag erstellen →
+                          </button>
                         </div>
                         <span
                           className="text-[10px] font-semibold px-2 py-1 rounded-full"
@@ -444,6 +451,19 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                           style={{ fontSize: 11, fontWeight: 500, color: "#A07830", padding: "5px 10px", borderRadius: 7, border: "1px solid rgba(160,120,48,0.2)", background: "rgba(160,120,48,0.05)" }}
                         >
                           NKA erstellen
+                        </button>
+                        <button
+                          onClick={() => router.push(`/mietvertraege?tenant=${tenant.id}`)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 5,
+                            fontSize: 11, fontWeight: 500, color: "#A07830",
+                            padding: "5px 10px", borderRadius: 7,
+                            border: "1px solid rgba(160,120,48,0.2)",
+                            background: "rgba(160,120,48,0.05)", cursor: "pointer",
+                          }}
+                        >
+                          <FileText size={12} />
+                          Mietvertrag
                         </button>
                         <DarkButton
                           variant="secondary"
