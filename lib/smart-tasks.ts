@@ -309,6 +309,59 @@ export async function generateSmartTasks(
     }
   }
 
+  // 8. Bewerber: Selbstauskunft prüfen
+  const { data: bewerberAusgefuellt } = await supabase
+    .from("bewerber")
+    .select("id, name, score")
+    .eq("user_id", userId)
+    .eq("status", "selbstauskunft_ausgefuellt")
+
+  for (const b of bewerberAusgefuellt ?? []) {
+    if (!isDuplicateByField("generic", "bewerber_id", b.id)) {
+      const score = b.score ?? 0
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Selbstauskunft prüfen — ${b.name}`,
+        description: `Score: ${score}/100. Bewerbung jetzt prüfen.`,
+        priority: score > 70 ? "high" : "medium",
+        category: "tenant",
+        due_date: today,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/bewerber", bewerber_id: b.id },
+      })
+    }
+  }
+
+  // 9. Bewerber: DSGVO Löschfrist
+  const twoWeeksLater = new Date()
+  twoWeeksLater.setDate(twoWeeksLater.getDate() + 14)
+  const { data: dsgvoBewerber } = await supabase
+    .from("bewerber")
+    .select("id, name, dsgvo_loeschdatum")
+    .eq("user_id", userId)
+    .eq("status", "absage")
+    .lte("dsgvo_loeschdatum", twoWeeksLater.toISOString().split("T")[0])
+    .gte("dsgvo_loeschdatum", today)
+
+  for (const b of dsgvoBewerber ?? []) {
+    if (!isDuplicateByField("generic", "bewerber_id", b.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Bewerberdaten löschen (DSGVO) — ${b.name}`,
+        description: `Daten müssen bis ${new Date(b.dsgvo_loeschdatum).toLocaleDateString("de-DE")} gelöscht werden.`,
+        priority: "medium",
+        category: "tenant",
+        due_date: b.dsgvo_loeschdatum,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/bewerber", bewerber_id: b.id },
+      })
+    }
+  }
+
   if (tasksToCreate.length > 0) {
     await supabase.from("tasks").insert(tasksToCreate)
   }

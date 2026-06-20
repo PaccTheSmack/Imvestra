@@ -8,7 +8,7 @@ import {
   HouseLine, Calculator, MapPin, FilePdf, Buildings,
   UsersFour, CheckSquare, Receipt, Tag, SignOut,
   MagnifyingGlass, Gear, ChartBar, FolderOpen, Warning, FileText,
-  ClipboardText, CaretDown,
+  ClipboardText, CaretDown, UserPlus,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
@@ -29,6 +29,7 @@ const navSections: NavSection[] = [
     items: [
       { Icon: Buildings, label: "Portfolio", href: "/portfolio" },
       { Icon: UsersFour, label: "Mieter", href: "/mieter" },
+      { Icon: UserPlus, label: "Bewerber", href: "/bewerber" },
       {
         Icon: ChartBar, label: "Finanzen", href: "/finanzen",
         children: [
