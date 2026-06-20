@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   HouseLine, Calculator, MapPin, FilePdf, Buildings,
   UsersFour, CheckSquare, Receipt, Tag, SignOut,
   MagnifyingGlass, Gear, ChartBar, FolderOpen, Warning, FileText,
+  CaretDown,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth-actions";
 
-type NavItem = { Icon: PhosphorIcon; label: string; href: string; badge?: string };
+type NavChild = { Icon: PhosphorIcon; label: string; href: string };
+type NavItem = { Icon: PhosphorIcon; label: string; href: string; badge?: string; children?: NavChild[] };
 type NavSection = { section?: string; items: NavItem[] };
 
 const navSections: NavSection[] = [
@@ -25,24 +27,32 @@ const navSections: NavSection[] = [
   {
     section: "VERWALTUNG",
     items: [
-      { Icon: Buildings,   label: "Portfolio",  href: "/portfolio" },
-      { Icon: UsersFour,   label: "Mieter",     href: "/mieter" },
-      { Icon: FileText,    label: "Mietverträge", href: "/mietvertraege" },
-      { Icon: Warning,     label: "Mahnwesen",  href: "/mahnwesen" },
-      { Icon: ChartBar,    label: "Finanzen",         href: "/finanzen" },
-      { Icon: Receipt,     label: "Nebenkostenabr.", href: "/nebenkostenabrechnung" },
-      { Icon: FolderOpen,  label: "Dokumente",        href: "/dokumente" },
-      { Icon: CheckSquare, label: "Aufgaben",   href: "/aufgaben" },
-      { Icon: Receipt,     label: "Steuern",    href: "/steuern" },
+      { Icon: Buildings, label: "Portfolio", href: "/portfolio" },
+      { Icon: UsersFour, label: "Mieter", href: "/mieter" },
+      {
+        Icon: ChartBar, label: "Finanzen", href: "/finanzen",
+        children: [
+          { Icon: Warning, label: "Mahnwesen", href: "/mahnwesen" },
+          { Icon: Receipt, label: "Steuern", href: "/steuern" },
+        ],
+      },
+      {
+        Icon: FolderOpen, label: "Dokumente", href: "/dokumente",
+        children: [
+          { Icon: FileText, label: "Mietverträge", href: "/mietvertraege" },
+          { Icon: Receipt, label: "Nebenkostenabr.", href: "/nebenkostenabrechnung" },
+        ],
+      },
+      { Icon: CheckSquare, label: "Aufgaben", href: "/aufgaben" },
     ],
   },
   {
     section: "ANALYSE",
     items: [
-      { Icon: Calculator, label: "Renditerechner",   href: "/calculator" },
-      { Icon: Tag,        label: "Verhandlung",       href: "/verhandlung" },
-      { Icon: MapPin,     label: "Standortanalyse",   href: "/standort" },
-      { Icon: FilePdf,    label: "PDF Export",        href: "/pdf-export" },
+      { Icon: Calculator, label: "Renditerechner", href: "/calculator" },
+      { Icon: Tag, label: "Verhandlung", href: "/verhandlung" },
+      { Icon: MapPin, label: "Standortanalyse", href: "/standort" },
+      { Icon: FilePdf, label: "PDF Export", href: "/pdf-export" },
     ],
   },
   {
@@ -58,14 +68,64 @@ function isActive(href: string, pathname: string) {
   return pathname.startsWith(href);
 }
 
-function NavLink({ Icon, label, href, taskCount, active }: NavItem & { taskCount?: number; active: boolean }) {
-  const isAufgaben = href === "/aufgaben";
-  const showBadge = isAufgaben && (taskCount ?? 0) > 0;
-
+// ── Child nav item (indented, no left-bar animation) ──────────────
+function ChildNavLink({ Icon, label, href, active }: NavChild & { active: boolean }) {
   return (
     <Link href={href} className="block mb-0.5">
+      <motion.div
+        className="flex items-center gap-2.5 px-3 py-2 rounded-[9px] cursor-pointer"
+        animate={{
+          backgroundColor: active ? "rgba(160,120,48,0.12)" : "rgba(0,0,0,0)",
+          color: active ? "#A07830" : "#6B7280",
+        }}
+        whileHover={active
+          ? { backgroundColor: "rgba(160,120,48,0.16)" }
+          : { backgroundColor: "rgba(0,0,0,0.04)", color: "#101418" }
+        }
+        transition={{ duration: 0.1 }}
+      >
+        <Icon
+          size={14}
+          weight={active ? "bold" : "regular"}
+          color={active ? "#A07830" : "#9CA3AF"}
+          className="flex-shrink-0"
+        />
+        <span
+          className="text-[13px] flex-1 leading-none"
+          style={{ fontWeight: active ? 600 : 400 }}
+        >
+          {label}
+        </span>
+        {active && (
+          <span
+            style={{ width: 5, height: 5, borderRadius: 99, background: "#A07830", flexShrink: 0 }}
+          />
+        )}
+      </motion.div>
+    </Link>
+  );
+}
+
+// ── Top-level nav item ────────────────────────────────────────────
+function NavLink({
+  Icon, label, href, taskCount, active, childActive, children, isOpen, onToggle, pathname,
+}: NavItem & {
+  taskCount?: number
+  active: boolean
+  childActive: boolean
+  isOpen: boolean
+  onToggle: () => void
+  pathname: string
+}) {
+  const hasChildren = (children?.length ?? 0) > 0;
+  const isAufgaben = href === "/aufgaben";
+  const showBadge = isAufgaben && (taskCount ?? 0) > 0;
+  const highlighted = active || childActive;
+
+  return (
+    <div className="mb-0.5">
       <div className="relative">
-        {/* Active left bar */}
+        {/* Animated left bar — only on direct active, not child-active */}
         {active && (
           <motion.div
             layoutId="nav-active-bar"
@@ -74,33 +134,96 @@ function NavLink({ Icon, label, href, taskCount, active }: NavItem & { taskCount
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
           />
         )}
-        <motion.div
-          className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer"
-          animate={{
-            backgroundColor: active ? "#A07830" : "rgba(0,0,0,0)",
-            color: active ? "#FFFFFF" : "#6B7280",
-          }}
-          whileHover={active ? { backgroundColor: "#A07830" } : { backgroundColor: "rgba(0,0,0,0.04)", color: "#101418" }}
-          transition={{ duration: 0.12 }}
+        <Link
+          href={href}
+          className="block"
+          onClick={hasChildren ? (e) => { e.preventDefault(); onToggle(); } : undefined}
         >
-          <Icon size={16} weight={active ? "bold" : "regular"} color={active ? "#FFFFFF" : "#9CA3AF"} className="flex-shrink-0" />
-          <span className="text-[14px] flex-1 font-medium leading-none" style={{ fontWeight: active ? 600 : 400 }}>
-            {label}
-          </span>
-          {showBadge && (
+          <motion.div
+            className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer"
+            animate={{
+              backgroundColor: active
+                ? "#A07830"
+                : childActive
+                  ? "rgba(160,120,48,0.07)"
+                  : "rgba(0,0,0,0)",
+              color: active ? "#FFFFFF" : childActive ? "#A07830" : "#6B7280",
+            }}
+            whileHover={
+              active
+                ? { backgroundColor: "#A07830" }
+                : { backgroundColor: "rgba(0,0,0,0.04)", color: "#101418" }
+            }
+            transition={{ duration: 0.12 }}
+          >
+            <Icon
+              size={16}
+              weight={highlighted ? "bold" : "regular"}
+              color={active ? "#FFFFFF" : childActive ? "#A07830" : "#9CA3AF"}
+              className="flex-shrink-0"
+            />
             <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-full leading-none flex-shrink-0 tabular-nums"
-              style={active
-                ? { background: "rgba(255,255,255,0.2)", color: "white" }
-                : { background: "rgba(185,28,28,0.1)", color: "#B91C1C" }
-              }
+              className="text-[14px] flex-1 font-medium leading-none"
+              style={{ fontWeight: highlighted ? 600 : 400 }}
             >
-              {taskCount}
+              {label}
             </span>
-          )}
-        </motion.div>
+            {showBadge && (
+              <span
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full leading-none flex-shrink-0 tabular-nums"
+                style={active
+                  ? { background: "rgba(255,255,255,0.2)", color: "white" }
+                  : { background: "rgba(185,28,28,0.1)", color: "#B91C1C" }
+                }
+              >
+                {taskCount}
+              </span>
+            )}
+            {hasChildren && (
+              <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                style={{
+                  color: active ? "rgba(255,255,255,0.6)" : childActive ? "#A07830" : "#C4C4C4",
+                  flexShrink: 0,
+                }}
+              >
+                <CaretDown size={12} weight="bold" />
+              </motion.div>
+            )}
+          </motion.div>
+        </Link>
       </div>
-    </Link>
+
+      {/* Children */}
+      {hasChildren && (
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              key="children"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              style={{ overflow: "hidden" }}
+            >
+              <div
+                className="ml-4 mt-0.5 mb-1 pl-3"
+                style={{ borderLeft: "1.5px solid rgba(0,0,0,0.07)" }}
+              >
+                {children!.map(child => (
+                  <ChildNavLink
+                    key={child.href}
+                    {...child}
+                    active={isActive(child.href, pathname)}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+    </div>
   );
 }
 
@@ -108,8 +231,23 @@ function NavLink({ Icon, label, href, taskCount, active }: NavItem & { taskCount
 export default function Sidebar({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname();
   const [openTaskCount, setOpenTaskCount] = useState(0);
+  const [openParents, setOpenParents] = useState<Set<string>>(() => new Set<string>());
 
   const openPalette = () => document.dispatchEvent(new CustomEvent("imvestra:palette:open"));
+
+  // Auto-expand parent when navigating to a child route
+  useEffect(() => {
+    navSections.forEach(section => {
+      section.items.forEach(item => {
+        if (item.children?.some(child => isActive(child.href, pathname))) {
+          setOpenParents(prev => {
+            if (prev.has(item.href)) return prev;
+            const next = new Set(prev); next.add(item.href); return next;
+          });
+        }
+      });
+    });
+  }, [pathname]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -123,6 +261,15 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
         .then(({ count }) => setOpenTaskCount(count ?? 0));
     });
   }, []);
+
+  function toggleParent(href: string) {
+    setOpenParents(prev => {
+      const next = new Set<string>(Array.from(prev));
+      if (next.has(href)) next.delete(href);
+      else next.add(href);
+      return next;
+    });
+  }
 
   return (
     <aside
@@ -174,18 +321,25 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
                 {section.section}
               </p>
             )}
-            {section.items.map(item => (
-              <NavLink
-                key={item.href}
-                {...item}
-                taskCount={item.href === "/aufgaben" ? openTaskCount : 0}
-                active={isActive(item.href, pathname)}
-              />
-            ))}
+            {section.items.map(item => {
+              const childActive = item.children?.some(child => isActive(child.href, pathname)) ?? false;
+              return (
+                <NavLink
+                  key={item.href}
+                  {...item}
+                  taskCount={item.href === "/aufgaben" ? openTaskCount : 0}
+                  active={isActive(item.href, pathname)}
+                  childActive={childActive}
+                  isOpen={openParents.has(item.href)}
+                  onToggle={() => toggleParent(item.href)}
+                  pathname={pathname}
+                />
+              );
+            })}
           </div>
         ))}
 
-        {/* Sign out separate */}
+        {/* Sign out */}
         <div className="mt-1">
           <button
             onClick={() => signOut()}
