@@ -539,7 +539,11 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                             </span>
                           )}
                           {/* Actions */}
-                          <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                          <div className={`ml-auto flex gap-1 transition-opacity items-center ${
+                            (isAutoGen && task.action_type && task.action_type !== 'generic')
+                              ? 'opacity-100'  // always visible for smart action tasks
+                              : 'opacity-0 group-hover:opacity-100'  // hover-only for manual tasks
+                          }`}>
                             {/* Als erledigt button for all tasks */}
                             {!task.completed && (
                               <button

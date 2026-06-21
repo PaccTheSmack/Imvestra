@@ -197,7 +197,7 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#B91C1C" }}>{mahnTasks.length} Mahnung{mahnTasks.length !== 1 ? "en" : ""} empfohlen</p>
                 <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2 }}>{formatCurrencyLocal(sum)} ausstehend</p>
-                <button onClick={() => router.push("/aufgaben")} style={{ fontSize: 11, color: "#B91C1C", marginTop: 8, fontWeight: 500 }}>Zum Mahnwesen →</button>
+                <button onClick={() => router.push("/mahnwesen")} style={{ fontSize: 11, color: "#B91C1C", marginTop: 8, fontWeight: 500 }}>Zum Mahnwesen →</button>
               </div>
             )
           })()}
@@ -212,7 +212,7 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
                   <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 99, background: "rgba(160,120,48,0.1)", color: "#A07830" }}>{zinsTasks.length}</span>
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#A07830" }}>{zinsTasks.length} Zinsbindung{zinsTasks.length !== 1 ? "en" : ""} laufen ab</p>
-                <button onClick={() => router.push("/calculator")} style={{ fontSize: 11, color: "#A07830", marginTop: 8, fontWeight: 500 }}>Zum Zinsrechner →</button>
+                <button onClick={() => router.push("/finanzen?tab=zinsbindung")} style={{ fontSize: 11, color: "#A07830", marginTop: 8, fontWeight: 500 }}>Zur Zinsbindung →</button>
               </div>
             )
           })()}
@@ -481,7 +481,11 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
               </Link>
             </div>
             {overdueTasks > 0 ? (
-              <div className="px-5 py-3 flex items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+              <div className="px-5 py-3 flex items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)", cursor: "pointer" }}
+                onClick={() => router.push("/aufgaben")}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "#F8F7F4"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
+              >
                 <div className="flex-1">
                   <p className="text-[12px] font-medium" style={{ color: "#101418" }}>
                     {overdueTasks} überfällige Aufgabe{overdueTasks > 1 ? "n" : ""}
@@ -499,7 +503,11 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
               </div>
             )}
             {financingAlertCount > 0 && (
-              <div className="px-5 py-3 flex items-center justify-between gap-3">
+              <div className="px-5 py-3 flex items-center justify-between gap-3" style={{ cursor: "pointer" }}
+                onClick={() => router.push("/finanzen?tab=zinsbindung")}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "#F8F7F4"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
+              >
                 <div className="flex-1">
                   <p className="text-[12px] font-medium" style={{ color: "#101418" }}>
                     {financingAlertCount} Zinsbindung{financingAlertCount > 1 ? "en" : ""} läuft aus

@@ -83,29 +83,38 @@ export default function MahnwesenView({ mahnungen, vermieterName }: MahnwesenVie
   const [sperreGrund, setSperreGrund] = useState("")
   const [settingSperr, setSettingSperr] = useState(false)
   const [localMahnungen, setLocalMahnungen] = useState<Mahnung[]>(mahnungen)
+  const [paramApplied, setParamApplied] = useState(false)
 
   // Auto-select payment from URL param and trigger scan
   useEffect(() => {
+    if (paramApplied) return
     const paymentId = searchParams.get("payment_id")
     const mahnungId = searchParams.get("mahnung_id")
+    if (!paymentId && !mahnungId) return
+
+    setParamApplied(true)
+
     if (paymentId) {
-      // Switch to scanner tab and pre-select after scan
+      // Switch to scanner tab, run scan, then pre-select the matching payment
       setTab("scanner")
+      setScanning(true)
       fetch("/api/mahnwesen/scan")
         .then(r => r.json())
-        .then((data: MahnungPreview[]) => {
-          setPreviews(data)
+        .then((data: { previews?: MahnungPreview[] } | MahnungPreview[]) => {
+          const list = Array.isArray(data) ? data : (data.previews ?? [])
+          setPreviews(list)
           setScanned(true)
-          const match = data.find(p => p.rent_payment_id === paymentId)
+          const match = list.find(p => p.rent_payment_id === paymentId)
           if (match && !match.mahnsperre) setSelected([paymentId])
         })
         .catch(() => {/* ignore */})
+        .finally(() => setScanning(false))
     } else if (mahnungId) {
       // Switch to history tab and filter for that mahnung
       setTab("verlauf")
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [searchParams, paramApplied])
 
   // Stats
   const offeneCount = localMahnungen.filter(m => m.status === "offen").length

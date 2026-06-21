@@ -74,30 +74,30 @@ export default function TaskActionCard({ task, onComplete, onDismiss }: TaskActi
   const createMahnung = async () => {
     if (!payload.payment_id && !payload.existing_mahnung_id) return
     setLoading("mahnung")
-    try {
-      const selectedIds = payload.payment_id ? [payload.payment_id] : []
-      if (selectedIds.length > 0) {
-        await fetch("/api/mahnwesen/erstellen", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ selectedIds, versand_methode: "email" }),
-        })
-      }
-      await fetch(`/api/tasks/${task.id}`, {
-        method: "PATCH",
+
+    // Fire-and-forget: create mahnung in background if we have a payment_id
+    if (payload.payment_id) {
+      fetch("/api/mahnwesen/erstellen", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: true }),
-      })
-      onComplete(task.id)
-      if (payload.existing_mahnung_id) {
-        router.push(`/mahnwesen?mahnung_id=${payload.existing_mahnung_id}`)
-      } else if (payload.payment_id) {
-        router.push(`/mahnwesen?payment_id=${payload.payment_id}`)
-      } else {
-        router.push("/mahnwesen")
-      }
-    } finally {
-      setLoading(null)
+        body: JSON.stringify({ selectedIds: [payload.payment_id], versand_methode: "email" }),
+      }).catch(() => {})
+    }
+
+    // Mark task complete in background
+    fetch(`/api/tasks/${task.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: true }),
+    }).catch(() => {})
+
+    // Navigate immediately (window.location.href is synchronous and reliable)
+    if (payload.existing_mahnung_id) {
+      window.location.href = `/mahnwesen?mahnung_id=${payload.existing_mahnung_id}`
+    } else if (payload.payment_id) {
+      window.location.href = `/mahnwesen?payment_id=${payload.payment_id}`
+    } else {
+      window.location.href = "/mahnwesen"
     }
   }
 
@@ -115,7 +115,7 @@ export default function TaskActionCard({ task, onComplete, onDismiss }: TaskActi
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: true }),
       })
-      onComplete(task.id)
+      onComplete(task.id)  // this is fine here, no navigation after
     } finally {
       setLoading(null)
     }
