@@ -355,6 +355,14 @@ export default function PortfolioView({ properties, financings, payments, expens
       setViewMode(tab)
     }
   }, [searchParams])
+
+  useEffect(() => {
+    const pid = searchParams.get("property_id")
+    if (pid) {
+      setSelectedProperty(pid)
+      setViewMode("properties")
+    }
+  }, [searchParams])
   const [chartMetric, setChartMetric] = useState<ChartMetric>("wert")
   const [timeRange, setTimeRange] = useState<TimeRange>("Alle")
   const [valueDisplay, setValueDisplay] = useState<"eur" | "pct">("eur")
@@ -1051,28 +1059,42 @@ export default function PortfolioView({ properties, financings, payments, expens
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 <button
-                                  onClick={() => router.push(`/calculator?purchase_price=${p.purchase_price}&rent=${p.rent_monthly}&sqm=${p.sqm ?? ""}&name=${encodeURIComponent(p.name ?? "")}`)}
-                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                  onClick={() => {
+                                    const params = new URLSearchParams({
+                                      name: p.name ?? "",
+                                      purchase_price: String(p.purchase_price ?? ""),
+                                      rent: String(p.rent_monthly ?? ""),
+                                      sqm: String(p.sqm ?? ""),
+                                    })
+                                    router.push(`/calculator?${params.toString()}`)
+                                  }}
+                                  className="bg-[#F8F7F4] border border-[rgba(0,0,0,0.08)] rounded-[8px] px-3 py-1.5 text-[11px] font-medium text-[#6B7280] hover:text-[#A07830] hover:bg-[rgba(160,120,48,0.04)] hover:border-[rgba(160,120,48,0.2)] transition-all duration-150 cursor-pointer flex items-center gap-1.5"
                                 >
                                   <ArrowUpRight size={12} /> Im Rechner öffnen
                                 </button>
                                 <button
                                   onClick={() => router.push(`/pdf-export?property_id=${p.id}`)}
-                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                  className="bg-[#F8F7F4] border border-[rgba(0,0,0,0.08)] rounded-[8px] px-3 py-1.5 text-[11px] font-medium text-[#6B7280] hover:text-[#A07830] hover:bg-[rgba(160,120,48,0.04)] hover:border-[rgba(160,120,48,0.2)] transition-all duration-150 cursor-pointer flex items-center gap-1.5"
                                 >
                                   <ArrowUpRight size={12} /> PDF Bankpräsentation
                                 </button>
                                 <button
                                   onClick={() => router.push(`/mieter?property_id=${p.id}`)}
-                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                  className="bg-[#F8F7F4] border border-[rgba(0,0,0,0.08)] rounded-[8px] px-3 py-1.5 text-[11px] font-medium text-[#6B7280] hover:text-[#A07830] hover:bg-[rgba(160,120,48,0.04)] hover:border-[rgba(160,120,48,0.2)] transition-all duration-150 cursor-pointer flex items-center gap-1.5"
                                 >
                                   <ArrowUpRight size={12} /> Mieter anzeigen
                                 </button>
                                 <button
                                   onClick={() => router.push(`/dokumente?property_id=${p.id}`)}
-                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                  className="bg-[#F8F7F4] border border-[rgba(0,0,0,0.08)] rounded-[8px] px-3 py-1.5 text-[11px] font-medium text-[#6B7280] hover:text-[#A07830] hover:bg-[rgba(160,120,48,0.04)] hover:border-[rgba(160,120,48,0.2)] transition-all duration-150 cursor-pointer flex items-center gap-1.5"
                                 >
                                   <ArrowUpRight size={12} /> Dokumente
+                                </button>
+                                <button
+                                  onClick={() => router.push(`/nebenkostenabrechnung?property_id=${p.id}`)}
+                                  className="bg-[#F8F7F4] border border-[rgba(0,0,0,0.08)] rounded-[8px] px-3 py-1.5 text-[11px] font-medium text-[#6B7280] hover:text-[#A07830] hover:bg-[rgba(160,120,48,0.04)] hover:border-[rgba(160,120,48,0.2)] transition-all duration-150 cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <ArrowUpRight size={12} /> NKA erstellen
                                 </button>
                               </div>
                             </div>

@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import UebergabeView from "@/components/dashboard/UebergabeView"
@@ -41,11 +42,13 @@ export default async function UebergabePage() {
   ])
 
   return (
-    <UebergabeView
-      protokolle={protokolle ?? []}
-      properties={properties ?? []}
-      tenants={tenants ?? []}
-      vermieterName={profile?.name ?? ""}
-    />
+    <Suspense fallback={null}>
+      <UebergabeView
+        protokolle={protokolle ?? []}
+        properties={properties ?? []}
+        tenants={tenants ?? []}
+        vermieterName={profile?.name ?? ""}
+      />
+    </Suspense>
   )
 }

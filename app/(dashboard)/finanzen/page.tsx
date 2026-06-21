@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import FinanzenHub from "@/components/dashboard/FinanzenHub";
 import type { Property, Tenant, RentPayment, Expense } from "@/types";
@@ -25,12 +26,14 @@ export default async function FinanzenPage() {
   ]);
 
   return (
-    <FinanzenHub
-      properties={(properties ?? []) as Property[]}
-      tenants={(tenants ?? []) as Tenant[]}
-      payments={(payments ?? []) as RentPayment[]}
-      expenses={(expenses ?? []) as Expense[]}
-      financings={financings ?? []}
-    />
+    <Suspense fallback={null}>
+      <FinanzenHub
+        properties={(properties ?? []) as Property[]}
+        tenants={(tenants ?? []) as Tenant[]}
+        payments={(payments ?? []) as RentPayment[]}
+        expenses={(expenses ?? []) as Expense[]}
+        financings={financings ?? []}
+      />
+    </Suspense>
   );
 }

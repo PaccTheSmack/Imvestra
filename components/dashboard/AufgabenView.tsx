@@ -18,6 +18,7 @@ import {
   Sparkle,
   Warning,
   ArrowSquareOut,
+  ArrowRight,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
@@ -539,6 +540,67 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                           )}
                           {/* Actions */}
                           <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                            {/* Als erledigt button for all tasks */}
+                            {!task.completed && (
+                              <button
+                                className="flex items-center gap-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer"
+                                style={{ color: "#A07830" }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8A6420"; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A07830"; }}
+                                onClick={() => toggleTask(task.id, true)}
+                              >
+                                Als erledigt ✓
+                              </button>
+                            )}
+                            {/* Action-type specific navigation buttons */}
+                            {task.action_type === "confirm_payment" && !task.completed && (
+                              <button
+                                className="flex items-center gap-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer"
+                                style={{ color: "#A07830" }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8A6420"; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A07830"; }}
+                                onClick={() => router.push("/bank")}
+                              >
+                                Zahlung prüfen →
+                                <ArrowRight size={12} />
+                              </button>
+                            )}
+                            {task.action_type === "create_mahnung" && !!task.action_payload?.payment_id && !task.completed && (
+                              <button
+                                className="flex items-center gap-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer"
+                                style={{ color: "#A07830" }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8A6420"; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A07830"; }}
+                                onClick={() => router.push(`/mahnwesen?payment_id=${task.action_payload!.payment_id}`)}
+                              >
+                                Mahnung erstellen →
+                                <ArrowRight size={12} />
+                              </button>
+                            )}
+                            {task.action_type === "create_mahnung" && !!task.action_payload?.existing_mahnung_id && !task.completed && (
+                              <button
+                                className="flex items-center gap-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer"
+                                style={{ color: "#A07830" }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8A6420"; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A07830"; }}
+                                onClick={() => router.push(`/mahnwesen?mahnung_id=${task.action_payload!.existing_mahnung_id}`)}
+                              >
+                                Mahnung eskalieren →
+                                <ArrowRight size={12} />
+                              </button>
+                            )}
+                            {task.action_type === "check_zinsbindung" && !task.completed && (
+                              <button
+                                className="flex items-center gap-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer"
+                                style={{ color: "#A07830" }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8A6420"; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A07830"; }}
+                                onClick={() => router.push(`/finanzen?tab=zinsbindung&financing_id=${task.action_payload!.financing_id}`)}
+                              >
+                                Zur Zinsbindung →
+                                <ArrowRight size={12} />
+                              </button>
+                            )}
                             {task.action_type === "generic" && typeof task.action_payload?.redirect === "string" && !task.completed && (
                               <button
                                 className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer"
@@ -548,7 +610,7 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                                 onClick={() => router.push(task.action_payload!.redirect as string)}
                               >
                                 <ArrowSquareOut size={10} />
-                                Jetzt erledigen →
+                                Öffnen →
                               </button>
                             )}
                             {!isAutoGen && (

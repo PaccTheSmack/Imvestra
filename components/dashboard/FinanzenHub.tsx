@@ -803,6 +803,7 @@ export default function FinanzenHub({
                     return (
                       <FadeIn key={f.id} delay={i * 0.06}>
                         <div
+                          id={`financing-${f.id}`}
                           className="rounded-[14px] overflow-hidden"
                           style={{ background: "#FFFFFF", border: `1px solid ${URGENCY_BORDER[f.urgency]}` }}
                         >

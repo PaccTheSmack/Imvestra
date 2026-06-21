@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import NkaView from "@/components/dashboard/NkaView"
@@ -36,11 +37,13 @@ export default async function NkaPage() {
   ])
 
   return (
-    <NkaView
-      abrechnungen={abrechnungen ?? []}
-      properties={properties ?? []}
-      tenants={tenants ?? []}
-      documents={documents ?? []}
-    />
+    <Suspense fallback={null}>
+      <NkaView
+        abrechnungen={abrechnungen ?? []}
+        properties={properties ?? []}
+        tenants={tenants ?? []}
+        documents={documents ?? []}
+      />
+    </Suspense>
   )
 }

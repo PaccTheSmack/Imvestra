@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   motion,
@@ -264,7 +264,7 @@ function PriceIndicatorBar({
 }
 
 // ─── main component ────────────────────────────────────────────
-export default function CalculatorPage() {
+function CalculatorPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -1602,5 +1602,13 @@ export default function CalculatorPage() {
       </div>
       </div>
     </div>
+  );
+}
+
+export default function CalculatorPage() {
+  return (
+    <Suspense fallback={null}>
+      <CalculatorPageInner />
+    </Suspense>
   );
 }

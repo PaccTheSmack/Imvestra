@@ -84,6 +84,7 @@ export async function generateSmartTasks(
           suggested_tenant_id: tx.suggested_tenant_id,
           betrag: tx.betrag,
           confidence: tx.match_confidence ?? 0,
+          redirect: "/bank",
         },
       })
     }
@@ -135,6 +136,7 @@ export async function generateSmartTasks(
           action_payload: {
             payment_id: payment.id,
             tenant_id: payment.tenant_id,
+            redirect: "/mahnwesen",
             betrag: payment.amount,
             tage_ueberfaellig: tage,
           },
@@ -161,6 +163,7 @@ export async function generateSmartTasks(
             existing_mahnung_id: mahnung.id,
             new_mahnstufe: mahnung.mahnstufe + 1,
             tenant_id: mahnung.tenant_id,
+            redirect: "/mahnwesen",
           },
         })
       }
@@ -186,7 +189,11 @@ export async function generateSmartTasks(
           completed: false,
           source_type: "auto",
           action_type: "check_zinsbindung",
-          action_payload: { financing_id: fin.id },
+          action_payload: {
+            financing_id: fin.id,
+            redirect: "/finanzen",
+            tab: "zinsbindung",
+          },
         })
       }
     }

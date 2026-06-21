@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import MieterView from "@/components/dashboard/MieterView";
 import type { Tenant, RentPayment } from "@/types";
@@ -20,9 +21,11 @@ export default async function MieterPage() {
   ]);
 
   return (
-    <MieterView
-      tenants={(tenants ?? []) as (Tenant & { rent_payments: RentPayment[] })[]}
-      properties={(properties ?? []) as { id: string; name: string; type: string }[]}
-    />
+    <Suspense fallback={null}>
+      <MieterView
+        tenants={(tenants ?? []) as (Tenant & { rent_payments: RentPayment[] })[]}
+        properties={(properties ?? []) as { id: string; name: string; type: string }[]}
+      />
+    </Suspense>
   );
 }

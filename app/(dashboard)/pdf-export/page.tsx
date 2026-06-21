@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import PDFExportView from "@/components/dashboard/PDFExportView";
 import type { Property, Plan } from "@/types";
@@ -22,9 +23,11 @@ export default async function PDFExportPage() {
   const plan = (profile?.plan ?? "free") as Plan;
 
   return (
-    <PDFExportView
-      properties={(properties ?? []) as Property[]}
-      plan={plan}
-    />
+    <Suspense fallback={null}>
+      <PDFExportView
+        properties={(properties ?? []) as Property[]}
+        plan={plan}
+      />
+    </Suspense>
   );
 }

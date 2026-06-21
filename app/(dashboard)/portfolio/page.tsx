@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import PortfolioView from "@/components/dashboard/PortfolioView"
 import type { Property, Financing, RentPayment, Expense } from "@/types"
@@ -19,11 +20,13 @@ export default async function PortfolioPage() {
   ])
 
   return (
-    <PortfolioView
-      properties={(properties ?? []) as Property[]}
-      financings={(financings ?? []) as Financing[]}
-      payments={(payments ?? []) as RentPayment[]}
-      expenses={(expenses ?? []) as Expense[]}
-    />
+    <Suspense fallback={null}>
+      <PortfolioView
+        properties={(properties ?? []) as Property[]}
+        financings={(financings ?? []) as Financing[]}
+        payments={(payments ?? []) as RentPayment[]}
+        expenses={(expenses ?? []) as Expense[]}
+      />
+    </Suspense>
   )
 }

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import AufgabenView from "@/components/dashboard/AufgabenView";
 import type { Task } from "@/types";
@@ -25,9 +26,11 @@ export default async function AufgabenPage() {
   ]);
 
   return (
-    <AufgabenView
-      tasks={(tasks ?? []) as TaskWithProperty[]}
-      properties={properties ?? []}
-    />
+    <Suspense fallback={null}>
+      <AufgabenView
+        tasks={(tasks ?? []) as TaskWithProperty[]}
+        properties={properties ?? []}
+      />
+    </Suspense>
   );
 }

@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import MahnwesenView from "@/components/dashboard/MahnwesenView"
@@ -21,9 +22,11 @@ export default async function MahnwesenPage() {
   ])
 
   return (
-    <MahnwesenView
-      mahnungen={mahnungen ?? []}
-      vermieterName={profile?.name ?? "Vermieter"}
-    />
+    <Suspense fallback={null}>
+      <MahnwesenView
+        mahnungen={mahnungen ?? []}
+        vermieterName={profile?.name ?? "Vermieter"}
+      />
+    </Suspense>
   )
 }

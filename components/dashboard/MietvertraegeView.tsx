@@ -264,7 +264,7 @@ export default function MietvertraegeView({ mietvertraege, properties, tenants, 
 
   // Pre-select tenant or bewerber from URL params
   useEffect(() => {
-    const tenantId = searchParams.get("tenant")
+    const tenantId = searchParams.get("tenant_id")
     const bewerberId = searchParams.get("bewerber_id")
     if (tenantId) {
       setView("wizard")

@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import MietvertraegeView from "@/components/dashboard/MietvertraegeView"
@@ -35,12 +36,14 @@ export default async function MietvertraegePage() {
   ])
 
   return (
-    <MietvertraegeView
-      mietvertraege={mietvertraege ?? []}
-      properties={properties ?? []}
-      tenants={tenants ?? []}
-      vermieterName={profile?.name ?? ""}
-      vermieterEmail={profile?.email ?? ""}
-    />
+    <Suspense fallback={null}>
+      <MietvertraegeView
+        mietvertraege={mietvertraege ?? []}
+        properties={properties ?? []}
+        tenants={tenants ?? []}
+        vermieterName={profile?.name ?? ""}
+        vermieterEmail={profile?.email ?? ""}
+      />
+    </Suspense>
   )
 }

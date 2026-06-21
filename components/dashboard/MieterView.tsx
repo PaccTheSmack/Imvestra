@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   UsersFour,
@@ -48,6 +48,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
 
 export default function MieterView({ tenants, properties }: MieterViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const prefersReduced = useReducedMotion();
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("all");
@@ -71,6 +72,15 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
     const t = setTimeout(() => setPortalToast(null), 3000);
     return () => clearTimeout(t);
   }, [portalToast]);
+
+  // Filter by property_id from URL param
+  useEffect(() => {
+    const propertyId = searchParams.get("property_id");
+    if (propertyId) {
+      setSelectedPropertyId(propertyId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Tenant form state
   const [tenantForm, setTenantForm] = useState({
@@ -461,7 +471,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                             </p>
                           )}
                           <button
-                            onClick={() => router.push(`/mietvertraege?tenant=${tenant.id}`)}
+                            onClick={() => router.push(`/mietvertraege?tenant_id=${tenant.id}`)}
                             style={{ fontSize: 11, color: "#A07830", padding: "3px 0", cursor: "pointer", textAlign: "left" }}
                           >
                             Mietvertrag erstellen →
@@ -507,7 +517,7 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                           Übergabe
                         </button>
                         <button
-                          onClick={() => router.push(`/mietvertraege?tenant=${tenant.id}`)}
+                          onClick={() => router.push(`/mietvertraege?tenant_id=${tenant.id}`)}
                           style={{
                             display: "flex", alignItems: "center", gap: 5,
                             fontSize: 11, fontWeight: 500, color: "#A07830",

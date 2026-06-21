@@ -197,7 +197,7 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#B91C1C" }}>{mahnTasks.length} Mahnung{mahnTasks.length !== 1 ? "en" : ""} empfohlen</p>
                 <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2 }}>{formatCurrencyLocal(sum)} ausstehend</p>
-                <button onClick={() => router.push("/mahnwesen")} style={{ fontSize: 11, color: "#B91C1C", marginTop: 8, fontWeight: 500 }}>Zum Mahnwesen →</button>
+                <button onClick={() => router.push("/aufgaben")} style={{ fontSize: 11, color: "#B91C1C", marginTop: 8, fontWeight: 500 }}>Zum Mahnwesen →</button>
               </div>
             )
           })()}
