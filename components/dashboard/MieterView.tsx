@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
@@ -9,6 +9,9 @@ import {
   DotsThree,
   Warning,
   FileText,
+  Globe,
+  CheckCircle,
+  Copy,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 import DarkButton from "@/components/ui/DarkButton";
@@ -53,6 +56,21 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<TenantWithPayments | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Portal invite state
+  const [showPortalModal, setShowPortalModal] = useState(false);
+  const [portalTenant, setPortalTenant] = useState<TenantWithPayments | null>(null);
+  const [portalStatus, setPortalStatus] = useState<Record<string, { active: boolean; email?: string; activationUrl?: string }>>({});
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteSuccess, setInviteSuccess] = useState(false);
+  const [portalToast, setPortalToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!portalToast) return;
+    const t = setTimeout(() => setPortalToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [portalToast]);
 
   // Tenant form state
   const [tenantForm, setTenantForm] = useState({
@@ -99,6 +117,36 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
   );
 
   const propertyName = (id: string) => properties.find((p) => p.id === id)?.name ?? "-";
+
+  function openPortalModal(tenant: TenantWithPayments) {
+    setPortalTenant(tenant);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setInviteEmail((tenant as any).email ?? "");
+    setInviteSuccess(false);
+    setShowPortalModal(true);
+  }
+
+  async function sendInvite() {
+    if (!portalTenant || !inviteEmail) return;
+    setInviteLoading(true);
+    const res = await fetch("/api/mieter/einladen", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tenant_id: portalTenant.id, email: inviteEmail, name: portalTenant.name }),
+    });
+    const data = await res.json();
+    setInviteLoading(false);
+    if (res.ok) {
+      setInviteSuccess(true);
+      setPortalStatus(prev => ({
+        ...prev,
+        [portalTenant.id]: { active: false, email: inviteEmail, activationUrl: data.activationUrl ?? data.activation_url ?? "" },
+      }));
+      setPortalToast("Einladung gesendet");
+    } else {
+      setPortalToast("Fehler beim Senden");
+    }
+  }
 
   async function saveTenant() {
     if (!tenantForm.property_id) {
@@ -477,6 +525,16 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                           Zahlung
                         </DarkButton>
                         <button
+                          onClick={() => openPortalModal(tenant)}
+                          title="Mieterportal"
+                          className="p-1.5 transition-colors duration-150"
+                          style={{ color: portalStatus[tenant.id]?.active ? "#00897B" : "#9CA3AF" }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#00897B"; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = portalStatus[tenant.id]?.active ? "#00897B" : "#9CA3AF"; }}
+                        >
+                          <Globe size={16} />
+                        </button>
+                        <button
                           className="p-1.5 transition-colors duration-150"
                           style={{ color: "#9CA3AF" }}
                           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#101418"; }}
@@ -706,6 +764,151 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
         )}
       </AnimatePresence>
 
+      {/* Modal: Mieterportal */}
+      <AnimatePresence>
+        {showPortalModal && portalTenant && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4"
+            style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setShowPortalModal(false); setPortalTenant(null); } }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.97 }}
+              transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
+              className="w-full max-w-[440px] rounded-[20px] overflow-hidden"
+              style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.12)" }}
+            >
+              {/* Header */}
+              <div className="px-6 py-5 flex justify-between items-center" style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+                <div className="flex items-center gap-3">
+                  <div style={{ width: 36, height: 36, borderRadius: 9, background: "rgba(0,137,123,0.08)", border: "1px solid rgba(0,137,123,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Globe size={16} color="#00897B" />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: "#101418" }}>Mieterportal</p>
+                    <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>{portalTenant.name}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setShowPortalModal(false); setPortalTenant(null); }}
+                  style={{ color: "#9CA3AF" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#101418"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 py-5">
+                {portalStatus[portalTenant.id]?.active ? (
+                  /* Already active */
+                  <div className="flex items-center gap-3 p-4 rounded-[12px]" style={{ background: "rgba(45,106,45,0.06)", border: "1px solid rgba(45,106,45,0.15)" }}>
+                    <CheckCircle size={20} color="#2D6A2D" weight="fill" />
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#2D6A2D" }}>Portal aktiv</p>
+                      <p style={{ fontSize: 11, color: "#6B7280", marginTop: 2 }}>{portalStatus[portalTenant.id]?.email}</p>
+                    </div>
+                  </div>
+                ) : inviteSuccess && portalStatus[portalTenant.id]?.activationUrl ? (
+                  /* Success — show activation URL */
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <CheckCircle size={18} color="#2D6A2D" weight="fill" />
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#2D6A2D" }}>Einladung gesendet!</p>
+                    </div>
+                    <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 8 }}>Aktivierungs-Link:</p>
+                    <div className="flex items-center gap-2" style={{ background: "#F8F7F4", border: "1px solid rgba(0,0,0,0.07)", borderRadius: 10, padding: "10px 14px" }}>
+                      <p style={{ fontSize: 11, color: "#101418", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {portalStatus[portalTenant.id]?.activationUrl}
+                      </p>
+                      <button
+                        onClick={() => {
+                          const url = portalStatus[portalTenant.id]?.activationUrl ?? "";
+                          navigator.clipboard.writeText(url);
+                          setPortalToast("Link kopiert");
+                        }}
+                        style={{ color: "#A07830", flexShrink: 0 }}
+                        className="transition-opacity hover:opacity-70"
+                      >
+                        <Copy size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* No portal yet — invite form */
+                  <div>
+                    <div className="mb-4 p-3 rounded-[10px]" style={{ background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                      <p style={{ fontSize: 12, color: "#6B7280" }}>
+                        Dieser Mieter hat noch keinen Portal-Zugang. Sende eine Einladung, damit er seine Dokumente, Anfragen und Abrechnungen einsehen kann.
+                      </p>
+                    </div>
+                    <div className="mb-4">
+                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6 }}>
+                        E-Mail-Adresse
+                      </label>
+                      <input
+                        type="email"
+                        value={inviteEmail}
+                        onChange={e => setInviteEmail(e.target.value)}
+                        placeholder="mieter@email.de"
+                        style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", fontSize: 13, color: "#101418", outline: "none", fontFamily: "inherit" }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              {!portalStatus[portalTenant.id]?.active && (
+                <div className="px-6 py-4 flex justify-end gap-3" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
+                  <button
+                    onClick={() => { setShowPortalModal(false); setPortalTenant(null); }}
+                    style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", padding: "9px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)" }}
+                    className="transition-colors hover:bg-gray-50"
+                  >
+                    {inviteSuccess ? "Schließen" : "Abbrechen"}
+                  </button>
+                  {!inviteSuccess && (
+                    <button
+                      onClick={sendInvite}
+                      disabled={inviteLoading || !inviteEmail}
+                      className="flex items-center gap-2 transition-all"
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: (inviteLoading || !inviteEmail) ? "#9CA3AF" : "white",
+                        background: (inviteLoading || !inviteEmail) ? "rgba(0,0,0,0.06)" : "#00897B",
+                        padding: "9px 20px",
+                        borderRadius: 10,
+                        boxShadow: (inviteLoading || !inviteEmail) ? "none" : "0 4px 14px rgba(0,137,123,0.2)",
+                        cursor: (inviteLoading || !inviteEmail) ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {inviteLoading ? (
+                        <>
+                          <svg className="animate-spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" strokeOpacity=".3"/>
+                            <path d="M12 2a10 10 0 0 1 10 10"/>
+                          </svg>
+                          Senden...
+                        </>
+                      ) : "Portal-Einladung senden"}
+                    </button>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Modal: Add Payment */}
       <AnimatePresence>
         {showAddPayment && selectedTenant && (
@@ -809,6 +1012,31 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                 </DarkButton>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Portal toast */}
+      <AnimatePresence>
+        {portalToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60]"
+            style={{
+              background: "#101418",
+              color: "white",
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "10px 20px",
+              borderRadius: 12,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {portalToast}
           </motion.div>
         )}
       </AnimatePresence>

@@ -475,6 +475,59 @@ export async function generateSmartTasks(
     }
   }
 
+  // 13. Neue offene Mieter-Anfragen
+  const { data: offeneAnfragen } = await supabase
+    .from("mieter_anfragen")
+    .select("id, titel, mieter_accounts(mieter_name), created_at")
+    .eq("vermieter_id", userId)
+    .eq("status", "offen")
+
+  for (const anfrage of offeneAnfragen ?? []) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mieterName = (anfrage.mieter_accounts as any)?.[0]?.mieter_name ?? (anfrage.mieter_accounts as any)?.mieter_name ?? "Mieter"
+    if (!isDuplicateByField("generic", "anfrage_id", anfrage.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Anfrage: ${anfrage.titel}`,
+        description: `Neue Anfrage von ${mieterName}. Bitte antworten.`,
+        priority: "medium",
+        category: "tenant",
+        due_date: today,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/anfragen", anfrage_id: anfrage.id },
+      })
+    }
+  }
+
+  // 14. Zählerstand eingereicht (prüfen)
+  const { data: zaehlerNeu } = await supabase
+    .from("mieter_zaehlerstaende")
+    .select("id, zaehlerart, ablesedatum, mieter_accounts(mieter_name)")
+    .eq("vermieter_id", userId)
+    .eq("geprueft", false)
+    .gte("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+
+  for (const zs of zaehlerNeu ?? []) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mieterName = (zs.mieter_accounts as any)?.[0]?.mieter_name ?? (zs.mieter_accounts as any)?.mieter_name ?? "Mieter"
+    if (!isDuplicateByField("generic", "zaehler_id", zs.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Zählerstand prüfen — ${mieterName}`,
+        description: `${zs.zaehlerart} vom ${new Date(zs.ablesedatum).toLocaleDateString("de-DE")} eingereicht. Bitte bestätigen.`,
+        priority: "low",
+        category: "tenant",
+        due_date: today,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/mieter", zaehler_id: zs.id },
+      })
+    }
+  }
+
   if (tasksToCreate.length > 0) {
     await supabase.from("tasks").insert(tasksToCreate)
   }

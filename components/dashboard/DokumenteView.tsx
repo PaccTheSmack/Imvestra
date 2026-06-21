@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   FolderOpen,
@@ -20,6 +20,7 @@ import {
   DownloadSimple,
   Trash,
   X,
+  ShareNetwork,
 } from "@phosphor-icons/react";
 import type { Document, DocumentCategory } from "@/types";
 import { DOCUMENT_CATEGORIES, formatFileSize } from "@/types";
@@ -555,6 +556,44 @@ export default function DokumenteView({ documents: initialDocs, properties, tena
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  // Share state
+  const [sharingDocId, setSharingDocId] = useState<string | null>(null);
+  const [sharedDocs, setSharedDocs] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(initialDocs.map(d => [d.id, (d as Document & { visible_to_tenant?: boolean }).visible_to_tenant ?? false]))
+  );
+  const [sharingLoading, setSharingLoading] = useState<string | null>(null);
+  const [shareToast, setShareToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!shareToast) return;
+    const t = setTimeout(() => setShareToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [shareToast]);
+
+  useEffect(() => {
+    if (!sharingDocId) return;
+    const handler = () => setSharingDocId(null);
+    window.addEventListener("click", handler);
+    return () => window.removeEventListener("click", handler);
+  }, [sharingDocId]);
+
+  async function toggleShare(docId: string, currentlyShared: boolean) {
+    setSharingLoading(docId);
+    const res = await fetch(`/api/dokumente/${docId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visible_to_tenant: !currentlyShared }),
+    });
+    setSharingLoading(null);
+    if (res.ok) {
+      setSharedDocs(prev => ({ ...prev, [docId]: !currentlyShared }));
+      setShareToast(!currentlyShared ? "Mit Mieter geteilt" : "Freigabe entfernt");
+      setSharingDocId(null);
+    } else {
+      setShareToast("Fehler beim Aktualisieren");
+    }
+  }
+
   // Stats
   const totalSize = documents.reduce((s, d) => s + d.file_size, 0);
   const byCat = ALL_CATEGORIES.reduce<Record<string, number>>((acc, cat) => {
@@ -757,7 +796,7 @@ export default function DokumenteView({ documents: initialDocs, properties, tena
           {/* Table header */}
           <div
             className="grid px-5 py-3"
-            style={{ gridTemplateColumns: "2.5fr 1fr 1fr 100px 110px 80px", background: "#F8F7F4", borderBottom: "1px solid rgba(0,0,0,0.06)" }}
+            style={{ gridTemplateColumns: "2.5fr 1fr 1fr 100px 110px 110px", background: "#F8F7F4", borderBottom: "1px solid rgba(0,0,0,0.06)" }}
           >
             {["NAME", "KATEGORIE", "OBJEKT", "GRÖSSE", "DATUM", ""].map(h => (
               <span key={h} style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", letterSpacing: "0.1em", textTransform: "uppercase" }}>{h}</span>
@@ -776,7 +815,7 @@ export default function DokumenteView({ documents: initialDocs, properties, tena
                 transition={{ delay: Math.min(i * 0.03, 0.2) }}
                 className="grid px-5 items-center cursor-pointer transition-colors duration-100 hover:bg-[#F8F7F4]"
                 style={{
-                  gridTemplateColumns: "2.5fr 1fr 1fr 100px 110px 80px",
+                  gridTemplateColumns: "2.5fr 1fr 1fr 100px 110px 110px",
                   paddingTop: 12,
                   paddingBottom: 12,
                   borderBottom: i < filtered.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
@@ -814,6 +853,67 @@ export default function DokumenteView({ documents: initialDocs, properties, tena
 
                 {/* Actions */}
                 <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
+                  {/* Share */}
+                  <div style={{ position: "relative" }}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSharingDocId(sharingDocId === doc.id ? null : doc.id); }}
+                      className="transition-colors"
+                      title="Mit Mieter teilen"
+                      style={{ width: 28, height: 28, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: sharedDocs[doc.id] ? "#00897B" : "#9CA3AF" }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,137,123,0.08)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <ShareNetwork size={14} />
+                    </button>
+                    <AnimatePresence>
+                      {sharingDocId === doc.id && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                          transition={{ duration: 0.12 }}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            position: "absolute",
+                            right: 0,
+                            top: 34,
+                            zIndex: 20,
+                            background: "white",
+                            border: "1px solid rgba(0,0,0,0.09)",
+                            borderRadius: 12,
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                            padding: "12px 14px",
+                            minWidth: 190,
+                          }}
+                        >
+                          <p style={{ fontSize: 12, fontWeight: 600, color: "#101418", marginBottom: 10 }}>Mit Mieter teilen</p>
+                          <button
+                            onClick={() => toggleShare(doc.id, sharedDocs[doc.id] ?? false)}
+                            disabled={sharingLoading === doc.id}
+                            className="w-full flex items-center gap-2 transition-all"
+                            style={{
+                              fontSize: 12,
+                              fontWeight: 600,
+                              color: (sharedDocs[doc.id]) ? "#B91C1C" : "white",
+                              background: (sharedDocs[doc.id]) ? "rgba(185,28,28,0.08)" : "#00897B",
+                              border: (sharedDocs[doc.id]) ? "1px solid rgba(185,28,28,0.15)" : "none",
+                              padding: "8px 12px",
+                              borderRadius: 8,
+                              cursor: "pointer",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {sharingLoading === doc.id ? "..." : sharedDocs[doc.id] ? "Freigabe entfernen" : "Freigeben"}
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                  {sharedDocs[doc.id] && (
+                    <span style={{ fontSize: 9, fontWeight: 700, background: "rgba(0,137,123,0.1)", color: "#00897B", padding: "2px 6px", borderRadius: 99, whiteSpace: "nowrap" }}>
+                      Geteilt
+                    </span>
+                  )}
                   <button
                     onClick={() => handleDownload(doc)}
                     className="transition-colors"
@@ -866,10 +966,27 @@ export default function DokumenteView({ documents: initialDocs, properties, tena
                   <p style={{ fontSize: 12, fontWeight: 500, color: "#101418", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 5 }}>
                     {doc.name}
                   </p>
-                  <span style={{ fontSize: 9, fontWeight: 600, padding: "2px 6px", borderRadius: 99, background: `${cfg.color}15`, color: cfg.color, border: `1px solid ${cfg.color}30` }}>
-                    {cfg.label}
-                  </span>
-                  <p style={{ fontSize: 10, color: "#9CA3AF", marginTop: 5 }}>{formatFileSize(doc.file_size)} · {formatDate(doc.created_at)}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span style={{ fontSize: 9, fontWeight: 600, padding: "2px 6px", borderRadius: 99, background: `${cfg.color}15`, color: cfg.color, border: `1px solid ${cfg.color}30` }}>
+                      {cfg.label}
+                    </span>
+                    {sharedDocs[doc.id] && (
+                      <span style={{ fontSize: 9, fontWeight: 700, background: "rgba(0,137,123,0.1)", color: "#00897B", padding: "2px 6px", borderRadius: 99 }}>
+                        Geteilt
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <p style={{ fontSize: 10, color: "#9CA3AF" }}>{formatFileSize(doc.file_size)} · {formatDate(doc.created_at)}</p>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleShare(doc.id, sharedDocs[doc.id] ?? false); }}
+                      title={sharedDocs[doc.id] ? "Freigabe entfernen" : "Mit Mieter teilen"}
+                      style={{ color: sharedDocs[doc.id] ? "#00897B" : "#C4B5A0", padding: 2 }}
+                      className="transition-opacity hover:opacity-70"
+                    >
+                      <ShareNetwork size={12} />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             );
@@ -897,6 +1014,31 @@ export default function DokumenteView({ documents: initialDocs, properties, tena
             doc={selectedDoc}
             onClose={() => setSelectedDoc(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Share toast */}
+      <AnimatePresence>
+        {shareToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60]"
+            style={{
+              background: "#101418",
+              color: "white",
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "10px 20px",
+              borderRadius: 12,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {shareToast}
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

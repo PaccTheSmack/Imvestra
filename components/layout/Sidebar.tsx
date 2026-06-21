@@ -8,7 +8,7 @@ import {
   HouseLine, Calculator, MapPin, FilePdf, Buildings,
   UsersFour, CheckSquare, Receipt, Tag, SignOut,
   MagnifyingGlass, Gear, ChartBar, FolderOpen, Warning, FileText,
-  ClipboardText, CaretDown, UserPlus, Wrench, Bank,
+  ClipboardText, CaretDown, UserPlus, Wrench, Bank, ChatCircle,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
@@ -48,6 +48,7 @@ const navSections: NavSection[] = [
         ],
       },
       { Icon: Bank, label: "Bankanbindung", href: "/bank" },
+      { Icon: ChatCircle, label: "Anfragen", href: "/anfragen" },
       { Icon: CheckSquare, label: "Aufgaben", href: "/aufgaben" },
     ],
   },
@@ -123,8 +124,7 @@ function NavLink({
   pathname: string
 }) {
   const hasChildren = (children?.length ?? 0) > 0;
-  const isAufgaben = href === "/aufgaben";
-  const showBadge = isAufgaben && (taskCount ?? 0) > 0;
+  const showBadge = (taskCount ?? 0) > 0;
   const highlighted = active || childActive;
 
   return (
@@ -236,6 +236,7 @@ function NavLink({
 export default function Sidebar({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname();
   const [openTaskCount, setOpenTaskCount] = useState(0);
+  const [anfragenCount, setAnfragenCount] = useState(0);
   const [openParents, setOpenParents] = useState<Set<string>>(() => new Set<string>());
 
   const openPalette = () => document.dispatchEvent(new CustomEvent("imvestra:palette:open"));
@@ -264,6 +265,12 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
         .eq("user_id", user.id)
         .eq("completed", false)
         .then(({ count }) => setOpenTaskCount(count ?? 0));
+      supabase
+        .from("mieter_anfragen")
+        .select("*", { count: "exact", head: true })
+        .eq("vermieter_id", user.id)
+        .eq("status", "offen")
+        .then(({ count }) => setAnfragenCount(count ?? 0));
     });
   }, []);
 
@@ -332,7 +339,7 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
                 <NavLink
                   key={item.href}
                   {...item}
-                  taskCount={item.href === "/aufgaben" ? openTaskCount : 0}
+                  taskCount={item.href === "/aufgaben" ? openTaskCount : item.href === "/anfragen" ? anfragenCount : 0}
                   active={isActive(item.href, pathname)}
                   childActive={childActive}
                   isOpen={openParents.has(item.href)}

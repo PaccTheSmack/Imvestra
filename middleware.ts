@@ -31,36 +31,51 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/register");
-  const isDashboard = request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/calculator") ||
-    request.nextUrl.pathname.startsWith("/portfolio") ||
-    request.nextUrl.pathname.startsWith("/pdf-export") ||
-    request.nextUrl.pathname.startsWith("/settings") ||
-    request.nextUrl.pathname.startsWith("/onboarding") ||
-    request.nextUrl.pathname.startsWith("/mieter") ||
-    request.nextUrl.pathname.startsWith("/standort") ||
-    request.nextUrl.pathname.startsWith("/finanzen") ||
-    request.nextUrl.pathname.startsWith("/aufgaben") ||
-    request.nextUrl.pathname.startsWith("/steuern") ||
-    request.nextUrl.pathname.startsWith("/verhandlung") ||
-    request.nextUrl.pathname.startsWith("/dokumente") ||
-    request.nextUrl.pathname.startsWith("/mahnwesen") ||
-    request.nextUrl.pathname.startsWith("/nebenkostenabrechnung") ||
-    request.nextUrl.pathname.startsWith("/mietvertraege") ||
-    request.nextUrl.pathname.startsWith("/uebergabe") ||
-    request.nextUrl.pathname.startsWith("/bewerber") ||
-    request.nextUrl.pathname.startsWith("/jahresabrechnung") ||
-    request.nextUrl.pathname.startsWith("/instandhaltung") ||
-    request.nextUrl.pathname.startsWith("/bank");
+  const pathname = request.nextUrl.pathname;
+
+  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
+
+  // Mieter-portal public pages (no auth required)
+  const isMieterAuthPage = pathname.startsWith("/mieter/login") || pathname.startsWith("/mieter/aktivieren");
+
+  // Mieter-portal protected pages (require mieter auth)
+  const isMieterPortal = pathname.startsWith("/mieter/") && !isMieterAuthPage;
+
+  // Vermieter dashboard routes (require vermieter auth)
+  const isDashboard = pathname === "/mieter" ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/calculator") ||
+    pathname.startsWith("/portfolio") ||
+    pathname.startsWith("/pdf-export") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/standort") ||
+    pathname.startsWith("/finanzen") ||
+    pathname.startsWith("/aufgaben") ||
+    pathname.startsWith("/anfragen") ||
+    pathname.startsWith("/steuern") ||
+    pathname.startsWith("/verhandlung") ||
+    pathname.startsWith("/dokumente") ||
+    pathname.startsWith("/mahnwesen") ||
+    pathname.startsWith("/nebenkostenabrechnung") ||
+    pathname.startsWith("/mietvertraege") ||
+    pathname.startsWith("/uebergabe") ||
+    pathname.startsWith("/bewerber") ||
+    pathname.startsWith("/jahresabrechnung") ||
+    pathname.startsWith("/instandhaltung") ||
+    pathname.startsWith("/bank");
 
   if (isDashboard && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  if (isMieterPortal && !user) {
+    return NextResponse.redirect(new URL("/mieter/login", request.url));
+  }
+
   if (isAuthPage && user) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const isMieter = user.user_metadata?.role === "mieter";
+    return NextResponse.redirect(new URL(isMieter ? "/mieter/dashboard" : "/dashboard", request.url));
   }
 
   return supabaseResponse;
