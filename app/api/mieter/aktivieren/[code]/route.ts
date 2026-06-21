@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 interface RouteParams {
@@ -15,9 +14,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Passwort erforderlich" }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    // Use admin client throughout — this route is public (no logged-in user)
+    // so anon client is blocked by RLS on mieter_accounts
+    const adminClient = createAdminClient();
 
-    const { data: account } = await supabase
+    const { data: account } = await adminClient
       .from("mieter_accounts")
       .select("id, mieter_email, mieter_name")
       .eq("invitation_code", code)
@@ -30,8 +31,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         { status: 404 }
       );
     }
-
-    const adminClient = createAdminClient();
 
     const { data: authData, error: authError } =
       await adminClient.auth.admin.createUser({
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await adminClient
       .from("mieter_accounts")
       .update({
         supabase_user_id: authData.user.id,

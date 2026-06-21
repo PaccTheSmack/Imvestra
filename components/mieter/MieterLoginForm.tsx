@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 
 export default function MieterLoginForm() {
@@ -10,8 +9,6 @@ export default function MieterLoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -29,8 +26,8 @@ export default function MieterLoginForm() {
       return;
     }
 
-    router.push("/mieter/dashboard");
-    router.refresh();
+    // Full page reload so server middleware picks up the new auth cookie
+    window.location.href = "/mieter/dashboard";
   }
 
   return (
