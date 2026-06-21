@@ -378,10 +378,6 @@ export default function BankView({
       ? suggestedTenant.rent_payments.find((p) => p.id === tx.suggested_payment_id) ?? null
       : null
 
-    const manualTenant = manualTenantId
-      ? tenants.find((t) => t.id === manualTenantId) ?? null
-      : null
-
     const manualPendingPayments = manualTenantId
       ? pendingPayments.filter((p) => p.tenant_id === manualTenantId)
       : []
@@ -1576,7 +1572,7 @@ export default function BankView({
               Kontoauszug importieren
             </h2>
             <TransaktionenImport
-              onImported={(_count: number) => {
+              onImported={() => {
                 setTab("transaktionen")
                 setFilterStatus("suggested")
               }}
