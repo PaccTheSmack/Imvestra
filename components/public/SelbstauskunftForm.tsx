@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Check, CheckCircle, Warning, Buildings, User } from "@phosphor-icons/react"
+import { Check, CheckCircle, Warning, Buildings } from "@phosphor-icons/react"
 
 interface Props {
   zugangscode: string
@@ -105,6 +105,98 @@ function DatePicker({ value, onChange, hasError }: { value: string; onChange: (v
   )
 }
 
+function SignaturePad({ value, onChange, hasError }: { value: string; onChange: (v: string) => void; hasError: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [isEmpty, setIsEmpty] = useState(!value)
+  const lastPos = useRef<{ x: number; y: number } | null>(null)
+
+  function getPos(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+    const rect = canvasRef.current!.getBoundingClientRect()
+    const scaleX = canvasRef.current!.width / rect.width
+    const scaleY = canvasRef.current!.height / rect.height
+    if ("touches" in e) {
+      return { x: (e.touches[0].clientX - rect.left) * scaleX, y: (e.touches[0].clientY - rect.top) * scaleY }
+    }
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY }
+  }
+
+  function startDraw(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+    e.preventDefault()
+    setIsDrawing(true)
+    lastPos.current = getPos(e)
+  }
+
+  function draw(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+    e.preventDefault()
+    if (!isDrawing || !lastPos.current) return
+    const ctx = canvasRef.current!.getContext("2d")!
+    const pos = getPos(e)
+    ctx.beginPath()
+    ctx.moveTo(lastPos.current.x, lastPos.current.y)
+    ctx.lineTo(pos.x, pos.y)
+    ctx.strokeStyle = "#101418"
+    ctx.lineWidth = 2.5
+    ctx.lineCap = "round"
+    ctx.lineJoin = "round"
+    ctx.stroke()
+    lastPos.current = pos
+    setIsEmpty(false)
+    onChange(canvasRef.current!.toDataURL())
+  }
+
+  function stopDraw() {
+    setIsDrawing(false)
+    lastPos.current = null
+  }
+
+  function clear() {
+    const canvas = canvasRef.current!
+    canvas.getContext("2d")!.clearRect(0, 0, canvas.width, canvas.height)
+    setIsEmpty(true)
+    onChange("")
+  }
+
+  return (
+    <div>
+      <div style={{
+        position: "relative", borderRadius: 10, overflow: "hidden",
+        border: `1.5px solid ${hasError ? "#B91C1C" : isEmpty ? "rgba(0,0,0,0.12)" : "#A07830"}`,
+        background: "white",
+      }}>
+        <canvas
+          ref={canvasRef}
+          width={640}
+          height={130}
+          style={{ width: "100%", height: 130, display: "block", cursor: "crosshair", touchAction: "none" }}
+          onMouseDown={startDraw}
+          onMouseMove={draw}
+          onMouseUp={stopDraw}
+          onMouseLeave={stopDraw}
+          onTouchStart={startDraw}
+          onTouchMove={draw}
+          onTouchEnd={stopDraw}
+        />
+        {isEmpty && (
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+            <span style={{ fontSize: 13, color: "#D1D5DB", fontStyle: "italic" }}>Hier unterschreiben …</span>
+          </div>
+        )}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "rgba(0,0,0,0.08)", margin: "0 16px" }} />
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+        <span style={{ fontSize: 11, color: "#9CA3AF" }}>Mit Maus oder Finger zeichnen</span>
+        {!isEmpty && (
+          <button onClick={clear} type="button" style={{ fontSize: 11, color: "#B91C1C", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+            Löschen
+          </button>
+        )}
+      </div>
+      {hasError && <p style={{ fontSize: 11, color: "#B91C1C", margin: "4px 0 0" }}>Bitte unterschreiben</p>}
+    </div>
+  )
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerberName, propertyAddress: _propertyAddress, propertyName, kaltmiete }: Props) {
   const [activeSection, setActiveSection] = useState<Section>("persoenlich")
@@ -129,7 +221,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
     warum_diese_wohnung: "", sonstiges: "",
     einverstaendnis_datenschutz: false,
     einverstaendnis_schufa: false,
-    unterschrift_name: "",
+    unterschrift_name: "", // stores canvas data URL
   })
 
   const set = (key: string, value: unknown) => setForm(p => ({ ...p, [key]: value }))
@@ -150,8 +242,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
     if (section === "einverstaendnis") {
       if (!form.einverstaendnis_datenschutz) errs.add("einverstaendnis_datenschutz")
       if (!form.einverstaendnis_schufa) errs.add("einverstaendnis_schufa")
-      const nameMatch = form.unterschrift_name.toLowerCase().trim() === `${form.vorname} ${form.nachname}`.toLowerCase().trim()
-      if (!form.unterschrift_name || !nameMatch) errs.add("unterschrift_name")
+      if (!form.unterschrift_name) errs.add("unterschrift_name")
     }
     return errs
   }
@@ -590,22 +681,12 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                     <p style={{ fontSize: 11, color: "#6B7280", margin: "0 0 4px" }}>Datum</p>
                     <p style={{ fontSize: 13, fontWeight: 500, color: "#374151", margin: 0 }}>{new Date().toLocaleDateString("de-DE")}</p>
                   </div>
-                  <Field label="Unterschrift (Vollständigen Namen eingeben)" required error={isErr("unterschrift_name")}>
-                    <div style={{ position: "relative" }}>
-                      <User size={14} color="#9CA3AF" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }} />
-                      <input
-                        style={{ ...(isErr("unterschrift_name") ? inputErrStyle : inputStyle), paddingLeft: 30 }}
-                        value={form.unterschrift_name}
-                        onChange={e => set("unterschrift_name", e.target.value)}
-                        placeholder={form.vorname && form.nachname ? `${form.vorname} ${form.nachname}` : "Vor- und Nachname"}
-                      />
-                    </div>
-                    {form.unterschrift_name && form.vorname && form.nachname &&
-                      form.unterschrift_name.toLowerCase().trim() !== `${form.vorname} ${form.nachname}`.toLowerCase().trim() && (
-                        <p style={{ fontSize: 11, color: "#B91C1C", marginTop: 4 }}>
-                          Name muss exakt lauten: {form.vorname} {form.nachname}
-                        </p>
-                      )}
+                  <Field label="Digitale Unterschrift" required error={isErr("unterschrift_name")}>
+                    <SignaturePad
+                      value={form.unterschrift_name}
+                      onChange={v => set("unterschrift_name", v)}
+                      hasError={isErr("unterschrift_name")}
+                    />
                   </Field>
                 </div>
               </div>
