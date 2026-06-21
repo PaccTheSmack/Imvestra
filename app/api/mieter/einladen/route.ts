@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const activation_url = `/mieter/aktivieren/${invitation_code}`;
+    const activation_url = `https://mieter.imvestra.de/aktivieren/${invitation_code}`;
 
     return NextResponse.json({ success: true, invitation_code, activation_url });
   } catch (err) {
