@@ -29,6 +29,7 @@ export default async function DashboardPage() {
     { data: tenants },
     { data: thisMonthPaidPayments },
     { data: openTasks },
+    { data: suggestedTxs },
   ] = await Promise.all([
     supabase.from("profiles").select("plan, name, onboarding_completed").eq("id", user!.id).single(),
     supabase.from("properties").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
@@ -37,6 +38,7 @@ export default async function DashboardPage() {
     supabase.from("rent_payments").select("amount").eq("user_id", user!.id).eq("status", "paid")
       .gte("due_date", firstDay).lte("due_date", lastDay),
     supabase.from("tasks").select("due_date, priority").eq("user_id", user!.id).eq("completed", false),
+    supabase.from("bank_transactions").select("id, betrag", { count: "exact", head: false }).eq("user_id", user!.id).eq("match_status", "suggested").limit(10),
   ]);
 
   if (profile?.onboarding_completed === false) {
@@ -84,6 +86,8 @@ export default async function DashboardPage() {
     .reduce((s, p) => s + (p.amount ?? 0), 0);
 
   const overdueTasks      = (openTasks ?? []).filter((t) => t.due_date && t.due_date < todayStr).length;
+  const suggestedTxCount  = suggestedTxs?.length ?? 0
+  const suggestedTxSum    = (suggestedTxs ?? []).reduce((s, t) => s + (t.betrag ?? 0), 0)
 
   return (
     <>
@@ -99,6 +103,8 @@ export default async function DashboardPage() {
         monthlyRentSoll={monthlyRentSoll}
         monthlyRentIst={monthlyRentIst}
         overdueTasks={overdueTasks}
+        suggestedTxCount={suggestedTxCount}
+        suggestedTxSum={suggestedTxSum}
         portfolioSummary={portfolioSummary}
       />
       <Suspense fallback={null}>

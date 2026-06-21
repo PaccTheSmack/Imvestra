@@ -51,6 +51,8 @@ interface DashboardHomeProps {
   overdueTotal?: number;
   portfolioSummary?: PortfolioSummary;
   actionTasks?: { action_type: string | null; title: string; action_payload: Record<string, unknown> }[];
+  suggestedTxCount?: number;
+  suggestedTxSum?: number;
 }
 
 function getGreeting(firstName: string) {
@@ -72,6 +74,8 @@ export default function DashboardHome({
   overdueTotal = 0,
   portfolioSummary,
   actionTasks,
+  suggestedTxCount = 0,
+  suggestedTxSum = 0,
 }: DashboardHomeProps) {
   const router = useRouter();
 
@@ -122,6 +126,40 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
             }}
           >
             Mahnwesen öffnen →
+          </button>
+        </div>
+      )}
+
+      {/* BANK TRANSACTION ALERT */}
+      {suggestedTxCount > 0 && (
+        <div
+          className="flex items-center justify-between mb-5"
+          style={{
+            background: "rgba(45,106,45,0.04)",
+            border: "1px solid rgba(45,106,45,0.15)",
+            borderRadius: 12,
+            padding: "14px 20px",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <CurrencyDollar size={18} color="#2D6A2D" weight="fill" />
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#2D6A2D" }}>
+                {suggestedTxCount} Zahlungseingang{suggestedTxCount !== 1 ? "e" : ""} prüfen · {fmtCurrency(suggestedTxSum)} eingegangen
+              </p>
+              <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>Noch nicht bestätigt — keine automatische Buchung</p>
+            </div>
+          </div>
+          <button
+            onClick={() => router.push("/bank")}
+            style={{
+              fontSize: 12, fontWeight: 500, color: "#2D6A2D",
+              background: "rgba(45,106,45,0.08)",
+              border: "1px solid rgba(45,106,45,0.15)",
+              padding: "6px 14px", borderRadius: 8,
+            }}
+          >
+            Jetzt bestätigen →
           </button>
         </div>
       )}

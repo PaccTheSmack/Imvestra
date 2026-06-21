@@ -10,6 +10,7 @@ export async function generateSmartTasks(
     { data: payments },
     { data: mahnungen },
     { data: transactions },
+    { data: unmatchedOld },
     { data: financings },
     { data: existingTasks },
   ] = await Promise.all([
@@ -29,6 +30,12 @@ export async function generateSmartTasks(
       .select("*, tenants(name)")
       .eq("user_id", userId)
       .eq("match_status", "suggested"),
+    supabase
+      .from("bank_transactions")
+      .select("id, betrag, transaction_date, auftraggeber_name")
+      .eq("user_id", userId)
+      .eq("match_status", "unmatched")
+      .lt("created_at", new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()),
     supabase
       .from("financings")
       .select("*, properties(name)")
@@ -77,6 +84,28 @@ export async function generateSmartTasks(
           suggested_tenant_id: tx.suggested_tenant_id,
           betrag: tx.betrag,
           confidence: tx.match_confidence ?? 0,
+        },
+      })
+    }
+  }
+
+  // 1b. Unzugeordnete Transaktionen älter als 3 Tage
+  for (const tx of unmatchedOld ?? []) {
+    if (!isDuplicateByField("confirm_payment", "transaction_id", tx.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Bankzahlung nicht zugeordnet — ${tx.auftraggeber_name || "Unbekannt"}`,
+        description: `${tx.betrag}€ vom ${new Date(tx.transaction_date).toLocaleDateString("de-DE")} konnte keinem Mieter zugeordnet werden. Bitte manuell prüfen.`,
+        priority: "medium",
+        category: "financial",
+        due_date: today,
+        completed: false,
+        source_type: "auto",
+        action_type: "confirm_payment",
+        action_payload: {
+          transaction_id: tx.id,
+          betrag: tx.betrag,
+          redirect: "/bank",
         },
       })
     }
