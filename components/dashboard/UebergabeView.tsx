@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import {
   ClipboardText,
@@ -70,6 +71,7 @@ function fmtDate(iso: string) {
 
 export default function UebergabeView({ protokolle, properties, tenants, vermieterName }: UebergabeViewProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [showModal, setShowModal] = useState(false)
   const [activeProtokoll, setActiveProtokoll] = useState<Protokoll | null>(null)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
@@ -78,6 +80,20 @@ export default function UebergabeView({ protokolle, properties, tenants, vermiet
   const [newTyp, setNewTyp] = useState<"einzug" | "auszug" | "zwischenkontrolle">("einzug")
   const [newPropertyId, setNewPropertyId] = useState("")
   const [newTenantId, setNewTenantId] = useState("")
+
+  // Auto-open modal and pre-select tenant from URL param (?tenant_id=)
+  useEffect(() => {
+    const tenantId = searchParams.get("tenant_id")
+    if (tenantId) {
+      const tenant = tenants.find(t => t.id === tenantId)
+      if (tenant) {
+        if (tenant.property_id) setNewPropertyId(tenant.property_id)
+        setNewTenantId(tenantId)
+        setShowModal(true)
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [newDatum, setNewDatum] = useState(new Date().toISOString().split("T")[0])
   const [useStandardRaeume, setUseStandardRaeume] = useState(true)
   const [creating, setCreating] = useState(false)

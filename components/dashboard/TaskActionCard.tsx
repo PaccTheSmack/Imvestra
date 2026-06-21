@@ -89,7 +89,13 @@ export default function TaskActionCard({ task, onComplete, onDismiss }: TaskActi
         body: JSON.stringify({ completed: true }),
       })
       onComplete(task.id)
-      router.push("/mahnwesen")
+      if (payload.existing_mahnung_id) {
+        router.push(`/mahnwesen?mahnung_id=${payload.existing_mahnung_id}`)
+      } else if (payload.payment_id) {
+        router.push(`/mahnwesen?payment_id=${payload.payment_id}`)
+      } else {
+        router.push("/mahnwesen")
+      }
     } finally {
       setLoading(null)
     }
@@ -292,12 +298,12 @@ export default function TaskActionCard({ task, onComplete, onDismiss }: TaskActi
           </div>
         </div>
         <button
-          onClick={() => router.push("/calculator")}
+          onClick={() => router.push(payload.financing_id ? `/finanzen?financing_id=${payload.financing_id}` : "/finanzen")}
           className="flex items-center gap-1.5 w-full justify-center"
           style={{ fontSize: 13, fontWeight: 600, color: "#A07830", background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.2)", padding: "9px 16px", borderRadius: 9 }}
         >
           <ArrowSquareOut size={13} />
-          Zum Zinsrechner
+          Zinsbindung prüfen
         </button>
       </motion.div>
     )

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   motion,
   AnimatePresence,
@@ -266,6 +266,7 @@ function PriceIndicatorBar({
 // ─── main component ────────────────────────────────────────────
 export default function CalculatorPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // form – objekt
   const [name, setName] = useState("");
@@ -316,6 +317,18 @@ export default function CalculatorPage() {
     }
     fetchPlan();
   }, []);
+
+  // prefill from URL params (e.g. from portfolio "Im Rechner öffnen")
+  useEffect(() => {
+    const pp = searchParams.get("purchase_price");
+    const rent = searchParams.get("rent");
+    const sqmParam = searchParams.get("sqm");
+    const nameParam = searchParams.get("name");
+    if (pp) setPurchasePrice(pp);
+    if (rent) setRentMonthly(rent);
+    if (sqmParam) setSqm(sqmParam);
+    if (nameParam) setName(nameParam);
+  }, [searchParams]);
 
   // tilgung
   const [tilgungYears, setTilgungYears] = useState<10 | 20 | 30>(20);

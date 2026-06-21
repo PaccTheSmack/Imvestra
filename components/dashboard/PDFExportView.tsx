@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import {
@@ -29,7 +30,15 @@ interface PDFExportViewProps {
 
 export default function PDFExportView({ properties, plan }: PDFExportViewProps) {
   const prefersReduced = useReducedMotion();
+  const searchParams = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const propertyId = searchParams.get("property_id");
+    if (propertyId && properties.some((p) => p.id === propertyId)) {
+      setSelectedId(propertyId);
+    }
+  }, [searchParams, properties]);
 
   const selectedProperty = properties.find((p) => p.id === selectedId) ?? null;
   const selectedResult = selectedProperty ? calculateProperty(selectedProperty) : null;

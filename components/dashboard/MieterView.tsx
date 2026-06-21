@@ -495,10 +495,16 @@ export default function MieterView({ tenants, properties }: MieterViewProps) {
                           </button>
                         )}
                         <button
-                          onClick={() => window.location.href = "/nebenkostenabrechnung"}
+                          onClick={() => router.push(`/nebenkostenabrechnung?tenant_id=${tenant.id}&property_id=${tenant.property_id}`)}
                           style={{ fontSize: 11, fontWeight: 500, color: "#A07830", padding: "5px 10px", borderRadius: 7, border: "1px solid rgba(160,120,48,0.2)", background: "rgba(160,120,48,0.05)" }}
                         >
                           NKA erstellen
+                        </button>
+                        <button
+                          onClick={() => router.push(`/uebergabe?tenant_id=${tenant.id}`)}
+                          style={{ fontSize: 11, fontWeight: 500, color: "#A07830", padding: "5px 10px", borderRadius: 7, border: "1px solid rgba(160,120,48,0.2)", background: "rgba(160,120,48,0.05)", cursor: "pointer" }}
+                        >
+                          Übergabe
                         </button>
                         <button
                           onClick={() => router.push(`/mietvertraege?tenant=${tenant.id}`)}

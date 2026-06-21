@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import {
   Receipt,
@@ -388,6 +389,7 @@ function PositionModal({ onSave, onClose, editPosition, documents }: PositionMod
 // ─── MAIN COMPONENT ──────────────────────────────────────
 
 export default function NkaView({ abrechnungen, properties, tenants, documents }: NkaViewProps) {
+  const searchParams = useSearchParams()
   const [view, setView] = useState<"list" | "wizard">("list")
   const [wizardStep, setWizardStep] = useState<1 | 2 | 3 | 4 | 5>(1)
   const [saving, setSaving] = useState(false)
@@ -424,6 +426,28 @@ export default function NkaView({ abrechnungen, properties, tenants, documents }
       vorauszahlung_edit: t.nk_vorauszahlung ?? 0,
     })))
   }
+
+  // Auto-open wizard from URL params (?tenant_id=&property_id=)
+  useEffect(() => {
+    const propertyId = searchParams.get("property_id")
+    const tenantId = searchParams.get("tenant_id")
+    if (propertyId) {
+      handleSelectProperty(propertyId)
+      setView("wizard")
+      setWizardStep(1)
+      if (tenantId) {
+        const pts = tenants.filter(t => t.property_id === propertyId)
+        setWizardTenants(pts.map(t => ({
+          ...t,
+          included: t.id === tenantId,
+          wohnflaeche_edit: t.wohnflaeche ?? 0,
+          einwohnerzahl_edit: t.einwohnerzahl ?? 1,
+          vorauszahlung_edit: t.nk_vorauszahlung ?? 0,
+        })))
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Year selection
   const handleSelectYear = (year: number) => {

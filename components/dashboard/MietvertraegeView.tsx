@@ -262,13 +262,31 @@ export default function MietvertraegeView({ mietvertraege, properties, tenants, 
     besondere_vereinbarungen: "",
   })
 
-  // Pre-select tenant from URL param
+  // Pre-select tenant or bewerber from URL params
   useEffect(() => {
     const tenantId = searchParams.get("tenant")
+    const bewerberId = searchParams.get("bewerber_id")
     if (tenantId) {
       setView("wizard")
       setStep(1)
       autofillTenant(tenantId)
+    } else if (bewerberId) {
+      setView("wizard")
+      setStep(1)
+      fetch(`/api/bewerber/${bewerberId}`)
+        .then(r => r.json())
+        .then((b: { name?: string; email?: string; telefon?: string; property_id?: string }) => {
+          const prop = b.property_id ? properties.find(p => p.id === b.property_id) : undefined
+          setForm(f => ({
+            ...f,
+            mieter_name: b.name ?? "",
+            mieter_email: b.email ?? "",
+            mieter_telefon: b.telefon ?? "",
+            property_id: b.property_id ?? "",
+            objekt_adresse: prop?.address ?? "",
+          }))
+        })
+        .catch(() => {/* ignore */})
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

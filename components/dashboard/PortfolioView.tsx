@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useMemo } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import {
   Buildings, Plus, DotsThree, ArrowUpRight,
@@ -345,8 +345,16 @@ function EmptyState() {
 
 export default function PortfolioView({ properties, financings, payments, expenses }: PortfolioViewProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const prefersReduced = useReducedMotion()
   const [viewMode, setViewMode] = useState<ViewMode>("overview")
+
+  useEffect(() => {
+    const tab = searchParams.get("tab")
+    if (tab === "overview" || tab === "chart" || tab === "properties" || tab === "analyse") {
+      setViewMode(tab)
+    }
+  }, [searchParams])
   const [chartMetric, setChartMetric] = useState<ChartMetric>("wert")
   const [timeRange, setTimeRange] = useState<TimeRange>("Alle")
   const [valueDisplay, setValueDisplay] = useState<"eur" | "pct">("eur")
@@ -1041,12 +1049,30 @@ export default function PortfolioView({ properties, financings, payments, expens
                                   </div>
                                 ))}
                               </div>
-                              <div className="flex gap-2">
+                              <div className="flex flex-wrap gap-2">
                                 <button
-                                  onClick={() => router.push(`/calculator?property=${p.id}`)}
+                                  onClick={() => router.push(`/calculator?purchase_price=${p.purchase_price}&rent=${p.rent_monthly}&sqm=${p.sqm ?? ""}&name=${encodeURIComponent(p.name ?? "")}`)}
                                   className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
                                 >
                                   <ArrowUpRight size={12} /> Im Rechner öffnen
+                                </button>
+                                <button
+                                  onClick={() => router.push(`/pdf-export?property_id=${p.id}`)}
+                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <ArrowUpRight size={12} /> PDF Bankpräsentation
+                                </button>
+                                <button
+                                  onClick={() => router.push(`/mieter?property_id=${p.id}`)}
+                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <ArrowUpRight size={12} /> Mieter anzeigen
+                                </button>
+                                <button
+                                  onClick={() => router.push(`/dokumente?property_id=${p.id}`)}
+                                  className="text-xs px-3 py-1.5 rounded-[6px] border border-[rgba(0,0,0,0.08)] text-[#6B7280] hover:text-[#101418] hover:border-[rgba(0,0,0,0.2)] transition-all cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <ArrowUpRight size={12} /> Dokumente
                                 </button>
                               </div>
                             </div>

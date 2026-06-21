@@ -117,7 +117,7 @@ const hasPortfolio = portfolioSummary && portfolioSummary.anzahl_objekte > 0;
             </div>
           </div>
           <button
-            onClick={() => router.push("/mahnwesen")}
+            onClick={() => router.push("/aufgaben")}
             style={{
               fontSize: 12, fontWeight: 500, color: "#B91C1C",
               background: "rgba(185,28,28,0.08)",

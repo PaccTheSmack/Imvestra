@@ -17,6 +17,7 @@ import {
   X,
   Sparkle,
   Warning,
+  ArrowSquareOut,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
@@ -537,7 +538,19 @@ export default function AufgabenView({ tasks: initialTasks, properties }: Aufgab
                             </span>
                           )}
                           {/* Actions */}
-                          <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                            {task.action_type === "generic" && typeof task.action_payload?.redirect === "string" && !task.completed && (
+                              <button
+                                className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer"
+                                style={{ color: "#A07830", background: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.15)" }}
+                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(160,120,48,0.14)"; }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(160,120,48,0.08)"; }}
+                                onClick={() => router.push(task.action_payload!.redirect as string)}
+                              >
+                                <ArrowSquareOut size={10} />
+                                Jetzt erledigen →
+                              </button>
+                            )}
                             {!isAutoGen && (
                               <button
                                 className="p-1 rounded transition-colors"

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useCallback, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import {
   Warning,
@@ -66,6 +66,7 @@ function StatusBadge({ status }: { status: Mahnung["status"] }) {
 
 export default function MahnwesenView({ mahnungen, vermieterName }: MahnwesenViewProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const prefersReduced = useReducedMotion()
 
   const [tab, setTab] = useState<"scanner" | "verlauf">("scanner")
@@ -82,6 +83,29 @@ export default function MahnwesenView({ mahnungen, vermieterName }: MahnwesenVie
   const [sperreGrund, setSperreGrund] = useState("")
   const [settingSperr, setSettingSperr] = useState(false)
   const [localMahnungen, setLocalMahnungen] = useState<Mahnung[]>(mahnungen)
+
+  // Auto-select payment from URL param and trigger scan
+  useEffect(() => {
+    const paymentId = searchParams.get("payment_id")
+    const mahnungId = searchParams.get("mahnung_id")
+    if (paymentId) {
+      // Switch to scanner tab and pre-select after scan
+      setTab("scanner")
+      fetch("/api/mahnwesen/scan")
+        .then(r => r.json())
+        .then((data: MahnungPreview[]) => {
+          setPreviews(data)
+          setScanned(true)
+          const match = data.find(p => p.rent_payment_id === paymentId)
+          if (match && !match.mahnsperre) setSelected([paymentId])
+        })
+        .catch(() => {/* ignore */})
+    } else if (mahnungId) {
+      // Switch to history tab and filter for that mahnung
+      setTab("verlauf")
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Stats
   const offeneCount = localMahnungen.filter(m => m.status === "offen").length

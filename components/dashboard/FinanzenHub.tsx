@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   Bank,
@@ -237,6 +237,7 @@ export default function FinanzenHub({
   bankTransactions = [],
 }: FinanzenHubProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const prefersReduced = useReducedMotion();
 
   const today = new Date();
@@ -259,6 +260,29 @@ export default function FinanzenHub({
     bank: "", loan_amount: "", interest_rate: "", repayment_rate: "",
     rate_monthly: "", fixed_until: "", current_debt: "",
   });
+
+  // ── URL param: auto-select financing and switch to zinsbindung tab ──────────
+  useEffect(() => {
+    const financingId = searchParams.get("financing_id")
+    if (!financingId) return
+    setActiveTab("zinsbindung")
+    const found = financings.find(f => f.id === financingId)
+    if (found) {
+      const prop = Array.isArray((found as { properties?: unknown }).properties)
+        ? (found as { properties?: { name?: string; type?: string }[] }).properties?.[0]
+        : (found as { properties?: { name?: string; type?: string } }).properties
+      const { urgency, days, months } = computeUrgency(found.fixed_until)
+      setSelectedFinancing({
+        ...found,
+        propertyName: prop?.name ?? propertiesMap[found.property_id]?.name ?? "Unbekannt",
+        propertyType: prop?.type ?? propertiesMap[found.property_id]?.type ?? "",
+        urgency,
+        daysUntilExpiry: days,
+        monthsUntilExpiry: months,
+      } as EnrichedFinancing)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Computed: maps ─────────────────────────────────────────────────────────
   const tenantsMap = Object.fromEntries(tenants.map((t) => [t.id, t]));
