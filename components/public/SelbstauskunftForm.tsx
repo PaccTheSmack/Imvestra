@@ -57,9 +57,10 @@ function Field({ label, required, error, children }: { label: string; required?:
 }
 
 const MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"]
-const YEARS = Array.from({ length: 90 }, (_, i) => 2008 - i) // 2008 → 1919
+const YEARS = Array.from({ length: 90 }, (_, i) => 2008 - i) // birth: 2008 → 1919
+const YEARS_RECENT = Array.from({ length: 50 }, (_, i) => 2026 - i) // since: 2026 → 1977
 
-function DatePicker({ value, onChange, hasError }: { value: string; onChange: (v: string) => void; hasError: boolean }) {
+function DatePicker({ value, onChange, hasError, years = YEARS }: { value: string; onChange: (v: string) => void; hasError: boolean; years?: number[] }) {
   const parsed = value ? value.split("-") : ["", "", ""]
   const [year, setYear] = useState(parsed[0] || "")
   const [month, setMonth] = useState(parsed[1] || "")
@@ -97,7 +98,7 @@ function DatePicker({ value, onChange, hasError }: { value: string; onChange: (v
       </select>
       <select style={selectStyle} value={year} onChange={e => { setYear(e.target.value); commit(e.target.value, month, day) }}>
         <option value="">Jahr</option>
-        {YEARS.map(y => (
+        {years.map(y => (
           <option key={y} value={String(y)}>{y}</option>
         ))}
       </select>
@@ -412,11 +413,9 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                 <Field label="Aktuelle Adresse" required error={isErr("aktuelle_adresse")}>
                   <textarea style={{ ...(isErr("aktuelle_adresse") ? inputErrStyle : inputStyle), resize: "vertical", minHeight: 60 }} value={form.aktuelle_adresse} onChange={e => set("aktuelle_adresse", e.target.value)} placeholder="Musterstraße 1, 12345 Berlin" />
                 </Field>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <Field label="Wohnhaft seit">
-                    <input type="month" style={inputStyle} value={form.wohnhaft_seit} onChange={e => set("wohnhaft_seit", e.target.value)} />
-                  </Field>
-                </div>
+                <Field label="Wohnhaft seit">
+                  <DatePicker value={form.wohnhaft_seit} onChange={v => set("wohnhaft_seit", v)} hasError={false} years={YEARS_RECENT} />
+                </Field>
                 <Field label="Kündigungsgrund (optional)">
                   <textarea style={{ ...inputStyle, resize: "vertical", minHeight: 60 }} value={form.kuendigungsgrund} onChange={e => set("kuendigungsgrund", e.target.value)} placeholder="Warum verlassen Sie Ihre aktuelle Wohnung?" />
                 </Field>
@@ -468,7 +467,7 @@ export default function SelbstauskunftForm({ zugangscode, bewerberName: _bewerbe
                     <input style={isErr("arbeitgeber") ? inputErrStyle : inputStyle} value={form.arbeitgeber} onChange={e => set("arbeitgeber", e.target.value)} placeholder="Firma GmbH" />
                   </Field>
                   <Field label="Beschäftigt seit">
-                    <input type="month" style={inputStyle} value={form.beschaeftigt_seit} onChange={e => set("beschaeftigt_seit", e.target.value)} />
+                    <DatePicker value={form.beschaeftigt_seit} onChange={v => set("beschaeftigt_seit", v)} hasError={false} years={YEARS_RECENT} />
                   </Field>
                   <Field label="Beruf / Position">
                     <input style={inputStyle} value={form.beruf} onChange={e => set("beruf", e.target.value)} placeholder="Softwareentwickler" />

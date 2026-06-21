@@ -21,11 +21,16 @@ export async function POST(request: NextRequest, { params }: { params: { code: s
 
   const body = await request.json()
 
+  // Sanitize: empty strings → null (prevents date column parse errors)
+  const sanitized = Object.fromEntries(
+    Object.entries(body as Record<string, unknown>).map(([k, v]) => [k, v === "" ? null : v])
+  )
+
   // Save form data
   const { error: updateErr } = await supabase
     .from("selbstauskuenfte")
     .update({
-      ...body,
+      ...sanitized,
       ausgefuellt_am: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
