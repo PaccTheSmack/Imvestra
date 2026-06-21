@@ -362,6 +362,90 @@ export async function generateSmartTasks(
     }
   }
 
+  // 10. Überfällige Instandhaltung
+  const { data: ueberfaelligeInstandhaltung } = await supabase
+    .from("instandhaltung")
+    .select("id, titel, faellig_am, kosten_geschaetzt, prioritaet, property_id")
+    .eq("user_id", userId)
+    .eq("status", "offen")
+    .lt("faellig_am", today)
+
+  for (const item of ueberfaelligeInstandhaltung ?? []) {
+    if (!isDuplicateByField("generic", "instandhaltung_id", item.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        property_id: item.property_id,
+        title: `ÜBERFÄLLIG: ${item.titel}`,
+        description: `Wartung war fällig am ${new Date(item.faellig_am).toLocaleDateString("de-DE")}${item.kosten_geschaetzt ? `. Kosten: ca. ${item.kosten_geschaetzt}€` : ""}.`,
+        priority: "high",
+        category: "maintenance",
+        due_date: today,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/instandhaltung", instandhaltung_id: item.id },
+      })
+    }
+  }
+
+  // 11. Instandhaltung fällig in 30 Tagen
+  const thirtyDaysLater = new Date()
+  thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30)
+  const thirtyDaysStr = thirtyDaysLater.toISOString().split("T")[0]
+
+  const { data: baldFaellig } = await supabase
+    .from("instandhaltung")
+    .select("id, titel, faellig_am, kosten_geschaetzt, prioritaet, property_id")
+    .eq("user_id", userId)
+    .in("status", ["offen", "in_bearbeitung"])
+    .gte("faellig_am", today)
+    .lte("faellig_am", thirtyDaysStr)
+
+  for (const item of baldFaellig ?? []) {
+    if (!isDuplicateByField("generic", "instandhaltung_id", item.id)) {
+      tasksToCreate.push({
+        user_id: userId,
+        property_id: item.property_id,
+        title: `${item.titel} — Wartung fällig`,
+        description: `Fällig am ${new Date(item.faellig_am).toLocaleDateString("de-DE")}${item.kosten_geschaetzt ? `. Kosten: ca. ${item.kosten_geschaetzt}€` : ""}.`,
+        priority: item.prioritaet === "dringend" || item.prioritaet === "hoch" ? "high" : "medium",
+        category: "maintenance",
+        due_date: item.faellig_am,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/instandhaltung", instandhaltung_id: item.id },
+      })
+    }
+  }
+
+  // 12. Jahresabrechnung Reminder (Oktober+)
+  const currentMonth2 = new Date().getMonth() + 1
+  if (currentMonth2 >= 10) {
+    const lastYear = new Date().getFullYear() - 1
+    const { data: jahresAbr } = await supabase
+      .from("jahresabrechnungen")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("jahr", lastYear)
+      .single()
+
+    if (!jahresAbr && !isDuplicateByField("generic", "redirect", "/jahresabrechnung")) {
+      tasksToCreate.push({
+        user_id: userId,
+        title: `Jahresabrechnung ${lastYear} erstellen`,
+        description: `Steuererklärung vorbereiten. Anlage V + DATEV Export für ${lastYear}.`,
+        priority: "medium",
+        category: "financial",
+        due_date: `${new Date().getFullYear()}-05-31`,
+        completed: false,
+        source_type: "auto",
+        action_type: "generic",
+        action_payload: { redirect: "/jahresabrechnung" },
+      })
+    }
+  }
+
   if (tasksToCreate.length > 0) {
     await supabase.from("tasks").insert(tasksToCreate)
   }

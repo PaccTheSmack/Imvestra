@@ -50,7 +50,9 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/nebenkostenabrechnung") ||
     request.nextUrl.pathname.startsWith("/mietvertraege") ||
     request.nextUrl.pathname.startsWith("/uebergabe") ||
-    request.nextUrl.pathname.startsWith("/bewerber");
+    request.nextUrl.pathname.startsWith("/bewerber") ||
+    request.nextUrl.pathname.startsWith("/jahresabrechnung") ||
+    request.nextUrl.pathname.startsWith("/instandhaltung");
 
   if (isDashboard && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
