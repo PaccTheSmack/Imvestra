@@ -60,12 +60,14 @@ const MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August",
 const YEARS = Array.from({ length: 90 }, (_, i) => 2008 - i) // 2008 → 1919
 
 function DatePicker({ value, onChange, hasError }: { value: string; onChange: (v: string) => void; hasError: boolean }) {
-  const parts = value ? value.split("-") : ["", "", ""]
-  const [year, month, day] = parts
+  const parsed = value ? value.split("-") : ["", "", ""]
+  const [year, setYear] = useState(parsed[0] || "")
+  const [month, setMonth] = useState(parsed[1] || "")
+  const [day, setDay] = useState(parsed[2] || "")
 
-  function update(newYear: string, newMonth: string, newDay: string) {
-    if (newYear && newMonth && newDay) {
-      onChange(`${newYear}-${newMonth.padStart(2,"0")}-${newDay.padStart(2,"0")}`)
+  function commit(y: string, m: string, d: string) {
+    if (y && m && d) {
+      onChange(`${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`)
     } else {
       onChange("")
     }
@@ -73,27 +75,27 @@ function DatePicker({ value, onChange, hasError }: { value: string; onChange: (v
 
   const selectStyle: React.CSSProperties = {
     flex: 1, padding: "10px 8px", borderRadius: 9, fontSize: 13,
-    border: `${hasError ? "1.5px solid #B91C1C" : "1px solid rgba(0,0,0,0.12)"}`,
+    border: hasError ? "1.5px solid #B91C1C" : "1px solid rgba(0,0,0,0.12)",
     background: hasError ? "rgba(185,28,28,0.03)" : "white",
-    outline: "none", color: value ? "#101418" : "#9CA3AF", cursor: "pointer",
+    outline: "none", color: "#101418", cursor: "pointer",
     appearance: "none" as React.CSSProperties["appearance"],
   }
 
   return (
     <div style={{ display: "flex", gap: 8 }}>
-      <select style={{ ...selectStyle, flex: "0 0 80px" }} value={day} onChange={e => update(year, month, e.target.value)}>
+      <select style={{ ...selectStyle, flex: "0 0 80px" }} value={day} onChange={e => { setDay(e.target.value); commit(year, month, e.target.value) }}>
         <option value="">Tag</option>
         {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
           <option key={d} value={String(d).padStart(2,"0")}>{d}</option>
         ))}
       </select>
-      <select style={{ ...selectStyle, flex: "0 0 120px" }} value={month} onChange={e => update(year, e.target.value, day)}>
+      <select style={{ ...selectStyle, flex: "0 0 120px" }} value={month} onChange={e => { setMonth(e.target.value); commit(year, e.target.value, day) }}>
         <option value="">Monat</option>
         {MONTHS.map((m, i) => (
           <option key={i} value={String(i+1).padStart(2,"0")}>{m}</option>
         ))}
       </select>
-      <select style={selectStyle} value={year} onChange={e => update(e.target.value, month, day)}>
+      <select style={selectStyle} value={year} onChange={e => { setYear(e.target.value); commit(e.target.value, month, day) }}>
         <option value="">Jahr</option>
         {YEARS.map(y => (
           <option key={y} value={String(y)}>{y}</option>
