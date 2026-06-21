@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import MieterAktivierenForm from "@/components/mieter/MieterAktivierenForm";
 
@@ -8,9 +8,9 @@ interface PageProps {
 
 export default async function MieterAktivierenPage({ params }: PageProps) {
   const { code } = await params;
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
-  const { data: mieterAccount } = await supabase
+  const { data: mieterAccount } = await adminClient
     .from("mieter_accounts")
     .select("mieter_name, mieter_email")
     .eq("invitation_code", code)
